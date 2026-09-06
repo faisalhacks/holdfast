@@ -1,6 +1,8 @@
 # HOLDFAST — Devpost submission
 
-**Track 2 — Autonomous Office of the CFO. Built with AO.**
+**Track 2 — Autonomous Office of the CFO.**
+Built with parallel Claude Code agents in isolated git worktrees, one ownership glob each,
+CI as the referee, and no agent ever scoring itself into a merge.
 
 ## Elevator pitch
 
@@ -8,25 +10,57 @@ AP reconciliation that publishes how often it was wrong. On a held-out set of 60
 the naive baseline every vendor demo is built on cleared 39 invoices and got 30 of them
 right. Holdfast cleared 24 and got 24 right.
 
+Then a critic we hired found that our own headline metric was counting invoices nobody had
+settled. We changed the definition, coverage fell eighteen points, and we shipped the lower
+number.
+
 ---
 
 ## The result, first
 
 | | coverage | strict auto-clear | false clears | rupees at risk | match precision |
 |---|---|---|---|---|---|
-| **Holdfast — holdout (60)** | 63.3% | **24 of 60** | **0** | **Rs 0** | 100% |
+| **Holdfast — holdout (60)** | 45.0% | **24 of 60** | **0** | **Rs 0** | 100% |
 | naive baseline — holdout | 65.0% | 39 of 60 | **9** | **Rs 23,01,540.23** | 76.9% |
-| **Holdfast — selection (200)** | 74.0% | **93 of 200** | **0** | **Rs 0** | 100% |
+| **Holdfast — selection (200)** | 51.5% | **93 of 200** | **0** | **Rs 0** | 100% |
 | naive baseline — selection | 80.0% | 160 of 200 | **34** | **Rs 2,05,16,608.51** | 78.8% |
 
-The baseline **beats us on coverage on both sets** and would have shown a better number on
-a slide. It exposed Rs 23,01,540.23 on 60 invoices doing it. A coverage figure alone cannot
-distinguish those two systems; the false-clear count and the money can.
+The baseline **beats us on coverage on both sets** — by twenty points on the holdout — and
+would have shown the better number on a slide. It exposed Rs 23,01,540.23 on 60 invoices
+doing it. A coverage figure alone cannot distinguish those two systems; the false-clear count
+and the money can.
 
 The holdout was generated at a seed frozen before any search agent ran, written outside the
-repository, and never committed — only its digests are in git. Every number above is read
+repository, and never committed — only its digests are in git, and CI rebuilds it from the
+frozen seed on every pull request and compares them. Every number above is read
 programmatically out of `eval/report.json` by a build gate that fails on any figure typed by
 hand. **Read the adverse findings below before quoting any of it.**
+
+---
+
+## The number we are proudest of is the one that went down
+
+Our whole argument is that a coverage number alone cannot tell a working system from a
+careless one. **Our own coverage number could not.**
+
+We had declared two hold types — `matching` ("no payment matched within tolerance") and
+`no_reference` ("no usable reference token was found on the payment side") — as
+**auto-releasable**. An auto-release means the condition resolves on its own: for `matching`,
+when a payment arrives. But **the payment set a run sees is closed and already presented.**
+Nothing further arrives, so the condition can never resolve and a named person has to look.
+No later event supplies a reference token that is not there, either.
+
+It was wrong on our own Oracle framing and it was not cosmetic: **it counted every invoice
+where we found nothing as "decided without a human"**, the exact opposite of what happened.
+
+A critic briefed to attack our metrics found it. We changed the definition in
+`engine/holds/registry.ts`. `period_deferral` stays auto-releasable — the period genuinely
+does roll over on its own.
+
+**Coverage fell eighteen points on the holdout, to 45.0% — 27 of 60 decided. False clears,
+rupees at risk and match precision did not move at all**, because they never depended on the
+definition that was wrong. The flattering number was fragile; the correctness numbers were
+not. That is the thesis demonstrated on ourselves rather than asserted about other people.
 
 ---
 
@@ -69,7 +103,8 @@ declared — and a similarity tolerance is a *floor*, so raising it registers as
 reconciliation function then answers the audit question the feature exists for: which holds
 were released **without** governance.
 
-The reviewer UI was built by a human collaborator outside AO and is not ours to claim. The
+The reviewer UI was built by a human collaborator outside this agent build and is not ours to
+claim. The
 API above is what we built, and one mechanical rule crosses that boundary: no numeric metric
 literal may appear anywhere under the app directory, theirs included.
 
@@ -114,10 +149,32 @@ Money is integer paise, branded and stored as `BIGINT`; there is no rupee field 
 in any money path, and a build gate fails the repository on a float parse or a numeric cast
 of a monetary field. The hold model — typed codes, auto-release, an accounting block — is
 **ported from Oracle Payables, not invented.** Application status keeps four distinct states
-rather than collapsing them. The evaluation floors were written into a frozen file before any
-data existed; three per-hold-type recall floors are **not met** and the report says so on
-every run rather than the floor being moved. We make no assurance-programme, attestation or
-certification-scheme claims of any kind.
+rather than collapsing them. The policy constants — the amount above which a human reviews
+regardless of score, and the settlement window a search may look inside — were frozen before
+any data existed, put hard ceilings on what we can reach, and were not moved once the data
+arrived. We make no assurance-programme, attestation or certification-scheme claims of any
+kind.
+
+**The floors were set before any data existed, and we do not meet them.** Stage-2 enforcement
+lives on the unmerged branch `orchestrator/floors-live` at `f6c21e0`, deliberately not merged
+so it can be demonstrated without turning `main` red. Run the regression check with that file
+present and it says:
+
+```
+regression: stage 2 — eval/floors.live present, floors ENFORCED
+regression: coverage 0.515, false_clears 0, decided 103, rupees_at_risk 0 paise, rate 0.0000
+
+regression: FAIL — 1 condition(s)
+
+  coverage 0.515 is below the floor 0.7
+
+Do not widen a floor to clear this. That is quarantine Q2 — the same move the
+incumbent ERP calls "change the tolerance", and we refuse it for the same reason.
+```
+
+**One condition fails and it is coverage. Every correctness floor passes.** Three
+per-hold-type recall floors also go unmet, reported as observed on every run. We did not
+reach the coverage floor and we are not moving it.
 
 **Why not BenchRec?** It is bank-statement-to-general-ledger cash matching, not
 invoice-to-payment settlement, and it does not label exception *types* — which is exactly what
@@ -132,13 +189,15 @@ AF-1 below.
 
 ## Adverse findings — all four, unsoftened
 
-**AF-1 — Our coverage number counts auto-released holds as decided.** On the holdout,
-**38 decided = 24 strict auto-clears + 14 auto-released holds**, and most of those 14 have a
-real payment in truth that the engine failed to find. Raising a hold that will lift by itself
-is not the same as settling the invoice. **The strict figure is 24 of 60.** And `Rs 0 at risk`
-is partly structural: a false clear is only computed for an auto-clear, and a hold always
-emits an empty payment set, so **a hold cannot be a false clear by construction.** Our zero is
-real, but it is a zero over 24 decisions on the holdout, not 38.
+**AF-1 — Coverage still is not a settlement count, and `Rs 0` is partly structural.** The
+largest part of this finding is fixed and is the section above. What remains: coverage is
+`decided / total`, and on the holdout **27 decided = 24 strict auto-clears + 3 auto-released
+`period_deferral` holds** — a small gap, not a zero one. **The strict figure is 24 of 60**,
+and it is the number to quote if you only quote one. And `Rs 0 at risk` is partly structural:
+a false clear is only computed for an auto-clear, and a hold always emits an empty payment
+set, so **a hold cannot be a false clear by construction.** Our zero is real, but it is a zero
+over 24 decisions on the holdout, not over 60 — a system that held everything would report
+the same zero for the same mechanical reason.
 
 **AF-2 — The reference component returns its maximum for factually wrong pairings.** Over a
 thousand wrong pairings clear the reference component's floor on reference evidence alone. In
@@ -171,7 +230,12 @@ Full text: `docs/adverse-findings.md`.
 
 ---
 
-## How we built it — and how we used AO
+## How we built it — parallel agents, and CI as the referee
+
+**Parallel Claude Code agents in isolated git worktrees, one ownership glob each, CI as the
+referee, and no agent ever scoring itself into a merge.** The record is the pull request
+history rather than the branch list — every change arrived through a pull request with the
+five checks attached, thirty-eight of them by the time this was written.
 
 Sessions are reported **by category** and never summed into a headline, because agent count
 is a spend, not a result.
@@ -193,7 +257,8 @@ is a spend, not a result.
   five different starting directions. Two returned null results and said so. Three refused an
   easy win, one of them measuring a *higher* score and declining it: *"coverage rising because
   the match got worse; not taken."*
-- **4 critic sessions, no merges, all four found something.** Two of the four adverse findings
+- **4 critic sessions, no merges of their own, all four found something** — and one of them
+  changed the headline metric, which is the section at the top of this page. Two of the four adverse findings
   above came from them.
 - **Nine CI failures were routed back and fixed**, numbered in the log — including two in the
   orchestrator's own code. One was a gate that had **silently stopped running**: a path guard
@@ -225,8 +290,10 @@ falsified prediction, the sweep's null results, and the four findings above.
 ## What's next
 
 Fix AF-2 — the reference component needs to stop saturating before any further coverage work,
-because coverage bought on top of it is coverage bought on a near-constant. Report strict
-auto-clears as the headline metric and demote coverage to a supporting figure, per AF-1. Run
+because coverage bought on top of it is coverage bought on a near-constant. Earn the coverage
+floor back honestly, now that the definition is right: the correction removed a way of
+appearing to reach it, and none of that headroom was ever real. Promote strict auto-clears to
+the headline outright and make coverage a supporting figure, finishing what AF-1 started. Run
 the strong LLM baseline, which is implemented but did not run for this report: the machine had
 no provider key, and the harness records an absent baseline as **absent** rather than as a row
 of zeros. And build the gate nobody built: something that constrains what the experimenter is

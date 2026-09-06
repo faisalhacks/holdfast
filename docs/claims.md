@@ -61,7 +61,7 @@ released alongside this change, which were released **without** governance.
 | **We meet a production bank's match-precision requirement** | BenchRec records 99.8-99.9%. We floor ourselves at 0.98 and report what we observe. We adopt the principle; we do not claim the bar. |
 | **A model contributed to any cleared or released outcome** | It structurally cannot. See the boundary section below. |
 | **Any assurance-programme, attestation or certification-scheme status** | We make no such claims of any kind, and nothing in this repository is a security or audit-readiness statement. |
-| **Anything about the reviewer UI** | It was built by a human collaborator outside AO. |
+| **Anything about the reviewer UI** | It was built by a human collaborator, outside this agent build. |
 
 ### Three sentences we retract
 

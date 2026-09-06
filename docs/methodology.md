@@ -86,6 +86,28 @@ Not committing it is also *stronger* than committing it, because the seed and th
 hash are frozen in advance. **Anyone can regenerate the holdout byte-identically and check
 our digests.** Nobody has to trust that a dozen agents did not peek.
 
+### The reproducibility claim is a check that runs on every pull request
+
+This started as a cost. The submission could not pass CI at first, because a CI runner is in
+exactly the position of a sweep agent by design — the holdout is not in the repository and
+not a git object, so a runner produced a report with no holdout figures and the claims
+auditor correctly rejected every holdout number in the prose. The right response was to
+escalate it rather than quote selection figures as though they were the headline.
+
+**It was fixed by regenerating the holdout in CI rather than checking it out.** Every pull
+request now rebuilds the holdout on a clean machine from the committed generator at the
+frozen seed, and the manifest gate compares the five rebuilt digests against the frozen ones:
+
+```
+manifest: holdout REPRODUCED — 5 file(s) at b410dcf1ea53,
+          regenerated from seed 20260907 and byte-identical to the frozen digests
+```
+
+So "the holdout is reproducible from a frozen seed" stopped being a sentence in a manifest
+and became a check that fails the build if it ever stops being true. It also means the
+headline set is measured on a fresh machine every time, not only on ours. **The cost became
+the evidence.**
+
 **Read AF-3 in `docs/adverse-findings.md` before concluding that the isolation was
 sufficient.** The agents were isolated. The human who chose what they searched for was not.
 
@@ -117,16 +139,38 @@ a rationalisation.
 
 | floor | value | status on the selection set |
 |---|---|---|
-| coverage | 0.70 | met — 74.0% |
+| coverage | 0.70 | **NOT met — 51.5%** |
 | false clears (absolute count, never a rate) | 3 | met — 0 |
 | match precision | 0.98 | met — 100% |
 | rupees at risk | derived from the two above | met — Rs 0 |
 | every held invoice emits at least one conflict | yes | met |
 | per hold type recall | 0.70 | **three types NOT met** |
 
-The three unmet floors are reported as observed on every run rather than moved:
-`matching` at 50.0%, `no_reference` at 44.4%, and selection-set `cardinality_residual` at
-0.0%.
+**Every correctness floor passes. The coverage floor does not.** The three unmet per-hold-type
+floors are reported as observed on every run rather than moved: `matching` at 50.0%,
+`no_reference` at 44.4%, and selection-set `cardinality_residual` at 0.0%.
+
+### Stage-2 enforcement is real, and it fails us
+
+Floor enforcement is two-stage by design: stage 1 records the floors so that every merge has
+trend data, and stage 2 enforces them from the moment `eval/floors.live` appears. That file
+exists on the branch `orchestrator/floors-live` at `f6c21e0` and is **deliberately unmerged**,
+so enforcement can be demonstrated without turning `main` red. With it present:
+
+```
+regression: stage 2 — eval/floors.live present, floors ENFORCED
+regression: coverage 0.515, false_clears 0, decided 103, rupees_at_risk 0 paise, rate 0.0000
+
+regression: FAIL — 1 condition(s)
+
+  coverage 0.515 is below the floor 0.7
+
+Do not widen a floor to clear this. That is quarantine Q2 — the same move the
+incumbent ERP calls "change the tolerance", and we refuse it for the same reason.
+```
+
+One condition fails and it is coverage. The floor was written before any data existed and
+hash-locked at the Wave 2 gate. **We did not reach it, and we are not moving it.**
 
 Two of those were investigated by the worker that owns them, which **refused to reach its own
 floor and showed its working**: of the selection rows expecting a `no_reference` hold, three
@@ -197,10 +241,14 @@ report, that duplicate recall is 100% while selection-set `cardinality_residual`
 
 Five falsifiable predictions were committed **before** the harness ran, in their own commit,
 so the ordering is checkable in the git log. Each came with an explicit statement of what
-would falsify it. Two have been scored:
+would falsify it. Three have been scored:
 
 - **Confirmed** — the naive baseline looks acceptable on aggregate coverage, and only the
   false-clear count and the rupees expose it. It does, and they do.
+- **Confirmed** — coverage would not clear the floor on the first engine run, and the gap
+  would close through normalisation rather than through scoring changes. It did not clear the
+  floor then and it does not clear it now, and the sweep that closed part of the gap only ever
+  touched normalisation.
 - **Falsified** — we predicted our deterministic layer would over-match and surface false
   clears in the duplicate and cardinality strata. **It does the opposite.** It produces zero
   false clears on both sets and under-matches instead.

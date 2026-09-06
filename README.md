@@ -2,7 +2,7 @@
 
 **AP reconciliation that reports how often it was wrong.**
 Built for the Syndicate by Maximor hackathon, Track 2 — Autonomous Office of the CFO.
-Built with AO.
+Built with parallel Claude Code agents in isolated git worktrees.
 
 Holdfast reconciles supplier invoices against a bank statement and, for every invoice it
 cannot settle beyond argument, applies a **typed hold** — a named condition that stops
@@ -23,16 +23,17 @@ are shown beside it and are never substituted for it.
 
 | | coverage | strict auto-clear | false clears | rupees at risk | match precision |
 |---|---|---|---|---|---|
-| **Holdfast — holdout** | 63.3% | **24 of 60** | **0** | **Rs 0** | 100% |
+| **Holdfast — holdout** | 45.0% | **24 of 60** | **0** | **Rs 0** | 100% |
 | naive baseline — holdout | 65.0% | 39 of 60 | **9** | **Rs 23,01,540.23** | 76.9% |
-| **Holdfast — selection (200)** | 74.0% | **93 of 200** | **0** | **Rs 0** | 100% |
+| **Holdfast — selection (200)** | 51.5% | **93 of 200** | **0** | **Rs 0** | 100% |
 | naive baseline — selection | 80.0% | 160 of 200 | **34** | **Rs 2,05,16,608.51** | 78.8% |
 
-**The line that carries the whole project: on the holdout, the naive baseline cleared 39
-invoices and got 30 of them right.** It beats us on the number the category publishes and
-loses catastrophically on the number it does not. A coverage figure alone cannot tell
-those two systems apart. The false-clear count and the money can, which is why both are in
-the report and why the report is generated, never typed.
+**The baseline beats us on coverage on both sets.** On the holdout it clears twenty points
+more than we do — and **it cleared 39 invoices and got 30 of them right.** That is the line
+that carries the whole project. It wins on the number the category publishes and loses
+catastrophically on the number it does not. A coverage figure alone cannot tell those two
+systems apart. The false-clear count and the money can, which is why both are in the report
+and why the report is generated, never typed.
 
 Every number in this repository's prose is read programmatically out of `eval/report.json`
 or carries a named external source in `docs/citations.json`. `pnpm audit:claims` extracts
@@ -40,10 +41,52 @@ every numeric token from `README.md`, `DEVPOST.md` and `docs/**` and fails the b
 anything with no provenance. We could not have hand-typed a metric into this file if we
 had wanted to.
 
-> **Before you read the claims, read [the four adverse findings](#adverse-findings).**
-> Two of them weaken the headline above. One of them is a methodological error by the
-> human running the project. The fourth says most of what we thought was novel is prior
-> art.
+---
+
+## The number we are proudest of is the one that went down
+
+Our whole argument is that a coverage number alone cannot tell a working system from a
+careless one.
+
+**Our own coverage number could not.**
+
+We had declared two hold types — `matching` ("no payment matched within tolerance") and
+`no_reference` ("no usable reference token was found on the payment side") — as
+**auto-releasable**. An auto-release means the condition resolves on its own: for
+`matching`, when a payment arrives. But **the payment set a run sees is closed and already
+presented.** Nothing further arrives inside the run, so the condition can never resolve, and
+a named person has to look. The same is true of `no_reference`: no later event supplies a
+reference token that is not there.
+
+It was wrong on our own Oracle framing, and it was not cosmetic. **It counted every invoice
+where we found nothing as "decided without a human"** — the exact opposite of what happened.
+
+A critic we hired to attack our own metrics found it. We changed the definition in
+`engine/holds/registry.ts`. `period_deferral` stays auto-releasable, because that condition
+genuinely does resolve on its own: the period rolls over.
+
+| what the correction moved | what it did not move |
+|---|---|
+| holdout coverage, down **eighteen points** to **45.0%** — 27 of 60 decided | false clears: **0** |
+| selection coverage, down to **51.5%** — 103 of 200 decided | rupees at risk: **Rs 0** |
+| | match precision: **100%** |
+
+**Coverage fell eighteen points on the holdout. False clears, rupees at risk and match
+precision did not move at all** — they never depended on the definition that was wrong. That
+asymmetry is the finding: the flattering number was fragile, and the correctness numbers
+were not. The figures above are the post-correction ones, and they are the only ones in this
+repository; the old report is gone, because the report is regenerated and never committed.
+
+The finding had been recorded hours earlier and was not acted on while the old figure kept
+being quoted; a rise in that figure after our normalisation sweep was the sweep, not a fix.
+Caught on review. **We shipped the lower number.**
+
+That is the thesis demonstrated on ourselves rather than asserted about other people, and it
+is worth more to us than any remaining metric on this page.
+
+> **Read [the four adverse findings](#adverse-findings) before the claims.** One is a
+> methodological error by the human running the project. One says most of what we thought
+> was novel is prior art.
 
 ---
 
@@ -81,6 +124,12 @@ That is the gap this project is aimed at, and the naive baseline in the table ab
 what the gap looks like when you measure it: a system that would have reported a
 better-than-ours match rate on a slide while quietly exposing Rs 23,01,540.23 on 60
 invoices.
+
+**We are below the plateau, and we publish that.** Our coverage does not reach the Hackett
+median, and after the correction described above it is not close. We could have reached a
+better-looking figure by keeping a definition we had already been shown was wrong. The whole
+argument of this submission is that the industry optimises the number it publishes; we do not
+get an exemption from our own argument.
 
 ---
 
@@ -149,7 +198,8 @@ nobody is recoverable the export says `attributable: false` rather than inventin
 a precision-of-review figure, the exception log, per-change tolerance evidence, and a hash
 chain over the journal that reports `intact` and `contiguous` separately.
 
-The reviewer UI itself was built by a human collaborator outside AO and is not ours to
+The reviewer UI itself was built by a human collaborator outside this agent build, and is not
+ours to
 claim. Everything above is the API it drives, and the one rule that crosses that boundary
 is mechanical: no numeric metric literal may appear anywhere under `app/`, theirs included.
 A hardcoded number in the UI is the exact thing that makes a judge stop believing the
@@ -201,10 +251,10 @@ silently dropped hold is an invoice that gets paid.
 ### The parts we would defend on the merits
 
 - **Cardinality.** Bulk remittances are settled by exact subset-sum over integer paise,
-  meet-in-the-middle, bounded by a frozen maximum subset size. On the selection set the
-  mean number of statement lines inside one invoice's window is 74, and a bounded search
-  returned dozens of arithmetically perfect solutions on individual invoices without
-  finishing. So amount evidence **never nominates** a settling set: a line enters the pool
+  meet-in-the-middle, bounded by a frozen maximum subset size. The mean pool of statement
+  lines inside one invoice's settlement window runs to dozens, and a bounded search returned
+  dozens of arithmetically perfect and semantically wrong solutions on individual invoices
+  *without finishing*. So amount evidence **never nominates** a settling set: a line enters the pool
   only if a reference token recovered from the raw narration names the invoice. Reference
   evidence picks the candidates; arithmetic picks among them. **On a tie, the settling set
   is reported empty and a `multiple_candidates_tied` conflict is raised** — applying a
@@ -262,11 +312,40 @@ is on. We port a data model; we did not invent one (§5).
 different problems with different owners, and collapsing them is how a real cash-application
 queue becomes uninterpretable.
 
-**The floors were set before any data existed**, in a frozen file, and are reported as
-observed rather than moved when they are missed. Three per-hold-type recall floors are
-**not met** on the selection set and the report says so on every run. Widening a threshold
-to make a red build green is the same move as widening a tolerance to release a hold, and
-it is the move this whole project exists to refuse.
+**The policy constants were frozen before any data existed**, in a file no worker owns — the
+amount above which a human reviews regardless of score, and the settlement window a
+cardinality search may look inside. Both put hard ceilings on what we can reach, and neither
+was moved once the data arrived. Moving a constant to reach a number is the same act as
+widening a tolerance to release a hold, and it is the act this project exists to make
+visible.
+
+### The floors were set before any data existed, and we do not meet them
+
+The evaluation floors were written into a frozen, hash-locked file at the very start of the
+build. A floor set in advance is a promise; a floor set afterwards is a rationalisation.
+
+Stage-2 enforcement is real and it is **proven against us**. `eval/floors.live` exists on
+the unmerged branch `orchestrator/floors-live` at `f6c21e0`, deliberately not merged so that
+enforcement can be demonstrated without turning `main` red. Run the regression check with
+that file present and this is what it says:
+
+```
+regression: stage 2 — eval/floors.live present, floors ENFORCED
+regression: coverage 0.515, false_clears 0, decided 103, rupees_at_risk 0 paise, rate 0.0000
+
+regression: FAIL — 1 condition(s)
+
+  coverage 0.515 is below the floor 0.7
+
+Do not widen a floor to clear this. That is quarantine Q2 — the same move the
+incumbent ERP calls "change the tolerance", and we refuse it for the same reason.
+```
+
+**One condition fails, and it is coverage. Every correctness floor passes** — false clears,
+rupees at risk, match precision, and every held invoice emitting at least one conflict.
+Three per-hold-type recall floors also go unmet and are reported as observed on every run.
+
+We did not reach the coverage floor. **We are not moving it.**
 
 **We make no assurance-programme, attestation or certification-scheme claims of any kind**,
 and nothing here is a security or audit-readiness statement.
@@ -309,29 +388,28 @@ nobody asked about is the most credible thing this submission has.
 
 The full text is in [`docs/adverse-findings.md`](docs/adverse-findings.md).
 
-## AF-1 — Our coverage number counts auto-released holds as decided
+## AF-1 — Coverage still is not a settlement count, and `Rs 0` is partly structural
 
-Coverage is `decided / total`, and "decided" means *an outcome was reached without a named
-human*. That set includes auto-releasing holds. On the holdout:
+**The largest part of this finding has been fixed and is [at the front of this
+file](#the-number-we-are-proudest-of-is-the-one-that-went-down).** What remains is smaller,
+and it still qualifies the two figures a reader is most likely to quote.
 
-**38 decided = 24 strict auto-clears + 14 auto-released holds.**
+**Coverage is not a settlement count.** It is `decided / total`, where *decided* means an
+outcome was reached without a named human. After the correction that set is strict
+auto-clears plus **only** the hold type that genuinely resolves on its own. On the holdout:
 
-Most of those 14 have a real payment in truth that the engine failed to find. We are
-counting "I raised a hold that will lift by itself" as coverage, and it is not the same
-thing as settling the invoice. **The strict figure is 24 of 60.** Both are in the table at
-the top of this file and both are in the report.
+**27 decided = 24 strict auto-clears + 3 auto-released `period_deferral` holds.**
 
-Our own normalisation sweep produced the same finding from the other direction: coverage is
-largely *insensitive* to normalisation quality, because a pairing lost becomes an
-auto-releasing `matching` hold and a pairing gained comes out of an auto-releasing
-`no_reference` hold — so both already counted as decided. Strict auto-clears barely moved
-across the entire sweep.
+The gap is small now, and it is not zero. **The strict figure is 24 of 60**, it sits beside
+coverage in the headline table, and it is the number to quote if you only quote one.
 
 **And `Rs 0 at risk` is partly structural.** A false clear is only computed for an
 auto-clear. A hold always emits an empty payment set. **A hold therefore cannot be a false
-clear by construction.** Our zero is real — no invoice we settled was settled wrongly — but
-it is a zero over 24 decisions on the holdout, not over 38, and the mechanism that produces
-it is worth understanding before it is quoted.
+clear by construction.** Our zero is real — no invoice we settled was settled wrongly, and
+match precision is 100% on both sets — but it is a zero over **24 decisions** on the
+holdout, not over 60. A system that held everything would report the same zero, for the same
+mechanical reason. The strict auto-clear count is what stops that reading, which is why it
+is in the table.
 
 ## AF-2 — The reference component returns its maximum for factually wrong pairings
 
@@ -432,10 +510,14 @@ sides at once.
 
 **The holdout is not in the repository and is not a git object.** Only its digests are
 committed, into the frozen manifest, before any search agent existed. Gitignoring would not
-have been enough — sparse checkout controls the working tree, not the object store. Anyone
-can regenerate the holdout byte-identically from the committed generator at the seed above
-and check the hashes. Nobody has to take our word for the isolation. (Read AF-3 before
-concluding that the isolation was sufficient.)
+have been enough — sparse checkout controls the working tree, not the object store.
+
+**Reproducibility is a check, not a sentence.** CI regenerates the holdout on a clean runner
+from the committed generator at the frozen seed on **every pull request**, and the manifest
+gate compares the rebuilt digests against the frozen ones. If the generator ever stops being
+deterministic, the build says so. Nobody has to take our word for it — and the rebuild is
+the same procedure a judge would run by hand. (Read AF-3 before concluding that the
+isolation this bought was sufficient.)
 
 **A firewall separates the generator from the matcher.** Only `eval/` may read the answer
 key; a build gate bans any reference to it from the engine, the model boundary or the app,
@@ -459,7 +541,16 @@ notes. We are not going to describe a comparison we did not measure.
 
 ---
 
-# 7. How we used AO
+# 7. How we built it — parallel agents, and CI as the referee
+
+**Parallel Claude Code agents in isolated git worktrees, one ownership glob each, CI as the
+referee, and no agent ever scoring itself into a merge.** That is the whole arrangement, and
+the mechanisms below are what made it safe to run wide.
+
+**The record is the pull request history, not the branch list.** Every change in this
+repository arrived through a pull request with the five checks attached — thirty-eight of
+them by the time this was written — and each one names its branch, the ownership glob it was
+scored against, and the gate results.
 
 Sessions are reported **by category**. They are never summed into a headline number,
 because "we ran N agents" is a spend, not a result.
@@ -469,7 +560,7 @@ because "we ran N agents" is a spend, not a result.
 | merged worker sessions | thirteen | one branch each, disjoint ownership globs |
 | race sessions discarded | 7 | redundant spawns on the three hardest briefs |
 | normalisation sweep sessions | 12 | 8 completed (4 lost to an API outage), **1 merged**, 7 recorded and discarded |
-| critic sessions | 4 | no merges — all four found something |
+| critic sessions | 4 | no merges of their own — all four found something, and one changed the headline metric |
 
 **Ownership is mechanical.** Every branch name maps to a set of globs, and CI fails any pull
 request touching a path outside them even if the change is correct. A frozen list — the
@@ -544,15 +635,21 @@ inside the window.
 
 ```bash
 pnpm install
-export HOLDFAST_HOLDOUT_DIR=/path/to/holdfast-holdout   # regenerate from the frozen seed
+export HOLDFAST_HOLDOUT_DIR=/path/to/holdfast-holdout
+tsx scripts/generate-dataset.ts --dataset holdout   # rebuild it from the frozen seed
+pnpm check:manifest # compares the rebuild's five digests against the frozen ones
 pnpm eval          # writes eval/report.json — every number in this file comes from it
 pnpm verify        # selftest, typecheck, forbidden, ownership, manifest,
                    # thresholds, migrations, eval, regression, audit:claims
 pnpm audit:claims  # fails if any number in README/DEVPOST/docs has no provenance
 ```
 
-Regenerate the holdout with the committed generator at the frozen seed and compare its five
-digests against `data/MANIFEST` before believing the headline.
+CI performs that same rebuild-and-compare on a clean runner on every pull request, so the
+headline set is measured on a fresh machine each time rather than only on ours.
+
+To see stage-2 floor enforcement fail against us, check out `orchestrator/floors-live` at
+`f6c21e0` — it carries `eval/floors.live` and is deliberately unmerged — and run
+`pnpm check:regression`.
 
 ## Further reading
 
@@ -561,7 +658,7 @@ digests against `data/MANIFEST` before believing the headline.
 | [`docs/adverse-findings.md`](docs/adverse-findings.md) | The four findings in full, unsoftened |
 | [`docs/claims.md`](docs/claims.md) | Every claim we make, every claim we retract, and the prior art |
 | [`docs/methodology.md`](docs/methodology.md) | Dataset, firewall, floors, holdout, what the report measures |
-| [`docs/how-we-used-ao.md`](docs/how-we-used-ao.md) | Session accounting by category, gates, races, the sweep |
+| [`docs/parallel-agents.md`](docs/parallel-agents.md) | Session accounting by category, gates, races, the sweep |
 | `eval/PREDICTION.md` | Five falsifiable predictions, written before the first run |
 | `logs/orchestrator_log.md` | The full run log, including everything that went wrong |
 | `sweep/results.md` | All twelve sweep agents, including the losers |

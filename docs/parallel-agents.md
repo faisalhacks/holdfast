@@ -1,15 +1,23 @@
-# How we used AO
+# How we built it — parallel agents, and CI as the referee
 
-Reported **by category**. Never summed into a headline, because the number of agents run is
-a spend, not a result. The full narrative, including everything that went wrong, is in
-`logs/orchestrator_log.md`.
+**Parallel Claude Code agents in isolated git worktrees, one ownership glob each, CI as the
+referee, and no agent ever scoring itself into a merge.**
+
+The record is the pull request history rather than the branch list: every change arrived
+through a pull request with the five checks attached, thirty-eight of them by the time this
+was written, each naming its branch, the ownership glob it was scored against, and its gate
+results.
+
+Sessions are reported **by category**. Never summed into a headline, because the number of
+agents run is a spend, not a result. The full narrative, including everything that went
+wrong, is in `logs/orchestrator_log.md`.
 
 | category | count | outcome |
 |---|---|---|
 | merged worker sessions | thirteen | one branch each, disjoint ownership globs |
 | race sessions discarded | 7 | redundant spawns on the three hardest briefs; losers' work never cherry-picked |
 | normalisation sweep sessions | 12 | 8 completed (4 lost to an API outage), **1 merged**, 7 recorded and discarded |
-| critic sessions | 4 | no merges — all four found something |
+| critic sessions | 4 | no merges of their own — all four found something, and one changed the headline metric |
 
 **Work before the submission window was research and planning only. All building happened
 in-window.**
@@ -132,10 +140,13 @@ filter.** Not one traded correctness for coverage.
   worse; not taken."* One found the baseline was profiting from an over-merge and fixed it
   anyway at a temporary cost. One found and fixed a real defect, observed that it changed no
   decision, and **reverted it rather than pad the diff.**
-- **The sweep also broke our own metric.** Its null results and a critic's finding are the same
-  discovery from opposite directions: coverage is largely insensitive to normalisation quality,
-  because a pairing lost becomes an auto-releasing hold and a pairing gained comes out of one.
-  That is AF-1, and it is why the submission reports strict auto-clears beside coverage.
+- **The sweep also broke our own metric.** Its null results and a critic's argument turned out
+  to be the same discovery from opposite directions: coverage was largely insensitive to
+  matching quality, because under the definition we were using at the time, a pairing lost
+  became an auto-releasing hold and a pairing gained came out of one — so both already counted
+  as decided. The critic's argument is what identified the cause. **We corrected the
+  definition, and the headline fell eighteen points.** Two independent routes to one
+  conclusion is why it was believed immediately rather than argued with.
 
 Four sweep sessions were lost to an API outage mid-flight and are reported as lost. An earlier
 outage took out two racers simultaneously; the critical path survived only because the brief

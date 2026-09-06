@@ -4,49 +4,60 @@ Four findings that damage this submission. They are published because we commiss
 critics to find things and publishing what they found is the entire point of having run
 them. None of them is paired with a mitigating clause in the same breath.
 
-Two came from critic sessions in the final wave. One came from our own normalisation sweep
-reading its own metric honestly. One is a methodological error by the human running the
-project.
+Three came from critic sessions. One came from our own normalisation sweep reading its own
+metric honestly. One is a methodological error by the human running the project.
+
+**One of the four has since been acted on rather than only disclosed.** A critic showed that
+our headline coverage metric was counting invoices nobody had settled; we corrected the
+definition and the number fell eighteen points. The correction is at the front of
+`README.md`, and AF-1 below records only what remains true afterwards.
 
 ---
 
-## AF-1 — Our coverage number counts auto-released holds as decided
+## AF-1 — Coverage still is not a settlement count, and `Rs 0` is partly structural
 
-### What the number actually is
+**The largest part of this finding has been fixed, and the fix is at the front of
+`README.md` rather than here.** Critic C1 found that two hold types — `matching` and
+`no_reference` — were declared `auto_releasable: true` when their conditions can never
+resolve inside a run whose payment set is closed and already presented. The metric was
+counting every invoice where we found nothing as "decided without a human". We changed the
+definition, **holdout coverage fell eighteen points to 45.0%**, and the correctness figures
+did not move at all. That story belongs at the front, because it is our own thesis
+demonstrated on us.
 
-`coverage = decided / invoices_total`, where **decided** means an outcome was reached
-without a named human having to act. That set has two members, not one:
+What is recorded here is the part that is still true after the fix.
+
+### Coverage is still not a settlement count
+
+`coverage = decided / invoices_total`, where **decided** means an outcome was reached without
+a named human having to act. That set still has two members:
 
 - **strict auto-clears** — the engine named the settling payment set and it was right;
-- **auto-released holds** — the engine raised a typed hold whose policy says it lifts on its
-  own when the underlying condition resolves.
+- **auto-released holds** — now only `period_deferral`, whose condition genuinely does
+  resolve on its own: the period rolls over.
 
 On the holdout set:
 
-> **38 decided = 24 strict auto-clears + 14 auto-released holds.**
+> **27 decided = 24 strict auto-clears + 3 auto-released `period_deferral` holds.**
 
-On the selection set the split is **148 decided = 93 strict auto-clears + 55 auto-released
-holds.**
+On the selection set: **103 decided = 93 strict auto-clears + 10 auto-released holds.**
 
-**Most of the auto-released holds have a real payment in truth that the engine failed to
-find.** They are not resolved invoices. They are invoices we did not settle, carrying a hold
-that will lift by itself, counted in the same figure as invoices we settled correctly.
+The gap is small now. It is not zero, and a `period_deferral` hold is still not a settled
+invoice. **The strict figure on the holdout is 24 of 60.** It appears beside coverage in the
+headline table in `README.md`, in `DEVPOST.md`, and in `eval/report.json` as
+`auto_cleared_count`. It is the number to quote if you only quote one.
 
-**The strict figure on the holdout is 24 of 60.** It appears beside coverage in the headline
-table in `README.md`, in `DEVPOST.md`, and in `eval/report.json` as `auto_cleared_count`.
-
-### Our own sweep found this from the other direction
+### How the sweep saw the same defect from the other side
 
 Twelve agents searched normalisation strategies against the selection set. The best of them
 moved coverage by a little. **Strict auto-clears barely moved at all across the whole sweep.**
 
-The reason is structural, and it is the same finding: a pairing lost becomes an
-auto-releasing `matching` hold, and a pairing gained comes out of an auto-releasing
-`no_reference` hold. Both hold types are `auto_releasable`, so **both already counted as
-decided**. Coverage is therefore largely *insensitive to matching quality* over that range.
-The agents that did move coverage moved it by dissolving human-required holds
-(`price_variance`, `cardinality_residual`) into auto-releasing ones — a real improvement in
-routing, and not the same thing as matching more invoices correctly.
+That was the same defect, arriving as a symptom: under the old definition a pairing lost
+became an auto-releasing `matching` hold and a pairing gained came out of an auto-releasing
+`no_reference` hold, so **both already counted as decided** and coverage was largely
+insensitive to matching quality. Two independent routes to one conclusion — a sweep's null
+results and a critic's argument — and it is the reason the correction was believed
+immediately when it came.
 
 ### `Rs 0 at risk` is partly structural
 
@@ -55,15 +66,16 @@ set. **A hold therefore cannot be a false clear by construction.**
 
 Our zero is a real result — every invoice the engine settled, it settled correctly, and match
 precision is 100% on both sets — but it is a zero over **24 decisions** on the holdout, not
-over 38, and not over 60. A system that held everything would also report zero, and would
-report it for the same mechanical reason. The figure that constrains that reading is the
-strict auto-clear count, which is why it is in the headline table.
+over 60. A system that held everything would also report zero, and would report it for the
+same mechanical reason. The figure that constrains that reading is the strict auto-clear
+count, which is why it is in the headline table.
 
-### What we would change
+### What we would still change
 
-Report **strict auto-clears** as the headline and demote coverage to a supporting figure.
-That is a metric change and metric changes made after seeing the result are exactly the move
-this project refuses, so it is stated here as a finding rather than applied.
+Promote **strict auto-clears** to the headline outright and make coverage a supporting
+figure. We have not done it in this submission: the definition has already been corrected
+once under a critic's argument, and swapping the headline metric again after seeing where the
+numbers landed is a different kind of move. It is stated here rather than applied.
 
 ---
 
