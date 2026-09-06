@@ -874,3 +874,40 @@ broke new worktree creation: git resolved fresh worktrees to a checkout discover
 them and refused, correctly, because commands would have written outside the worktree. Two
 spawns failed before this was diagnosed. All nineteen were removed and the registry pruned.
 Worth recording as a real cost of running ~30 agents through one repository.
+
+---
+
+## W10 — and the second table that had drifted
+
+`engine/rules/**` and `export/**`, 12 files. Clean on scope and firewall.
+
+**It disagreed with the API's `TOLERANCE_GOVERNS` deliberately, and it was right.** W10
+built the governance table from a stricter definition — *a tolerance kind reaches a hold
+type iff the condition raising that hold is actually tested against a `Tolerance` of that
+kind* — and cited the engine site for every row. Four rows differed, all of them the API
+over-claiming:
+
+- **`exact` governed four hold types.** An exact tolerance has no number to move; a retype
+  releases nothing.
+- **`days` governed `period_deferral`, `credit_note_crossing`, `duplicate_candidate`.**
+  Those turn on month EQUALITY. In W10's words: *no window makes March equal April.*
+- **`duplicate_candidate` was reachable at all.** It never consults a tolerance; its window
+  is frozen policy.
+
+**This was visible, not cosmetic.** The API's 428 preview tells a reviewer which holds a
+tolerance change is about to release. Naming holds it cannot release is the same class of
+error as releasing one silently — it is a promise about a judgement, made wrongly, on the
+screen built to record judgements correctly. Swapped: the API now derives the table from
+`governedHoldTypes()`.
+
+That is the **second** parallel table found drifting from a frozen single source, after the
+hold-policy table. Both were written by a worker that started before the owner existed, and
+both were flagged by the worker itself rather than discovered later. The pattern is worth
+stating in the submission: parallel construction produces duplicate sources of truth, and
+the fix is not more review — it is making the second copy import the first.
+
+**W10 also improved on the brief.** Three outcomes rather than two: `released`,
+`requires_named_release` (the tolerance governs the hold, but a named person must still
+act) and `withheld` with five typed reasons. Only a `widened` change releases anything, and
+`reconcileRelease` names holds that were released *without* governance — which is exactly
+the audit question the feature exists to answer.
