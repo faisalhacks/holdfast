@@ -24,7 +24,10 @@ SELECT
   min(h.applied_at)                       AS held_since,
   (CURRENT_DATE - min(h.applied_at)::date) AS age_days,
   bool_or(h.blocks_accounting)            AS blocks_accounting,
-  max(h.severity::text)                   AS highest_severity_present,
+  -- max() over the enum, not over its text: the enum is declared advisory < material <
+  -- blocking, so this is the most severe hold on the case. Sorting the text instead would
+  -- rank 'material' above 'blocking' and quietly understate the worst hold.
+  max(h.severity)                         AS highest_severity_present,
   bool_and(h.auto_releasable)             AS all_holds_auto_releasable,
   top.candidate_id                        AS top_candidate_id,
   top.residual_paise                      AS top_candidate_residual_paise
