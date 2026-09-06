@@ -1,0 +1,76 @@
+{
+  "_comment": "Orchestrator-owned and FROZEN. External figures the submission is permitted to state, each with its source. `pnpm audit:claims` passes a number in three cases only: it appears in eval/report.json (measured), it appears here (cited), or it is structural (versions, dates, worker ids, list numbering). Anything else fails the build, printing token, file and line.",
+
+  "_note_to_w11": "docs/** is your glob, but this file is frozen and the frozen check runs first. You cannot add a citation to justify a number you wrote. If a figure you need is genuinely missing, open `CONTRACT: citation <figure>`. Our own results are never listed here — they come from eval/report.json or they do not ship.",
+
+  "citations": {
+    "70": {
+      "source": "The Hackett Group — median AP auto-match rate",
+      "use": "The plateau we position against. Cash-application automation reliably reaches roughly 70% touchless and stalls there."
+    },
+    "32.6": {
+      "source": "Ardent Partners — average touchless invoice processing rate",
+      "use": "The gap between vendor marketing and the median buyer's reality."
+    },
+    "49.2": {
+      "source": "Ardent Partners — best-in-class touchless invoice processing rate",
+      "use": "Even best-in-class leaves half the work to people."
+    },
+    "60": {
+      "source": "SAP cash application — reported plateau range, lower bound of 60-70%",
+      "use": "Corroborates the plateau from the incumbent's own numbers."
+    },
+    "95": {
+      "source": "Vendor marketing — upper bound of claimed auto-match rates",
+      "use": "Cited as a claim, never as a fact. Nobody publishes what it cost in wrong matches."
+    },
+    "99.8": {
+      "source": "BenchRec, ICAIF 2023 (Operartis) — required match precision, lower bound",
+      "use": "Our design principle, stated by a bank three years before this hackathon: leaving a transaction unmatched for review is better than matching it incorrectly."
+    },
+    "99.9": {
+      "source": "BenchRec, ICAIF 2023 (Operartis) — required match precision, upper bound",
+      "use": "As above. We do not claim to meet it; we state the gap."
+    },
+    "92": {
+      "source": "Kognitos — marketing copy conceding an aggressive touchless rate",
+      "use": "A competitor concedes 92% reached by aggressive matching is worse than an honest 85%."
+    },
+    "85": {
+      "source": "Kognitos — the honest rate it prefers to an aggressive 92%",
+      "use": "As above."
+    },
+    "91.3": {
+      "source": "OpenSanctions Pairs, February 2026 — rule-based matcher F1",
+      "use": "Rules over-match. This is why our deterministic layer is floored on precision, not coverage."
+    },
+    "99.0": {
+      "source": "OpenSanctions Pairs, February 2026 — GPT-4o F1",
+      "use": "LLMs fail differently, and pairwise matching is near a practical ceiling — so attention should shift to uncertainty-aware review. That is Holdfast."
+    },
+    "0.05": {
+      "source": "Duplicate-payment loss estimates — low end of the self-reported range, % of AP spend",
+      "use": "The range runs 0.05%-5% and every figure in it is self-reported by firms selling recovery. The variance IS the argument; we cite the spread, never a point estimate."
+    },
+    "5": {
+      "source": "Duplicate-payment loss estimates — high end of the self-reported range, % of AP spend",
+      "use": "As above. A hundred-fold spread is not a measurement."
+    },
+    "30": {
+      "source": "Recovery-audit practice — duplicates as share of recovery claims, lower bound of 30-40%",
+      "use": "Why the amount cap exists: duplicates concentrate in high-value invoices."
+    },
+    "40": {
+      "source": "Recovery-audit practice — duplicates as share of recovery claims, upper bound",
+      "use": "As above."
+    },
+    "2023": {
+      "source": "BenchRec publication year (ICAIF 2023)",
+      "use": "Citation year."
+    },
+    "2026": {
+      "source": "OpenSanctions Pairs publication year",
+      "use": "Citation year."
+    }
+  }
+}

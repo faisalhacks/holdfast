@@ -1,0 +1,47 @@
+{
+  "_comment": "Orchestrator-owned. Branch name -> the ONLY paths that branch may touch. A PR touching anything else fails CI even if the change is correct. Frozen paths fail for every worker branch without exception (quarantine trigger Q1). Structure per AMENDMENT 01 §3.",
+
+  "_frontend_note": "app/(ui)/** is deliberately absent. The frontend is ceded to a human collaborator outside AO. Branches that do not match ^W\\d{2}[a-c]?- skip this check entirely, so the collaborator is unblocked without an entry here. The ui-metric-literal rule in check-forbidden.mjs still applies to their commits — that gate crosses the boundary and is not negotiable.",
+
+  "frozen": [
+    "lib/types.ts",
+    "eval/thresholds.json",
+    "eval/thresholds.lock",
+    "data/MANIFEST",
+    "engine/holds/registry.ts",
+    "docs/citations.json",
+    "AGENTS.md",
+    "CODEOWNERS",
+    "package.json",
+    "pnpm-lock.yaml",
+    "tsconfig.json",
+    ".github/**",
+    "tools/**",
+    "BLOCKED.md",
+    "CURRENT_AIM.md",
+    "memory.md",
+    "logs/**",
+    "critique/**",
+    "quarantine/**"
+  ],
+
+  "frozen_exceptions": {
+    "_comment": "W01 builds lib/types.ts once, inside the window, then it freezes. This is the only exemption and it exists for exactly one branch. eval/thresholds.json is NOT exempted for W03 — it is authored at Wave 0 precisely so the eval gate keys on a file no worker can remove (AMENDMENT 01 §6).",
+    "W01-contract-schema": ["lib/types.ts"]
+  },
+
+  "workers": {
+    "W01-contract-schema":     ["lib/types.ts", "lib/**", "db/**"],
+    "W02-data-generator":      ["scripts/**", "data/**"],
+    "W03-eval-harness":        ["eval/**"],
+    "W04a-engine-normalise":   ["engine/normalise/**"],
+    "W04b-engine-match":       ["engine/match/**"],
+    "W05a-holds-duplicate":    ["engine/holds/duplicate/**"],
+    "W05b-holds-variance":     ["engine/holds/variance/**"],
+    "W05c-holds-cardinality":  ["engine/holds/cardinality/**"],
+    "W06-api-routes":          ["app/api/**"],
+    "W09-llm-boundary":        ["llm/**"],
+    "W10-tolerance-and-audit": ["engine/rules/**", "export/**"],
+    "W11-submission":          ["README.md", "DEVPOST.md", "docs/**"]
+  }
+}

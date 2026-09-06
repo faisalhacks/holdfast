@@ -1,0 +1,149 @@
+name: CI
+
+# Five checks on every PR, matching ARTEFACT 4. AO routes a failure back to the worker
+# whose branch caused it, so each check enforces the contract across all eleven workers
+# without anyone reading eleven diffs.
+#
+# Supporting gates are folded into the check they belong to, so a red job names the
+# worker's actual mistake:
+#   ownership  — scope + frozen files (quarantine Q1)
+#   forbidden  — grep wall + gate self-tests + claims audit
+#   eval       — dataset freeze (Q7) + threshold lock (Q2) + the harness itself
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+
+  migrations:
+    name: migrations
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: holdfast
+          POSTGRES_DB: holdfast
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgres://postgres:holdfast@localhost:5432/holdfast
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Applies every migration from scratch against an empty database, in one
+      # transaction, then asserts UPDATE/DELETE are actually revoked on audit_journal.
+      - run: pnpm migrate
+
+  eval:
+    name: eval
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # The dataset is frozen before anything is tuned. Drift here means the numbers
+      # we publish describe a dataset that no longer exists. Quarantine Q7.
+      - name: dataset freeze
+        run: pnpm check:manifest
+
+      # A floor is a promise, not a dial. Quarantine Q2.
+      - name: threshold lock
+        run: pnpm check:thresholds
+
+      # AMENDMENT 01 §6. The trigger sits outside every worker's glob: W03 owns eval/**
+      # and could otherwise make a red eval skip by deleting the file the gate keys on.
+      # data/MANIFEST is frozen, orchestrator-written once at the Wave 2 freeze, and
+      # one-way — it appears at exactly the moment an eval becomes meaningful, and after
+      # that the eval is mandatory and nobody in the build can turn it off.
+      - name: harness
+        run: |
+          if [ -f data/MANIFEST ] && [ ! -f eval/run.ts ]; then
+            echo "the dataset is frozen but eval/run.ts does not exist."
+            echo "The eval gate is not optional once the dataset is frozen."
+            exit 1
+          fi
+          if [ -f eval/run.ts ]; then
+            pnpm eval
+          else
+            echo "dataset not frozen yet (pre-Wave-2 gate) — no harness to run"
+          fi
+
+      # Quarantine Q4'. Catches the silent regression, not the unflattering result.
+      - name: regression
+        run: pnpm check:regression
+
+  ownership:
+    name: ownership
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # A PR may touch only the paths its branch name claims, and no frozen file at all.
+      - run: pnpm check:ownership
+
+  forbidden:
+    name: forbidden
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # The gates are the only thing standing between an autonomous build and a
+      # dishonest one, so they are tested before they are trusted.
+      - name: gate self-tests
+        run: node tools/selftest.mjs
+      - name: grep wall
+        run: pnpm check:forbidden
+      # No number reaches the submission unless the harness produced it or a source
+      # is cited. Load-bearing.
+      - name: claims audit
+        run: pnpm audit:claims
