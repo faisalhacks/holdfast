@@ -1,0 +1,5 @@
+# The dataset is hashed byte-for-byte into data/MANIFEST at the freeze gate, and the
+# holdout lives outside the repository where git never touches it. If git rewrote line
+# endings on checkout the two would stop agreeing and regeneration would stop being
+# byte-identical on a machine configured differently from the one that generated it.
+* -text

@@ -1,0 +1,3 @@
+# data/holdout.spec.json pins the sha256 of every file in this directory so the holdout
+# can be regenerated and verified. EOL rewriting on checkout would break those digests.
+* -text

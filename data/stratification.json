@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "dataset": "selection",
+  "seed": 20260906,
+  "generator_version": "1.0.0",
+  "invoice_count": 200,
+  "payment_count": 173,
+  "vendor_count": 60,
+  "declared": {
+    "clean": 120,
+    "duplicate": 20,
+    "tolerance": 15,
+    "cardinality": 15,
+    "reference": 15,
+    "period": 15
+  },
+  "realised": {
+    "clean": 120,
+    "duplicate": 20,
+    "tolerance": 15,
+    "cardinality": 15,
+    "reference": 15,
+    "period": 15
+  },
+  "proportions": {
+    "clean": 0.6,
+    "duplicate": 0.1,
+    "tolerance": 0.075,
+    "cardinality": 0.075,
+    "reference": 0.075,
+    "period": 0.075
+  },
+  "allocation_method": "largest remainder over the selection-set counts; ties broken by the order of STRATA in lib/types.ts",
+  "bulk_remittance_size": 22,
+  "unmatched_credits": 15,
+  "invoices_with_no_correct_payment": 26,
+  "invoices_expecting_a_hold": 64,
+  "conventions": [
+    "Money is an integer count of paise everywhere. There is no rupee field and no float.",
+    "The generator performs NO normalisation. normalised_reference, narration_normalised and normalised_name are byte-identical to their raw counterparts, and every extraction field on a statement row is null with application_status at unidentified. Recovering those values is the work being measured.",
+    "Every vendor name, tax identifier and account fragment is invented. State codes 97 and 99 with a ZZ-prefixed PAN block cannot collide with an issued registration.",
+    "truth.json carries an explicit null where no correct payment exists. An empty array would be ambiguous."
+  ]
+}
