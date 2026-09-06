@@ -6,27 +6,7 @@ import { cn } from "@/lib/cn";
 import { config } from "@/lib/config";
 import { useRunSummary } from "@/hooks/useRunSummary";
 import { HoldfastLogo } from "@/components/site/HoldfastLogo";
-
-function OverviewGlyph() {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden className="size-4 shrink-0" fill="currentColor">
-      <rect x="1" y="1" width="6" height="6" rx="1.5" />
-      <rect x="9" y="1" width="6" height="6" rx="1.5" opacity="0.55" />
-      <rect x="1" y="9" width="6" height="6" rx="1.5" opacity="0.55" />
-      <rect x="9" y="9" width="6" height="6" rx="1.5" />
-    </svg>
-  );
-}
-
-function QueueGlyph() {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden className="size-4 shrink-0" fill="currentColor">
-      <rect x="1" y="2" width="14" height="3" rx="1.5" />
-      <rect x="1" y="6.5" width="14" height="3" rx="1.5" opacity="0.55" />
-      <rect x="1" y="11" width="9" height="3" rx="1.5" opacity="0.55" />
-    </svg>
-  );
-}
+import { OverviewGlyph, QueueGlyph } from "./NavGlyphs";
 
 const NAV = [
   { href: "/overview", label: "Overview", Glyph: OverviewGlyph },

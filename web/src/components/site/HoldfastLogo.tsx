@@ -16,34 +16,21 @@ import { cn } from "@/lib/cn";
  *
  * The file itself is untouched, so the crop is reversible and the asset stays
  * the single source of truth.
+ *
+ * There is no dark variant any more. The mark used to be inverted and
+ * blend-composited onto the dark workstation; every surface it lands on is now
+ * light, so it is simply the artwork, at full fidelity, with nothing done to it.
  */
 const FRAME = "relative block overflow-hidden";
 const IMAGE = "block w-[134.82%] max-w-none -ml-[17.41%] -mt-[36.97%]";
 
-/*
- * The same file on a dark surface.
- *
- * `invert(1) hue-rotate(180deg)` lifts the artwork rather than recolouring it,
- * and it happens to land on the workstation's own palette: the charcoal becomes
- * #d5dbdf, a shade off `--color-ink`, and the steel becomes #7795b2, a shade off
- * `--color-focus`. The white plate inverts to pure black, which `lighten` then
- * discards against any surface lighter than black — every surface we have — so
- * the background disappears instead of sitting there as a dark rectangle.
- *
- * One asset, two surfaces, no second file to keep in step.
- */
-const ON_DARK = "[filter:invert(1)_hue-rotate(180deg)] [mix-blend-mode:lighten]";
-
 export function HoldfastLogo({
   className,
   priority = false,
-  tone = "light",
 }: {
   /** Sets the width; the frame derives its own height from the artwork. */
   className?: string;
   priority?: boolean;
-  /** The surface it sits on, not the colour it becomes. */
-  tone?: "light" | "dark";
 }) {
   return (
     <span className={cn(FRAME, "aspect-[1074/281]", className)}>
@@ -56,7 +43,7 @@ export function HoldfastLogo({
         decoding="async"
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : undefined}
-        className={cn(IMAGE, tone === "dark" && ON_DARK)}
+        className={IMAGE}
       />
     </span>
   );

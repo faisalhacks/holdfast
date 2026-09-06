@@ -76,24 +76,13 @@
   --shadow-overlay: 0 12px 32px rgba(16, 24, 40, 0.14);
 
   /*
-   * The public site palette.
+   * There is no second palette.
    *
-   * Additive, and now the same family as the workstation above rather than its
-   * inverse. Left in place while the landing page is reconciled separately.
+   * The public page used to carry its own light set — paper, rule, graphite,
+   * steel — because the product was dark and the page was not. The product is
+   * light now, so the page reads the same tokens the workstation does and a
+   * colour means one thing across both surfaces.
    */
-  --color-paper: #f7f9fa;
-  --color-paper-2: #eff2f5;
-  --color-paper-3: #e4e9ee;
-  --color-rule: #dde2e8;
-  --color-rule-strong: #c3cbd4;
-
-  --color-graphite: #151a20;
-  --color-graphite-2: #46505c;
-  --color-graphite-3: #636d79;
-
-  --color-steel: #5b8db8;
-  --color-steel-deep: #2f6087;
-  --color-steel-wash: #e7eef4;
 }
 
 @layer base {
@@ -107,11 +96,6 @@
     font-family: var(--font-sans);
     font-size: 0.875rem;
     -webkit-font-smoothing: antialiased;
-  }
-
-  /* The public page keeps its own ground. */
-  body:has(.site-root) {
-    color: var(--color-graphite);
   }
 
   /* In-page links glide rather than jump, unless the reader asked otherwise. */
@@ -142,22 +126,6 @@
 }
 
 @layer utilities {
-  /*
-   * The public site's section label. The workstation no longer uses it: a
-   * panel title and a field label were the same object there, which meant the
-   * screen marked regions and fields identically and so marked neither.
-   * Panels now carry a plain sentence-case title, and `.label-field` below is
-   * the only micro-label left in the product.
-   */
-  .label-section {
-    font-size: 0.65625rem;
-    line-height: 0.875rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-ink-faint);
-  }
-
   /* Field label. The smallest type in the system, and the only uppercase. */
   .label-field {
     font-size: 0.6875rem;
@@ -169,16 +137,17 @@
   }
 
   /*
-   * Site: an eyebrow above a headline. Held at its old metrics so the landing
-   * page is untouched by the workstation's larger scale.
+   * Site: an eyebrow above a headline. Metrically the workstation's
+   * `.label-field` with a little more tracking, because a marketing eyebrow
+   * sits alone above a headline rather than in a column of sibling labels.
    */
   .label-eyebrow {
-    font-size: 0.65625rem;
-    line-height: 0.875rem;
+    font-size: 0.6875rem;
+    line-height: 0.9375rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: var(--color-graphite-3);
+    color: var(--color-ink-faint);
   }
 
   /* Site: display type. Tight leading, slight negative tracking. */
@@ -220,12 +189,4 @@
   .skip-link {
     transition: transform 150ms ease-out;
   }
-}
-
-/*
- * A surface modifier for the shared label, written outside every layer so it
- * reliably outranks the label's own colour.
- */
-.label-on-dark {
-  color: var(--color-ink-muted);
 }

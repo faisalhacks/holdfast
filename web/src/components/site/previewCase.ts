@@ -12,6 +12,7 @@ import type { Signal } from "@/lib/api";
  * integer paise, formatted only at render, exactly as the workstation does it.
  */
 
+export const PREVIEW_RUN_ID = "run_demo_7f31";
 export const PREVIEW_REFERENCE = "EXC-4821";
 export const PREVIEW_TITLE = "Invoice total exceeds purchase order tolerance";
 export const PREVIEW_CURRENCY = "INR";
@@ -24,6 +25,19 @@ export const PREVIEW_HOLD_PAISE = 18_432_050;
  * not been routed, which is what the run summary reports.
  */
 export const PREVIEW_AT_RISK_PAISE = 29_527_050;
+
+/*
+ * Times are written down rather than derived.
+ *
+ * The workstation computes "3h left" and "2h ago" from the clock, which is
+ * right in the product and wrong on a page: a screenshot whose countdown
+ * drifts every hour is a screenshot nobody can trust. These are the strings
+ * that case shows when it is three hours from its target.
+ */
+export const PREVIEW_SLA_LABEL = "3h left";
+export const PREVIEW_SLA_DUE = "06 Sept, 23:25";
+export const PREVIEW_RAISED_RELATIVE = "2h ago";
+export const PREVIEW_RAISED_AT = "06 Sept, 18:25";
 
 export const PREVIEW_SIGNALS: Signal[] = [
   {
@@ -67,6 +81,9 @@ export interface PreviewRow {
   exposure_paise: number | null;
   severity: "critical" | "high" | "medium" | "low";
   meta: string;
+  /** Written down, not derived. See PREVIEW_SLA_LABEL. */
+  sla: string;
+  breached?: boolean;
   routed?: boolean;
 }
 
@@ -78,6 +95,7 @@ export const PREVIEW_QUEUE: PreviewRow[] = [
     exposure_paise: 18_432_050,
     severity: "critical",
     meta: "NORTHWIND-884",
+    sla: "3h left",
   },
   {
     reference: "EXC-4817",
@@ -85,6 +103,7 @@ export const PREVIEW_QUEUE: PreviewRow[] = [
     exposure_paise: 9_675_000,
     severity: "critical",
     meta: "treasury.ops",
+    sla: "3h left",
   },
   {
     reference: "EXC-4808",
@@ -92,6 +111,7 @@ export const PREVIEW_QUEUE: PreviewRow[] = [
     exposure_paise: 1_420_000,
     severity: "high",
     meta: "SUP-204",
+    sla: "3h left",
   },
   {
     reference: "EXC-4788",
@@ -99,6 +119,7 @@ export const PREVIEW_QUEUE: PreviewRow[] = [
     exposure_paise: 311_040,
     severity: "low",
     meta: "ap.corrections",
+    sla: "3h left",
     routed: true,
   },
   {
@@ -107,5 +128,7 @@ export const PREVIEW_QUEUE: PreviewRow[] = [
     exposure_paise: null,
     severity: "high",
     meta: "unassigned",
+    sla: "Breached 1h ago",
+    breached: true,
   },
 ];
