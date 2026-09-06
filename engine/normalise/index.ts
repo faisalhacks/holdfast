@@ -16,6 +16,23 @@
 // field it belongs to? Bank feeds put references in vendor names and vendor fragments in
 // references, and canonicalising a field cannot fix a field that holds the wrong thing.
 //
+// ─── Reference recovery, and how strong it is ────────────────────────────────────────
+//
+// A recovered reference is not a boolean. A token found intact behind a document prefix is
+// evidence about ONE document; a bare digit run scraped out of free text is evidence about
+// as many documents as happen to contain those digits. `recoverReferences` assembles the
+// fragments of a narration back into the document numbers they came from — reading the
+// DELIMITERS, which `punctuation_strip` destroys and which are the only thing separating
+// `RCT-2026-01-472` (one number) from `SI4559,TX.02973,06495` (three) — and stamps every
+// candidate with a `ReferenceRecoveryKind` saying which of those it is, plus the fragments
+// it refused and why. `NarrationExtraction.recoveries` carries that beside `references`,
+// index for index, so a consumer can tell a `prefixed_compound` from a `bare_digits`
+// without re-parsing a string.
+//
+// NO NUMERIC CONFIDENCE FIELD EXISTS HERE and there is not going to be one. A number
+// invites a threshold and a threshold invites tuning. What is published is the structure
+// that was observed; ranking it is the consumer's decision, in the open, in its own spec.
+//
 // ─── What this module is NOT ─────────────────────────────────────────────────────────
 //
 // No candidate generation, no similarity, no scoring, no comparison between an invoice and

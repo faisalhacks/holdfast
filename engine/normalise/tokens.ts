@@ -13,6 +13,23 @@
 // The contract has somewhere to put that finding: `ReferenceEvidence.displaced` and
 // `displaced_from`. Filling those in is the matcher's call; supplying the evidence is this
 // module's job.
+//
+// ─── AND WHETHER A RECOVERY IS STRONG OR WEAK ────────────────────────────────────────
+//
+// "A reference was recovered" is not one fact, it is a range of them, and the flat token
+// view collapses the range. `punctuation_strip` turns every delimiter into the same space,
+// so by the time a line is classified, `RCT-2026-01-472` (ONE document number) and
+// `SI4559,TX.02973,06495` (THREE) are the same shape: anonymous fragments in a row. Offer
+// each fragment separately and a bare `2026` goes downstream as a reference — where, being
+// a token-set subset of every reference minted that year, it scores a perfect similarity
+// against all of them. Offer them glued and a comma-separated list of six invoices becomes
+// one reference that matches nothing and half-matches everything.
+//
+// `segmentValue` keeps the delimiter that `punctuation_strip` discards, and
+// `recoverReferences` uses it to assemble fragments back into the document numbers they
+// came from — carrying, on every candidate, the STRUCTURE that says how strong it is: what
+// was joined, what held it together, which prefix introduced it, and, for the fragments
+// that were refused, why. Nothing here scores anything. It says what was found and how.
 
 import type {
   DisplacementFinding,
@@ -150,7 +167,14 @@ export interface ExtractionOptions {
 const ALPHA_HEAD_OF = /^(\p{L}+)\p{N}/u;
 
 /**
- * The tokens worth putting through the reference profile.
+ * The tokens worth putting through the reference profile, ONE FRAGMENT AT A TIME.
+ *
+ * SUPERSEDED by `recoverReferences`, and kept exported because it is the thing that
+ * function has to be measured against. Every fragment offered here is offered alone, which
+ * is the defect: `RCT-2026-01-472` arrives as `2026` and `472`, and a bare `2026` is a
+ * token-set SUBSET of every reference minted that year — it scores a perfect token
+ * similarity against all of them. `fields.ts` reaches this behaviour through
+ * `NormaliseConfig.assembleReferenceRuns: false`.
  *
  * Fused prefix forms (`inv0042`) are included — the reference profile is what splits them,
  * and excluding them here would mean the prefix step never sees the case it exists for.
@@ -376,7 +400,9 @@ function kindOf(
   bodyParts: readonly Segment[],
   prefix: string | null,
 ): ReferenceRecoveryKind {
-  const compound = headParts.length + bodyParts.length > 1;
+  // Compound is about the NUMBER, not the furniture: `BILL 004856` is one number wearing a
+  // prefix, `INV/2026/01640` is two parts wearing one.
+  const compound = bodyParts.length > 1;
   if (prefix !== null) return compound ? 'prefixed_compound' : 'prefixed_single';
   if (bodyParts.length > 1) return 'compound';
   if (headParts.length > 0) return 'alpha_series';

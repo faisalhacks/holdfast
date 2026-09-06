@@ -138,6 +138,21 @@ export const DEFAULT_NOISE_TOKENS: ReadonlySet<string> = new Set([
   'remit',
   'rem',
   'settlement',
+  // statement furniture — the words a bank puts on a line ABOUT a line, never in a
+  // vendor's registered name. `adv` earns its place twice over: it is the tail of
+  // "REM ADV" and, left in, it is short enough to be mistaken for a series marker and
+  // welded onto the document number that follows it.
+  'adv',
+  'advice',
+  'clg',
+  'clearing',
+  'inward',
+  'outward',
+  'collect',
+  'collection',
+  'eod',
+  'misc',
+  'against',
   // connectives
   'by',
   'to',
