@@ -112,7 +112,7 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
   }, [activeIndex, items, move, router]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col border-r border-line-strong bg-surface">
+    <div className="flex h-full min-h-0 flex-col">
       <div className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-line px-4">
         <h2 className="text-md font-semibold text-ink">Exception queue</h2>
         <span className="num shrink-0 text-xs text-ink-faint">

@@ -38,7 +38,7 @@ export function ToleranceConsole({
   const busy = pending !== null;
 
   return (
-    <div className="space-y-4 px-4 py-4">
+    <div className="space-y-5 px-4 py-5">
       <div>
         <p className="label-field">Scope</p>
         <p className="mt-1 font-mono text-xs break-all text-ink-muted">{tolerance.scope}</p>

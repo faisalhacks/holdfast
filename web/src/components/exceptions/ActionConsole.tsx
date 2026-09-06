@@ -10,7 +10,6 @@ import { RoutingConsole } from "./RoutingConsole";
 import { ToleranceConsole } from "./ToleranceConsole";
 import { KeyHint } from "@/components/ui/KeyHint";
 import { NoticeBanner } from "@/components/ui/NoticeBanner";
-import { Panel } from "@/components/ui/Panel";
 import { Token } from "@/components/ui/Token";
 
 type State = ReturnType<typeof useExceptionDetail>;
@@ -34,7 +33,7 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <Panel>
+    <section className="border-t border-line">
       <h3>
         <button
           type="button"
@@ -42,13 +41,13 @@ function Section({
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={`console-panel-${id}`}
-          className="flex min-h-11 w-full items-center justify-between gap-3 px-4 py-2 text-left transition-colors hover:bg-surface-2"
+          className="flex min-h-12 w-full items-center justify-between gap-3 px-4 py-2.5 text-left transition-colors hover:bg-surface-2"
         >
           <span className="flex items-center gap-2">
             <span aria-hidden className="text-ink-faint">
               {open ? "▾" : "▸"}
             </span>
-            <span className="text-md font-semibold text-ink">{title}</span>
+            <span className="text-base font-semibold text-ink">{title}</span>
           </span>
           <span className="flex shrink-0 items-center gap-2">
             {status}
@@ -56,19 +55,20 @@ function Section({
           </span>
         </button>
       </h3>
-      <div id={`console-panel-${id}`} hidden={!open} className="border-t border-line">
+      <div id={`console-panel-${id}`} hidden={!open} className="bg-surface-2/50">
         {children}
       </div>
-    </Panel>
+    </section>
   );
 }
 
 /**
  * The right pane: route, govern, adjust, audit.
  *
- * Routing is pinned at the top because it is the act the product exists for.
- * Everything else collapses, and a section only exists when the exception
- * actually carries that state.
+ * One surface, not four cards. Routing is pinned open at the top because it is
+ * the act the product exists for; the other three are disclosures under a
+ * hairline, and a section only exists when the exception actually carries that
+ * state. Nothing here fires on a keystroke — every write is behind a submit.
  */
 export function ActionConsole({
   exception,
@@ -128,17 +128,16 @@ export function ActionConsole({
     state.actionError?.action === action ? state.actionError.message : null;
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="flex min-h-full flex-col">
       {state.notice ? (
-        <NoticeBanner notice={state.notice} onDismiss={state.dismissNotice} />
+        <div className="border-b border-line p-3">
+          <NoticeBanner notice={state.notice} onDismiss={state.dismissNotice} />
+        </div>
       ) : null}
 
-      <Panel>
-        <div
-          id="console-route"
-          className="flex min-h-11 items-center justify-between gap-3 border-b border-line px-4 py-2"
-        >
-          <h3 className="text-md font-semibold text-ink">Route next action</h3>
+      <section id="console-route">
+        <div className="flex min-h-12 items-center justify-between gap-3 border-b border-line px-4 py-2.5">
+          <h3 className="text-base font-semibold text-ink">Route next action</h3>
           <KeyHint>r</KeyHint>
         </div>
         <RoutingConsole
@@ -147,7 +146,7 @@ export function ActionConsole({
           error={actionError("route")}
           onRoute={state.route}
         />
-      </Panel>
+      </section>
 
       {exception.hold ? (
         <Section
@@ -196,6 +195,9 @@ export function ActionConsole({
       >
         <AuditStream events={exception.timeline} />
       </Section>
+
+      {/* Keeps the last hairline from floating mid-pane on a short case. */}
+      <div className="min-h-6 flex-1 border-t border-line" />
     </div>
   );
 }

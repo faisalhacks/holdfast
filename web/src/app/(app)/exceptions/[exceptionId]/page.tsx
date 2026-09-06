@@ -6,14 +6,21 @@ import { useEffect, useState } from "react";
 import { useExceptionDetail } from "@/hooks/useExceptionDetail";
 import { isBareKey, isTypingTarget } from "@/lib/keyboard";
 import { ActionConsole } from "@/components/exceptions/ActionConsole";
+import { CaseContext } from "@/components/exceptions/CaseContext";
 import { CaseHeader } from "@/components/exceptions/CaseHeader";
 import { ComparisonLedger } from "@/components/exceptions/ComparisonLedger";
-import { ConflictBar } from "@/components/exceptions/ConflictBar";
-import { EvidenceReferences } from "@/components/exceptions/EvidenceReferences";
 import { Button } from "@/components/ui/Button";
 import { KeyHint } from "@/components/ui/KeyHint";
 import { Panel, PanelHeader } from "@/components/ui/Panel";
-import { EmptyState, ErrorState, LoadingRows, Skeleton } from "@/components/ui/States";
+import { EmptyState, ErrorState, Skeleton } from "@/components/ui/States";
+
+/*
+ * The centre and the console are separate surfaces on the canvas rather than
+ * two halves of one sheet, so the diagnostic reading and the act that follows
+ * it are visibly different places to be.
+ */
+const SURFACE =
+  "overflow-hidden rounded-md border border-line-strong bg-surface shadow-panel";
 
 export default function ExceptionDetailPage() {
   const exceptionId = useParams<{ exceptionId: string }>().exceptionId;
@@ -41,38 +48,44 @@ export default function ExceptionDetailPage() {
 
   if (state.loading && !exception) {
     return (
-      <div className="space-y-4 p-4 sm:p-5">
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-16 w-full" />
-        <LoadingRows rows={3} className="p-0" />
+      <div className="space-y-3">
+        <Skeleton className="h-56 w-full rounded-md" />
+        <Skeleton className="h-72 w-full rounded-md" />
       </div>
     );
   }
 
   if (state.error) {
     return (
-      <ErrorState
-        message={state.error}
-        action={
-          <Button size="sm" variant="outline" onClick={state.refresh}>
-            Try again
-          </Button>
-        }
-      />
+      <div className={SURFACE}>
+        <ErrorState
+          message={state.error}
+          action={
+            <Button size="sm" variant="outline" onClick={state.refresh}>
+              Try again
+            </Button>
+          }
+        />
+      </div>
     );
   }
 
   if (state.notFound || !exception) {
     return (
-      <EmptyState
-        title="Exception not found"
-        description={`Nothing in this run matches "${exceptionId}".`}
-        action={
-          <Link href="/exceptions" className="text-base text-focus-ink underline underline-offset-4">
-            Back to the queue
-          </Link>
-        }
-      />
+      <div className={SURFACE}>
+        <EmptyState
+          title="Exception not found"
+          description={`Nothing in this run matches "${exceptionId}".`}
+          action={
+            <Link
+              href="/exceptions"
+              className="text-base text-focus-ink underline underline-offset-4"
+            >
+              Back to the queue
+            </Link>
+          }
+        />
+      </div>
     );
   }
 
@@ -81,12 +94,10 @@ export default function ExceptionDetailPage() {
   return (
     /* overflow-hidden: the console parks off-canvas below xl, and without this
        the page would gain a horizontal scroll the width of the drawer. */
-    <div className="relative flex h-full min-h-0 overflow-hidden">
+    <div className="relative flex h-full min-h-0 gap-3 overflow-hidden 2xl:gap-4">
       <div className="min-w-0 flex-1 overflow-y-auto">
-        <div className="space-y-4 p-4 pb-20 sm:p-5 xl:pb-5">
+        <div className="space-y-3 pb-20 xl:pb-0 2xl:space-y-4">
           <CaseHeader exception={exception} />
-
-          <ConflictBar exception={exception} />
 
           <Panel>
             <PanelHeader
@@ -100,34 +111,30 @@ export default function ExceptionDetailPage() {
             <ComparisonLedger signals={exception.signals} />
           </Panel>
 
-          {exception.policy ? (
-            <Panel>
-              <PanelHeader title="Policy" count={exception.policy.id} />
-              <div className="px-4 py-4 sm:px-5">
-                <p className="font-medium text-ink">{exception.policy.name}</p>
-                <p className="mt-1.5 text-base text-ink-muted">{exception.policy.clause}</p>
-              </div>
-            </Panel>
-          ) : null}
-
-          <Panel>
-            <PanelHeader title="Evidence references" count={exception.evidence.length} />
-            <EvidenceReferences items={exception.evidence} />
-          </Panel>
+          <CaseContext exception={exception} />
         </div>
       </div>
 
-      {/* Console: docked at xl and above, drawer below. One instance either way. */}
+      {/*
+        Console: docked at xl and above, drawer below. One instance either way.
+
+        The closed drawer is display-toggled rather than parked off-canvas with
+        a transform. `translate-x-full` compiles to the `translate` property
+        here and did not survive into the computed style, which left the drawer
+        sitting on top of the ledger at every width below xl. A panel that is
+        merely moved out of sight is also still in the tab order; `hidden`
+        removes it from both.
+      */}
       <aside
         aria-label="Context and action console"
         className={
           consoleOpen
-            ? "absolute inset-y-0 right-0 z-40 flex w-full max-w-[400px] translate-x-0 flex-col border-l border-line-strong bg-canvas shadow-overlay transition-transform xl:static xl:z-auto xl:w-[360px] xl:max-w-none xl:shadow-none 2xl:w-[400px]"
-            : "absolute inset-y-0 right-0 z-40 flex w-full max-w-[400px] translate-x-full flex-col border-l border-line-strong bg-canvas transition-transform xl:static xl:z-auto xl:w-[360px] xl:max-w-none xl:translate-x-0 2xl:w-[400px]"
+            ? "absolute inset-y-0 right-0 z-40 flex w-full max-w-[400px] flex-col overflow-hidden rounded-md border border-line-strong bg-surface shadow-overlay xl:static xl:w-[340px] xl:max-w-none xl:shadow-panel 2xl:w-[380px]"
+            : "hidden flex-col overflow-hidden border border-line-strong bg-surface xl:static xl:flex xl:w-[340px] xl:rounded-md xl:shadow-panel 2xl:w-[380px]"
         }
       >
-        <div className="flex h-12 shrink-0 items-center justify-between border-b border-line-strong bg-surface px-4 xl:hidden">
-          <span className="text-md font-semibold text-ink">Console</span>
+        <div className="flex h-12 shrink-0 items-center justify-between border-b border-line px-4 xl:hidden">
+          <span className="text-base font-semibold text-ink">Console</span>
           <button
             type="button"
             onClick={() => setConsoleOpen(false)}
@@ -142,9 +149,11 @@ export default function ExceptionDetailPage() {
         </div>
       </aside>
 
-      {/* The action bar that raises the console when it is not docked. */}
-      <div className="absolute inset-x-0 bottom-0 z-30 flex h-16 items-center gap-3 border-t border-line-strong bg-surface px-4 xl:hidden">
-        <Button variant="primary" className="flex-1" onClick={() => setConsoleOpen(true)}>
+      {/* The action bar that raises the console when it is not docked. It floats
+          on the canvas like every other surface rather than welding itself to
+          the bottom of the viewport. */}
+      <div className="absolute inset-x-0 bottom-0 z-30 flex h-16 items-center gap-3 rounded-md border border-line-strong bg-surface px-4 shadow-overlay xl:hidden">
+        <Button variant="primary" size="lg" className="flex-1" onClick={() => setConsoleOpen(true)}>
           Route, hold, tolerance
         </Button>
         <KeyHint>]</KeyHint>

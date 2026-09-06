@@ -1,143 +1,118 @@
 "use client";
 
-import Link from "next/link";
-import { useMemo } from "react";
-import { config } from "@/lib/config";
-import { useExceptionQueue } from "@/hooks/useExceptionQueue";
-import { useRunSummary } from "@/hooks/useRunSummary";
-import { describeSla, formatMoney } from "@/lib/format";
-import { SeverityToken } from "@/components/ui/Badge";
-import { KeyHint } from "@/components/ui/KeyHint";
-import { Panel, PanelHeader } from "@/components/ui/Panel";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef } from "react";
+import { useExceptionQueue, useQueueQuery } from "@/hooks/useExceptionQueue";
+import { Button } from "@/components/ui/Button";
+import { EmptyState, ErrorState } from "@/components/ui/States";
+
+const SURFACE =
+  "flex h-full min-h-0 items-center justify-center overflow-hidden rounded-md border border-line-strong bg-surface shadow-panel";
 
 /*
- * A small money-ordered read, purely so this pane can name the case a reviewer
- * should probably open first. The queue in the layout does its own read; this
- * one is deliberately short.
+ * The width at which all three panes are on screen at once. Below it the queue
+ * IS this route, so opening a case on arrival would make the backlog
+ * unreachable from the case's own back link.
  */
-const REST_QUERY = {
-  status: "all",
-  severity: "all",
-  category: "all",
-  search: "",
-  sort: "amount_desc",
-  page: 1,
-  pageSize: 20,
-} as const;
+const THREE_PANE = "(min-width: 1024px)";
 
 /**
  * The centre pane with nothing selected.
  *
- * It states where the run stands and which case carries the most money, rather
- * than leaving a reviewer looking at a screen-sized blank while the queue sits
- * beside it fully loaded. Everything here is a figure the API returned; there
- * is no illustration and no encouragement.
+ * At desktop widths this is a waypoint rather than a destination: the queue is
+ * already ordered by money at risk, so the case a reviewer would open first is
+ * known, and it opens itself. The redirect replaces rather than pushes, so
+ * going back from the case leaves the workstation instead of bouncing between
+ * the queue and the row it would immediately re-open, and it carries the query
+ * string so a shared filtered link opens the top of THAT queue.
+ *
+ * It fires once per mount. A reviewer who returns here deliberately — the
+ * mobile back link, a resize — is not dragged forward again.
+ *
+ * What remains visible is the honest case: a queue with nothing in it, or a
+ * filter that matches nothing. Neither invents a case to fill the space.
  */
-export default function ExceptionQueueRestState() {
-  const { summary } = useRunSummary(config.currentRunId);
-  const { page } = useExceptionQueue(REST_QUERY);
+function ExceptionQueueRestState() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const { query, clear, activeFilterCount } = useQueueQuery();
+  const { page, loading, error, refresh } = useExceptionQueue(query);
 
-  const items = useMemo(() => page?.items ?? [], [page]);
-  const top = items[0] ?? null;
-  const breached = useMemo(
-    () => items.filter((item) => describeSla(item.slaDueAt).breached).length,
-    [items],
-  );
+  const redirected = useRef(false);
+  const top = page?.items[0] ?? null;
 
-  const attention: string[] = [];
-  if (breached > 0) {
-    attention.push(
-      `${breached} exception${breached === 1 ? " has" : "s have"} breached the SLA target`,
+  useEffect(() => {
+    if (redirected.current || !top) return;
+    if (!window.matchMedia(THREE_PANE).matches) return;
+
+    redirected.current = true;
+    const qs = params.toString();
+    router.replace(`/exceptions/${top.id}${qs ? `?${qs}` : ""}`);
+  }, [top, params, router]);
+
+  if (error) {
+    return (
+      <div className={SURFACE}>
+        <ErrorState
+          message={error}
+          action={
+            <Button size="sm" variant="outline" onClick={refresh}>
+              Try again
+            </Button>
+          }
+        />
+      </div>
     );
   }
-  if (summary && summary.held > 0) {
-    attention.push(
-      `${summary.held} payment${summary.held === 1 ? " is" : "s are"} held pending review`,
+
+  // Loading, or the moment between the queue resolving and the case opening.
+  if (loading || top) {
+    return (
+      <div className={SURFACE}>
+        <p className="px-6 text-center text-base text-ink-muted">
+          {top ? "Opening the highest-exposure case…" : "Loading the queue…"}
+        </p>
+      </div>
     );
   }
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="w-full max-w-3xl space-y-4 px-5 py-6 sm:px-8 sm:py-8">
-        <header>
-          <h1 className="text-xl font-semibold tracking-tight text-ink">
-            Select an exception to review
-          </h1>
-          <p className="mt-1.5 text-base text-ink-muted">
-            The queue is ordered by money at risk, descending. Open the top item, or search for a
-            reference.
-          </p>
-        </header>
-
-        {top ? (
-          <Panel>
-            <PanelHeader title="Highest exposure" />
-            <Link
-              href={`/exceptions/${top.id}`}
-              className="block px-4 py-4 transition-colors hover:bg-surface-2 sm:px-5"
-            >
-              <div className="flex items-baseline justify-between gap-3">
-                <span
-                  className={
-                    top.exposure_paise !== null
-                      ? "num text-xl font-semibold tracking-tight text-ink"
-                      : "num text-xl font-semibold tracking-tight text-ink-faint"
-                  }
-                >
-                  {formatMoney(top.exposure_paise, top.currency)}
-                </span>
-                <SeverityToken severity={top.severity} />
-              </div>
-              <p className="mt-1.5 text-base text-ink">{top.title}</p>
-              <p className="mt-2 flex flex-wrap items-center gap-2 text-xs text-ink-faint">
-                <span className="font-mono text-ink-muted">{top.reference}</span>
-                {top.entity.label !== top.reference ? (
-                  <>
-                    <span aria-hidden className="opacity-40">·</span>
-                    <span>{top.entity.label}</span>
-                  </>
-                ) : null}
-                <span aria-hidden className="opacity-40">·</span>
-                <span>{describeSla(top.slaDueAt).label}</span>
-              </p>
-            </Link>
-          </Panel>
-        ) : null}
-
-        {attention.length > 0 ? (
-          <Panel>
-            <PanelHeader title="Needs attention first" />
-            <ul className="divide-y divide-line">
-              {attention.map((line) => (
-                <li key={line} className="px-4 py-3 text-base text-ink sm:px-5">
-                  {line}
-                </li>
-              ))}
-            </ul>
-          </Panel>
-        ) : null}
-
-        <p className="px-1 text-base">
-          <Link
-            href="/overview"
-            className="rounded-xs text-focus-ink underline-offset-4 hover:underline"
-          >
-            See how the whole run stands &rarr;
-          </Link>
-        </p>
-
-        <p className="flex flex-wrap items-center gap-2 px-1 text-xs text-ink-faint">
-          <KeyHint>j</KeyHint>
-          <KeyHint>k</KeyHint>
-          <span>move</span>
-          <span aria-hidden className="opacity-40">·</span>
-          <KeyHint>↵</KeyHint>
-          <span>open</span>
-          <span aria-hidden className="opacity-40">·</span>
-          <KeyHint>/</KeyHint>
-          <span>search</span>
-        </p>
-      </div>
+    <div className={SURFACE}>
+      {activeFilterCount > 0 ? (
+        <EmptyState
+          title="No exceptions match these filters"
+          description="Adjust or clear the filters to see the rest of the backlog."
+          action={
+            <Button size="sm" variant="outline" onClick={clear}>
+              Clear {activeFilterCount} filter{activeFilterCount === 1 ? "" : "s"}
+            </Button>
+          }
+        />
+      ) : (
+        <EmptyState
+          title="Nothing to review"
+          description="The API returned no exceptions for this run."
+        />
+      )}
     </div>
+  );
+}
+
+/*
+ * `useQueueQuery` reads the search params, which a statically prerendered page
+ * cannot do without a boundary to bail out at. The queue pane in the layout is
+ * wrapped for the same reason.
+ */
+export default function ExceptionQueueRestPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className={SURFACE}>
+          <p className="px-6 text-center text-base text-ink-muted">Loading the queue…</p>
+        </div>
+      }
+    >
+      <ExceptionQueueRestState />
+    </Suspense>
   );
 }

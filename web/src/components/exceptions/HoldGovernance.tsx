@@ -32,7 +32,7 @@ export function HoldGovernance({
   const held = hold.status === "held";
 
   return (
-    <div className="space-y-4 px-4 py-4">
+    <div className="space-y-5 px-4 py-5">
       {/* The section header already carries the held/released token. */}
       <div className="min-w-0">
         <p

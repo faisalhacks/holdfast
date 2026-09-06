@@ -34,8 +34,13 @@ export function StatusToken({ status }: { status: ExceptionStatus }) {
   );
 }
 
+/*
+ * A passing field is the normal case, and in a table where most rows pass, a
+ * green chip on each of them is the loudest thing on screen. Pass is stated,
+ * not celebrated; the colour is spent on the rows that need reading.
+ */
 export const SIGNAL_TONE: Record<SignalStatus, Tone> = {
-  pass: "cleared",
+  pass: "neutral",
   warn: "material",
   fail: "blocking",
   unknown: "neutral",

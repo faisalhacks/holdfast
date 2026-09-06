@@ -30,7 +30,7 @@ export function RoutingConsole({
   if (exception.routingDecision) {
     const decision = exception.routingDecision;
     return (
-      <div className="border-l-[3px] border-cleared px-4 py-4">
+      <div className="border-l-[3px] border-cleared px-4 py-5">
         <p className="label-field">Action routed</p>
         <p className="mt-1.5 text-md font-medium text-cleared">
           {RESOLUTION_PATH_LABELS[decision.resolution_path]}
@@ -57,7 +57,7 @@ export function RoutingConsole({
 
   return (
     <form
-      className="space-y-4 px-4 py-4"
+      className="space-y-5 px-4 py-5"
       onSubmit={async (event) => {
         event.preventDefault();
         if (!valid) return;
@@ -127,9 +127,11 @@ export function RoutingConsole({
 
       {!valid ? <BlockedReason>Next owner and reason are required.</BlockedReason> : null}
 
+      {/* The act the product exists for. It is the only lg control on this pane. */}
       <Button
         type="submit"
         variant="primary"
+        size="lg"
         className="w-full"
         loading={pending === "route"}
         disabled={!valid || busy}
