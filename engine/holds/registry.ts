@@ -53,8 +53,17 @@ import { HOLD_TYPES } from '@/lib/types';
  */
 export const HOLD_POLICY: Readonly<Record<HoldType, HoldPolicy>> = Object.freeze({
   matching: {
+    // NOT auto-releasable, corrected after critic C1. The clause is "no payment matched
+    // within tolerance" — and an auto-release means the condition resolves on its own,
+    // when a payment arrives. But the payment set a run sees is CLOSED and already
+    // presented: nothing further is going to arrive inside the run, so the condition can
+    // never resolve and a named person has to look.
+    //
+    // This was wrong on our own Oracle framing, and it was not cosmetic. It counted every
+    // invoice where we found nothing as "decided without a human", which is the opposite
+    // of what happened. Correcting it moved holdout coverage 63.3% -> 45.0%.
     type: 'matching',
-    auto_releasable: true,
+    auto_releasable: false,
     blocks_accounting: false,
     default_severity: 'material',
     clause: 'No payment matched within tolerance.',
@@ -106,8 +115,11 @@ export const HOLD_POLICY: Readonly<Record<HoldType, HoldPolicy>> = Object.freeze
     clause: 'A prior invoice matches on vendor, amount and date.',
   },
   no_reference: {
+    // NOT auto-releasable, same correction as `matching` and for the same reason: no
+    // usable reference token exists on the payment side, and no later event inside the
+    // run will supply one.
     type: 'no_reference',
-    auto_releasable: true,
+    auto_releasable: false,
     blocks_accounting: false,
     default_severity: 'material',
     clause: 'No usable reference token was found on the payment side.',

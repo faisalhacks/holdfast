@@ -1033,3 +1033,60 @@ believe us; they can run the generator and compare five hashes.
 This is the third time in the run that the honest arrangement was also the one that
 produced better evidence — after keeping the holdout out of git in the first place, and
 after publishing the sweep's losing strategies.
+
+---
+
+# THE FIX WE MADE TO OURSELVES — C1's finding, applied
+
+Critic C1 found that our headline metric counted holds **nobody has to look at**. It was
+recorded as an adverse finding and, for several hours, not acted on — the number kept
+being quoted at 60.0% and then 63.3% after the sweep. That rise was the sweep, not a fix,
+and a fix would have moved it the other way. Caught on review.
+
+**`matching` and `no_reference` were declared `auto_releasable: true`.** An auto-release
+means the condition resolves on its own — for `matching`, "when a payment arrives". But the
+payment set a run sees is **closed and already presented**. Nothing further arrives inside
+the run, so the condition can never resolve, and a named person has to look. The same
+applies to `no_reference`: no later event supplies a reference token that is not there.
+
+It was wrong on our own Oracle framing, and it was not cosmetic. **It counted every invoice
+where we found nothing as "decided without a human"** — the opposite of what happened.
+
+`period_deferral` stays auto-releasable. That condition genuinely does resolve on its own:
+the period rolls over.
+
+## What it cost
+
+| | before | **after** |
+|---|---|---|
+| holdout coverage | 63.3% (38/60) | **45.0% (27/60)** |
+| selection coverage | 74.0% (148/200) | **51.5% (103/200)** |
+| false clears | 0 | **0** |
+| rupees at risk | Rs 0 | **Rs 0** |
+| match precision | 100% | **100%** |
+
+Eighteen points off the headline. The correctness figures did not move, because they never
+depended on the definition that was wrong.
+
+## Why this is the most important thing in the submission
+
+The project's entire argument is that the industry publishes the flattering number and not
+the correctness number, and that a coverage figure alone cannot tell a working system from
+a careless one.
+
+**Our own coverage figure could not.** An adversary we hired found it, we changed the
+definition, the number fell eighteen points, and we shipped the lower one. That is the
+thesis demonstrated on ourselves rather than asserted about other people — and it happened
+because the critique was briefed to succeed by finding flaws, and because the finding was
+written down verbatim at the time instead of being softened.
+
+It belongs at the front of the README, not buried under adverse findings.
+
+**Standing comparison, holdout, both figures from the same run:**
+
+| | coverage | false clears | rupees at risk | precision |
+|---|---|---|---|---|
+| Holdfast | **45.0%** | **0** | **Rs 0** | **100%** |
+| naive baseline | 65.0% | 9 | Rs 23,01,540.23 | 76.9% |
+
+The baseline clears twenty points more and gets nine of them wrong.
