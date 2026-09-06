@@ -1,24 +1,24 @@
 # Orchestrator-owned. These paths are the contract and the honesty machinery.
 # Mechanically enforced by tools/check-ownership.mjs regardless of GitHub settings —
 # CODEOWNERS is belt-and-braces and needs a real handle to activate branch protection.
-# Replace @orchestrator with the repo owner's GitHub handle.
+# Owner: @faisalhacks.
 
-/lib/types.ts                  @orchestrator
-/eval/thresholds.json          @orchestrator
-/eval/thresholds.lock          @orchestrator
-/data/MANIFEST                 @orchestrator
-/engine/holds/registry.ts      @orchestrator
-/docs/citations.json           @orchestrator
-/AGENTS.md                     @orchestrator
-/CODEOWNERS                    @orchestrator
-/package.json                  @orchestrator
-/pnpm-lock.yaml                @orchestrator
-/tsconfig.json                 @orchestrator
-/BLOCKED.md                    @orchestrator
-/CURRENT_AIM.md                @orchestrator
-/memory.md                     @orchestrator
-/.github/                      @orchestrator
-/tools/                        @orchestrator
-/logs/                         @orchestrator
-/critique/                     @orchestrator
-/quarantine/                   @orchestrator
+/lib/types.ts                  @faisalhacks
+/eval/thresholds.json          @faisalhacks
+/eval/thresholds.lock          @faisalhacks
+/data/MANIFEST                 @faisalhacks
+/engine/holds/registry.ts      @faisalhacks
+/docs/citations.json           @faisalhacks
+/AGENTS.md                     @faisalhacks
+/CODEOWNERS                    @faisalhacks
+/package.json                  @faisalhacks
+/pnpm-lock.yaml                @faisalhacks
+/tsconfig.json                 @faisalhacks
+/BLOCKED.md                    @faisalhacks
+/CURRENT_AIM.md                @faisalhacks
+/memory.md                     @faisalhacks
+/.github/                      @faisalhacks
+/tools/                        @faisalhacks
+/logs/                         @faisalhacks
+/critique/                     @faisalhacks
+/quarantine/                   @faisalhacks
