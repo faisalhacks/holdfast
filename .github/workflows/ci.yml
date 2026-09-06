@@ -7,8 +7,8 @@ name: CI
 # Supporting gates are folded into the check they belong to, so a red job names the
 # worker's actual mistake:
 #   ownership  — scope + frozen files (quarantine Q1)
-#   forbidden  — grep wall + gate self-tests + claims audit
-#   eval       — dataset freeze (Q7) + threshold lock (Q2) + the harness itself
+#   forbidden  — grep wall + gate self-tests
+#   eval       — dataset freeze (Q7), threshold lock (Q2), the harness, Q4' and claims
 
 on:
   pull_request:
@@ -124,6 +124,13 @@ jobs:
       - name: regression
         run: pnpm check:regression
 
+      # No number reaches the submission unless the harness produced it or a source is
+      # cited. Load-bearing — and it lives HERE, not in the forbidden job, because it
+      # reads eval/report.json, which the harness step above generates. report.json is
+      # never committed: a placeholder in git would seed this auditor with fake numbers.
+      - name: claims audit
+        run: pnpm audit:claims
+
   ownership:
     name: ownership
     runs-on: ubuntu-latest
@@ -157,7 +164,3 @@ jobs:
         run: node tools/selftest.mjs
       - name: grep wall
         run: pnpm check:forbidden
-      # No number reaches the submission unless the harness produced it or a source
-      # is cited. Load-bearing.
-      - name: claims audit
-        run: pnpm audit:claims

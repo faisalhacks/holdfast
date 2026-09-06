@@ -621,3 +621,63 @@ Two things in W05a's design are worth keeping regardless of what the eval says:
 - **The residual gap is stated plainly** rather than left for a critic: a copy carrying a
   brand-new reference, landing in an unoccupied period, exactly on the cadence step is
   indistinguishable from the next legitimate cycle and is not held.
+
+### CI failure routed and fixed
+
+9. **`eval/report.json` was committed — my error, not a worker's.** W03 deliberately kept
+   it out of git: *"a zeroed placeholder in git would put a fake number in the repo and
+   into `audit:claims`' allowlist."* A `git add -A` during the Wave 2 freeze commit undid
+   that. W05c racer B found it operationally — running `pnpm eval` rewrote a tracked file
+   outside its glob, so it had to restore the file before every commit. Friction I imposed.
+
+   Untracked and gitignored, along with `eval/report.prev.json`. **And `audit:claims` moved
+   from the `forbidden` job to the `eval` job**, because it reads a report that only the
+   harness generates — in the forbidden job it would have passed for the wrong reason now
+   and failed at Wave 5 the moment W11 wrote a README.
+
+## W05c — the race winner measured the problem before trusting it
+
+Racer B won; A and C were stopped mid-correction (A: "thread the new field through the
+remaining return sites"; C: "the family gate that separates a cardinality residual from an
+amount variance").
+
+**The finding that shaped the design.** On the frozen selection set the mean number of
+statement lines inside one invoice's 45-day window is **74**, and a bounded search of that
+pool returned **2, 14, 50, 77 and 54 distinct exact solutions** on five mid-sized invoices
+*without finishing*. Subset-sum selected on amount and date alone is degenerate — it does
+not find the answer, it finds dozens of answers, and picking one is a coin flip dressed as
+arithmetic.
+
+So amount evidence never nominates a settling set. A line enters the pool only when a
+reference token recovered from `narration_raw` names the invoice, or `engine/match` already
+nominated it. **Reference evidence picks the candidates; amount arithmetic picks among
+them.** Meet-in-the-middle exact subset-sum over integer paise, O(2^(n/2) log 2^(n/2)),
+pool bounded by the frozen `max_subset_size = 40`. A pool above the bound is not searched
+at all and is held — declining to search can never clear anything.
+
+**On a tie: exactly one subset is proven; two means nothing is proven.** The settling set
+is reported EMPTY, never guessed, with `multiple_candidates_tied` raised beside
+`residual_unsettled`. Applying a payment to an invoice means *naming* the payment, and two
+sets that both fit to the paise name none. This is live in the data — `PAY-S-0049` sits
+in-window against four invoices all at 7,538,265 paise with references BILL004844/45/47/50.
+In the worker's own words: *"the naive baseline takes the first row; we refuse to."* That
+sentence is the project's thesis, arrived at independently by a worker that had never been
+shown the pitch.
+
+### ADVERSE FINDING 4 — the bulk remittance is unreachable, and stays that way
+
+`PAY-S-0163` (2,555,499,851 paise, narration `BULK REM ... 22 INV ...`) names invoices
+dated 93 to 163 days away. Under the frozen `date_window_days: 45`, **every member of that
+remittance is out of window.** This puts a hard ceiling on `cardinality_residual` recall in
+the selection set.
+
+The worker did not widen the window, and named the reason: that is quarantine Q2. Instead
+it added an out-of-window branch that raises a hold with `date_outside_window` — notice
+without matching, which can never produce a false clear — recovering 5 of 13 otherwise
+unreachable bulk members. The remainder are lost to a narration truncated at 100 characters
+listing only ~7 of the 22 references. Closing that by subset-sum over out-of-window
+invoices would manufacture exactly the spurious solutions the anchoring exists to refuse.
+
+**This ships as an adverse finding.** The threshold's own rationale says a payment settling
+an invoice from six months earlier is an exception a human should see, not a match to find
+— so the ceiling is the policy working, and the honest report is that it costs us recall.

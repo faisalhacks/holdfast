@@ -10,3 +10,9 @@ next-env.d.ts
 
 # Agent worktrees — full repo copies, each runs its own gates against its own root.
 .claude/
+
+# The eval report is generated, never committed. A placeholder in git would seed
+# audit:claims with fake numbers, and every agent running the harness would dirty its
+# branch with an out-of-scope file.
+eval/report.json
+eval/report.prev.json
