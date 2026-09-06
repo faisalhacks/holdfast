@@ -95,8 +95,12 @@ export async function runEngineOn(
   let raw: unknown;
   try {
     raw = await loaded.run({
-      invoices: bundle.invoices,
-      payments: bundle.payments,
+      // The UNNARROWED rows. `bundle.invoices` is the projection this harness validates
+      // and scores; the engine needs fields the harness never looks at. Passing the
+      // projection would silently starve the engine of net_paise, the tax breakdown and
+      // the dates, and it would report the resulting zero as the system's coverage.
+      invoices: bundle.rawInvoices.length > 0 ? bundle.rawInvoices : bundle.invoices,
+      payments: bundle.rawPayments.length > 0 ? bundle.rawPayments : bundle.payments,
       thresholds: policy,
       dataset: bundle.name,
     });
