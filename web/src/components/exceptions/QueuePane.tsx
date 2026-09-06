@@ -3,10 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { config } from "@/lib/config";
 import { isBareKey, isTypingTarget } from "@/lib/keyboard";
 import { useExceptionQueue, useQueueQuery } from "@/hooks/useExceptionQueue";
-import { useRunSummary } from "@/hooks/useRunSummary";
 import { QueueLedgerStrip } from "./QueueLedgerStrip";
 import { QueueRow } from "./QueueRow";
 import { QueueToolbar } from "./QueueToolbar";
@@ -28,18 +26,16 @@ const optionId = (id: string) => `queue-option-${id}`;
 export function QueuePane({ selectedId }: { selectedId: string | null }) {
   const router = useRouter();
   const { query, patch, clear, activeFilterCount } = useQueueQuery();
-  const { page, loading, error, refresh } = useExceptionQueue(query);
-  const { summary, error: summaryError } = useRunSummary(config.currentRunId);
+  const { page, run, loading, error, refresh } = useExceptionQueue(query);
 
-  const items = useMemo(() => page?.items ?? [], [page]);
+  const items = useMemo(() => page?.cases ?? [], [page]);
   const [activeIndex, setActiveIndex] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
-  const searchRef = useRef<HTMLInputElement>(null);
 
   // Follow the URL: the open case is the highlighted case.
   useEffect(() => {
     if (!selectedId) return;
-    const index = items.findIndex((item) => item.id === selectedId);
+    const index = items.findIndex((item) => item.case_id === selectedId);
     if (index >= 0) setActiveIndex(index);
   }, [selectedId, items]);
 
@@ -51,7 +47,7 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
     (delta: number) => {
       setActiveIndex((current) => {
         const next = Math.min(items.length - 1, Math.max(0, current + delta));
-        const element = document.getElementById(optionId(items[next]?.id ?? ""));
+        const element = document.getElementById(optionId(items[next]?.case_id ?? ""));
         element?.scrollIntoView({ block: "nearest" });
         return next;
       });
@@ -71,13 +67,6 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
     function onKey(event: KeyboardEvent) {
       if (!isBareKey(event)) return;
       if (isTypingTarget(event.target)) return;
-
-      if (event.key === "/") {
-        event.preventDefault();
-        searchRef.current?.focus();
-        searchRef.current?.select();
-        return;
-      }
 
       if (event.key === "j" || event.key === "ArrowDown") {
         event.preventDefault();
@@ -103,7 +92,7 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
         const item = items[activeIndex];
         if (!item) return;
         event.preventDefault();
-        router.push(`/exceptions/${item.id}`);
+        router.push(`/exceptions/${item.case_id}`);
       }
     }
 
@@ -116,18 +105,17 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
       <div className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-line px-4">
         <h2 className="text-md font-semibold text-ink">Exception queue</h2>
         <span className="num shrink-0 text-xs text-ink-faint">
-          {page ? `${page.total} item${page.total === 1 ? "" : "s"}` : "—"}
+          {page ? `${page.total_matching} item${page.total_matching === 1 ? "" : "s"}` : "—"}
         </span>
       </div>
 
-      <QueueLedgerStrip summary={summary} error={summaryError} />
+      <QueueLedgerStrip summary={run} error={error} />
 
       <QueueToolbar
         query={query}
         onChange={patch}
         onClear={clear}
         activeFilterCount={activeFilterCount}
-        searchRef={searchRef}
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
@@ -148,24 +136,24 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
             role="listbox"
             tabIndex={0}
             aria-label="Exceptions, ordered by money at risk"
-            aria-activedescendant={items[activeIndex] ? optionId(items[activeIndex].id) : undefined}
+            aria-activedescendant={items[activeIndex] ? optionId(items[activeIndex].case_id) : undefined}
             className="divide-y divide-line outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
           >
             {items.map((item, index) => (
               <Link
-                key={item.id}
-                id={optionId(item.id)}
+                key={item.case_id}
+                id={optionId(item.case_id)}
                 role="option"
-                aria-selected={item.id === selectedId}
+                aria-selected={item.case_id === selectedId}
                 tabIndex={-1}
-                href={`/exceptions/${item.id}`}
+                href={`/exceptions/${item.case_id}`}
                 onClick={() => setActiveIndex(index)}
                 className="block"
               >
                 <QueueRow
                   item={item}
-                  selected={item.id === selectedId}
-                  active={index === activeIndex && item.id !== selectedId}
+                  selected={item.case_id === selectedId}
+                  active={index === activeIndex && item.case_id !== selectedId}
                 />
               </Link>
             ))}
@@ -191,9 +179,9 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
 
       {page ? (
         <Pagination
-          page={page.page}
-          pageSize={page.pageSize}
-          total={page.total}
+          page={Math.floor(page.offset / page.limit) + 1}
+          pageSize={page.limit}
+          total={page.total_matching}
           onPageChange={(next) => patch({ page: next })}
         />
       ) : null}
@@ -204,8 +192,6 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
         <span>move</span>
         <KeyHint>↵</KeyHint>
         <span>open</span>
-        <KeyHint>/</KeyHint>
-        <span>search</span>
       </div>
     </div>
   );

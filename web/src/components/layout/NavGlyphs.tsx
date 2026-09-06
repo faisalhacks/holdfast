@@ -26,3 +26,12 @@ export function QueueGlyph() {
     </svg>
   );
 }
+
+export function AuditGlyph() {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden className="size-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M3 1.5h8.5L13 3v11.5H3z" />
+      <path d="M5.5 5h5M5.5 8h5M5.5 11h3.5" opacity="0.65" />
+    </svg>
+  );
+}

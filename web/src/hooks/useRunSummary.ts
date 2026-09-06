@@ -1,38 +1,36 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { api, type RunSummary } from "@/lib/api";
+import { api, type RunOverview } from "@/lib/api";
 import { toErrorMessage } from "@/lib/errors";
 import { onWrite } from "@/lib/revalidate";
 
-/**
- * The run's headline figures, read on their own so the shell can show them
- * without waiting for a queue page.
- */
+/** Loads the frozen backend's run overview for the shell and dashboard. */
 export function useRunSummary(runId: string) {
-  const [summary, setSummary] = useState<RunSummary | null>(null);
+  const [summary, setSummary] = useState<RunOverview | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      try {
-        const next = await api.getRunSummary(runId);
+    setError(null);
+    void api.getRun(runId).then(
+      (next) => {
         if (!cancelled) setSummary(next);
-      } catch (cause) {
-        if (!cancelled) setError(toErrorMessage(cause));
-      }
-    })();
+      },
+      (cause) => {
+        if (!cancelled) {
+          setSummary(null);
+          setError(toErrorMessage(cause));
+        }
+      },
+    );
     return () => {
       cancelled = true;
     };
   }, [runId, reloadToken]);
 
   const refresh = useCallback(() => setReloadToken((token) => token + 1), []);
-
-  // Routing a case moves it between the counters shown here.
   useEffect(() => onWrite(refresh), [refresh]);
-
   return { summary, error, refresh };
 }

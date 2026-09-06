@@ -39,7 +39,7 @@ function ExceptionQueueRestState() {
   const { page, loading, error, refresh } = useExceptionQueue(query);
 
   const redirected = useRef(false);
-  const top = page?.items[0] ?? null;
+  const top = page?.cases[0] ?? null;
 
   useEffect(() => {
     if (redirected.current || !top) return;
@@ -47,7 +47,7 @@ function ExceptionQueueRestState() {
 
     redirected.current = true;
     const qs = params.toString();
-    router.replace(`/exceptions/${top.id}${qs ? `?${qs}` : ""}`);
+    router.replace(`/exceptions/${top.case_id}${qs ? `?${qs}` : ""}`);
   }, [top, params, router]);
 
   if (error) {

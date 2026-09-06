@@ -1,55 +1,15 @@
-import type { TimelineEvent } from "@/lib/api";
-import { cn } from "@/lib/cn";
+import type { AuditActor, AuditSlice } from "@/lib/api";
 import { formatDateTime, formatRelative } from "@/lib/format";
-import { TIMELINE_KIND_LABELS, isHumanEvent } from "@/lib/labels";
+import { AUDIT_EVENT_LABELS } from "@/lib/labels";
 
-/**
- * The per-exception event stream, newest first.
- *
- * System and human actions are distinguished by the typed event kind rather
- * than by pattern-matching the actor string, so the distinction never depends
- * on how a backend happens to spell a name. Absolute time leads; an auditor
- * reads the clock, not "3h ago".
- */
-export function AuditStream({ events }: { events: TimelineEvent[] }) {
-  if (events.length === 0) {
-    return <p className="px-4 py-5 text-sm text-ink-faint">No events recorded.</p>;
-  }
+function actorLabel(actor: AuditActor): string {
+  if (actor.kind === "human") return actor.reviewer;
+  if (actor.kind === "model") return `${actor.model_id} · ${actor.call_site}`;
+  return actor.component;
+}
 
-  const ordered = [...events].sort((a, b) => b.at.localeCompare(a.at));
-
-  return (
-    <ol className="divide-y divide-line">
-      {ordered.map((event) => {
-        const human = isHumanEvent(event.kind);
-        return (
-          <li key={event.id} className="px-4 py-3.5">
-            <p className="num flex items-baseline justify-between gap-2 font-mono text-xs text-ink-faint">
-              <span>{formatDateTime(event.at)}</span>
-              <span>{formatRelative(event.at)}</span>
-            </p>
-            <p className="mt-1.5 flex items-baseline gap-2">
-              <span
-                aria-hidden
-                className={cn(
-                  "size-1.5 shrink-0 translate-y-[-1px] rounded-full",
-                  human ? "bg-focus" : "bg-transparent ring-1 ring-ink-faint",
-                )}
-              />
-              <span className="label-field shrink-0">
-                {TIMELINE_KIND_LABELS[event.kind]}
-              </span>
-              <span className="min-w-0 text-base font-medium text-ink">{event.title}</span>
-            </p>
-            <p className="mt-1 pl-4 font-mono text-xs text-ink-faint">
-              {human ? "user" : "system"} &middot; {event.actor}
-            </p>
-            {event.detail ? (
-              <p className="mt-1 pl-4 text-base text-ink-muted">{event.detail}</p>
-            ) : null}
-          </li>
-        );
-      })}
-    </ol>
-  );
+export function AuditStream({ slice }: { slice: AuditSlice }) {
+  if (slice.entries.length === 0) return <p className="px-4 py-5 text-sm text-ink-faint">No journal entries recorded.</p>;
+  const ordered = [...slice.entries].sort((a, b) => b.sequence - a.sequence);
+  return <div><div className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-2 text-xs"><span className={slice.chain.intact ? "text-cleared" : "text-blocking"}>{slice.chain.intact ? "Hash chain intact" : "Hash chain requires attention"}</span><span className="font-mono text-ink-faint">{slice.chain.entries_examined} examined</span></div><ol className="divide-y divide-line">{ordered.map((entry) => <li key={entry.id} className="px-4 py-3.5"><p className="num flex items-baseline justify-between gap-2 font-mono text-xs text-ink-faint"><span>#{entry.sequence} · {formatDateTime(entry.occurred_at)}</span><span>{formatRelative(entry.occurred_at)}</span></p><p className="mt-1.5 flex items-baseline gap-2"><span aria-hidden className={entry.actor.kind === "human" ? "size-1.5 shrink-0 rounded-full bg-focus" : "size-1.5 shrink-0 rounded-full ring-1 ring-ink-faint"} /><span className="label-field shrink-0">{AUDIT_EVENT_LABELS[entry.event]}</span><span className="min-w-0 truncate text-base font-medium text-ink">{entry.entity.entity} · {entry.entity.id}</span></p><p className="mt-1 pl-4 font-mono text-xs text-ink-faint">{entry.actor.kind} · {actorLabel(entry.actor)}</p>{Object.keys(entry.detail).length > 0 ? <p className="mt-1 pl-4 font-mono text-2xs break-all text-ink-muted">{JSON.stringify(entry.detail)}</p> : null}</li>)}</ol></div>;
 }

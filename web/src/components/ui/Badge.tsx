@@ -1,58 +1,114 @@
-import type { ExceptionStatus, Severity, SignalStatus } from "@/lib/api";
-import { SEVERITY_LABELS, SIGNAL_STATUS_LABELS, STATUS_LABELS } from "@/lib/labels";
-import { StateDot, Token, type Tone } from "./Token";
+import type { ReactNode } from "react";
+import type { ApplicationStatus, ConflictSeverity, HoldType } from "@/lib/api";
+import { cn } from "@/lib/cn";
+import {
+  APPLICATION_STATUS_LABELS,
+  HOLD_TYPE_LABELS,
+  SEVERITY_LABELS,
+} from "@/lib/labels";
+
+export function Badge({
+  children,
+  className,
+  dot,
+}: {
+  children: ReactNode;
+  className?: string;
+  dot?: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] leading-4 font-medium whitespace-nowrap",
+        className,
+      )}
+    >
+      {dot ? <span aria-hidden className={cn("size-1.5 rounded-full", dot)} /> : null}
+      {children}
+    </span>
+  );
+}
+
+/** The backend's three conflict severities. There is no fourth. */
+const SEVERITY_STYLES: Record<ConflictSeverity, string> = {
+  blocking: "border-blocking/40 bg-blocking/10 text-blocking",
+  material: "border-material/40 bg-material/10 text-material",
+  advisory: "border-advisory/35 bg-advisory/10 text-advisory",
+};
+
+export function SeverityBadge({ severity }: { severity: ConflictSeverity }) {
+  return <Badge className={SEVERITY_STYLES[severity]}>{SEVERITY_LABELS[severity]}</Badge>;
+}
 
 /**
- * Severity, status and evidence state, each mapped to exactly one tone.
- *
- * `low` severity and an `unknown` signal get no colour at all: nothing is
- * wrong, and painting them would spend attention the reviewer needs elsewhere.
+ * A typed hold. The four AR application states below are a different axis and are never
+ * collapsed into this one.
  */
-export const SEVERITY_TONE: Record<Severity, Tone> = {
-  critical: "blocking",
-  high: "material",
-  medium: "advisory",
-  low: "neutral",
-};
-
-export function SeverityToken({ severity }: { severity: Severity }) {
-  return <Token tone={SEVERITY_TONE[severity]}>{SEVERITY_LABELS[severity]}</Token>;
-}
-
-export const STATUS_TONE: Record<ExceptionStatus, Tone> = {
-  open: "neutral",
-  in_review: "focus",
-  routed: "cleared",
-};
-
-export function StatusToken({ status }: { status: ExceptionStatus }) {
+export function HoldTypeBadge({ type }: { type: HoldType }) {
   return (
-    <Token tone={STATUS_TONE[status]}>
-      <StateDot tone={STATUS_TONE[status]} />
-      {STATUS_LABELS[status]}
-    </Token>
+    <Badge className="border-line-strong bg-surface-2 text-ink-muted">
+      {HOLD_TYPE_LABELS[type]}
+    </Badge>
   );
 }
 
-/*
- * A passing field is the normal case, and in a table where most rows pass, a
- * green chip on each of them is the loudest thing on screen. Pass is stated,
- * not celebrated; the colour is spent on the rows that need reading.
- */
-export const SIGNAL_TONE: Record<SignalStatus, Tone> = {
-  pass: "neutral",
-  warn: "material",
-  fail: "blocking",
-  unknown: "neutral",
+const APPLICATION_STYLES: Record<ApplicationStatus, { className: string; dot: string }> = {
+  applied: {
+    className: "border-cleared/35 bg-cleared/10 text-cleared",
+    dot: "bg-cleared",
+  },
+  unapplied: { className: "border-line-strong bg-surface-2 text-ink", dot: "bg-focus" },
+  on_account: {
+    className: "border-focus/40 bg-focus-wash text-focus-ink",
+    dot: "bg-focus",
+  },
+  unidentified: {
+    className: "border-material/35 bg-material/10 text-material",
+    dot: "bg-material",
+  },
 };
 
-export function SignalToken({ status }: { status: SignalStatus }) {
+export function ApplicationStatusBadge({ status }: { status: ApplicationStatus }) {
+  const style = APPLICATION_STYLES[status];
   return (
-    <Token tone={SIGNAL_TONE[status]}>
-      <StateDot tone={SIGNAL_TONE[status]} />
-      {SIGNAL_STATUS_LABELS[status]}
-    </Token>
+    <Badge className={style.className} dot={style.dot}>
+      {APPLICATION_STATUS_LABELS[status]}
+    </Badge>
   );
 }
 
-export { Token, StateDot };
+/** Whether the document may be paid. Derived from the backend's own `payable` field. */
+export function PayableBadge({ payable }: { payable: boolean }) {
+  return payable ? (
+    <Badge className="border-cleared/35 bg-cleared/10 text-cleared" dot="bg-cleared">
+      Payable
+    </Badge>
+  ) : (
+    <Badge className="border-material/35 bg-material/10 text-material" dot="bg-material">
+      Held
+    </Badge>
+  );
+}
+
+/** Whether a hold currently blocks the accounting entry, not just the payment. */
+export function AccountingBadge({ blocks }: { blocks: boolean }) {
+  if (!blocks) return null;
+  return (
+    <Badge className="border-blocking/40 bg-blocking/10 text-blocking">
+      Blocks accounting
+    </Badge>
+  );
+}
+
+/** Whether a compared field fell inside the tolerance that was applied to it. */
+export function ToleranceBadge({ within }: { within: boolean }) {
+  return within ? (
+    <Badge className="border-cleared/35 bg-cleared/10 text-cleared">
+      Within tolerance
+    </Badge>
+  ) : (
+    <Badge className="border-blocking/35 bg-blocking/10 text-blocking">
+      Outside tolerance
+    </Badge>
+  );
+}

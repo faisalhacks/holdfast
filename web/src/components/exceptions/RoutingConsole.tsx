@@ -1,143 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import type { ExceptionDetail, ResolutionPath, RoutingDecisionInput } from "@/lib/api";
-import type { PendingAction } from "@/hooks/useExceptionDetail";
+import { OWNER_ROLES, RESOLUTION_PATHS, type CaseDossier, type OwnerRole, type RecordDecisionInput, type ResolutionPath } from "@/lib/api";
+import type { CaseAction } from "@/hooks/useCaseDossier";
 import { formatDateTime } from "@/lib/format";
-import { RESOLUTION_PATH_HINTS, RESOLUTION_PATH_LABELS } from "@/lib/labels";
+import { DECISION_ACTION_LABELS, HOLD_TYPE_LABELS, OWNER_ROLE_LABELS, RESOLUTION_PATH_LABELS } from "@/lib/labels";
 import { Button } from "@/components/ui/Button";
 import { BlockedReason, TextAreaField, TextField } from "@/components/ui/Fields";
 
-const PATHS = Object.keys(RESOLUTION_PATH_LABELS) as ResolutionPath[];
+const MIN_REASON = 8;
+const SELECT = "mt-1.5 h-9 w-full rounded-sm border border-line-strong bg-surface px-2.5 text-sm text-ink focus:border-focus focus:outline-none";
 
-export function RoutingConsole({
-  exception,
-  pending,
-  error,
-  onRoute,
-}: {
-  exception: ExceptionDetail;
-  pending: PendingAction;
-  error: string | null;
-  onRoute: (input: RoutingDecisionInput) => Promise<boolean>;
-}) {
-  const [path, setPath] = useState<ResolutionPath>("internal_correction");
-  const [owner, setOwner] = useState("");
+export function RoutingConsole({ dossier, reviewer, pending, error, onSubmit }: { dossier: CaseDossier; reviewer: string; pending: CaseAction | null; error: string | null; onSubmit: (input: RecordDecisionInput) => Promise<boolean> }) {
+  const suggestion = dossier.suggested_next;
+  const [action, setAction] = useState<"route" | "escalate">("route");
+  const [path, setPath] = useState<ResolutionPath>(suggestion?.resolution_path ?? "internal_correction");
+  const [role, setRole] = useState<OwnerRole>(suggestion?.owner_role ?? "ap_clerk");
+  const [party, setParty] = useState("");
   const [reason, setReason] = useState("");
-
-  // A routed case is terminal: the API rejects a second decision, so the form
-  // is replaced by the record rather than left there to fail.
-  if (exception.routingDecision) {
-    const decision = exception.routingDecision;
-    return (
-      <div className="border-l-[3px] border-cleared px-4 py-5">
-        <p className="label-field">Action routed</p>
-        <p className="mt-1.5 text-md font-medium text-cleared">
-          {RESOLUTION_PATH_LABELS[decision.resolution_path]}
-        </p>
-        <dl className="mt-3 space-y-2.5">
-          <div>
-            <dt className="label-field">Next owner</dt>
-            <dd className="mt-0.5 font-mono text-sm text-ink">{decision.owner_next}</dd>
-          </div>
-          <div>
-            <dt className="label-field">Reason</dt>
-            <dd className="mt-0.5 text-base text-ink-muted">{decision.reason}</dd>
-          </div>
-        </dl>
-        <p className="mt-3 font-mono text-xs text-ink-faint">{formatDateTime(decision.routedAt)}</p>
-      </div>
-    );
-  }
-
-  const trimmedOwner = owner.trim();
-  const trimmedReason = reason.trim();
-  const valid = Boolean(trimmedOwner && trimmedReason);
+  const recorded = dossier.decisions.filter((decision) => decision.action === "route" || decision.action === "escalate");
+  const valid = reason.trim().length >= MIN_REASON;
   const busy = pending !== null;
-
-  return (
-    <form
-      className="space-y-5 px-4 py-5"
-      onSubmit={async (event) => {
-        event.preventDefault();
-        if (!valid) return;
-        const ok = await onRoute({
-          resolution_path: path,
-          owner_next: trimmedOwner,
-          reason: trimmedReason,
-        });
-        if (ok) {
-          setOwner("");
-          setReason("");
-        }
-      }}
-    >
-      <p className="text-base text-ink-muted">
-        Choosing who acts next. This does not determine whether the match is correct.
-      </p>
-
-      <fieldset className="space-y-1.5">
-        <legend className="label-field mb-1.5">Resolution path</legend>
-        {PATHS.map((value) => (
-          <label
-            key={value}
-            className="flex cursor-pointer gap-2.5 rounded-sm px-2 py-2 hover:bg-surface-2"
-          >
-            <input
-              type="radio"
-              name="resolution_path"
-              value={value}
-              checked={path === value}
-              onChange={() => setPath(value)}
-              className="mt-1 accent-[var(--color-focus)]"
-            />
-            <span className="min-w-0">
-              <span className="block text-base font-medium text-ink">{RESOLUTION_PATH_LABELS[value]}</span>
-              <span className="mt-0.5 block text-xs text-ink-faint">{RESOLUTION_PATH_HINTS[value]}</span>
-            </span>
-          </label>
-        ))}
-      </fieldset>
-
-      {/* The contract types `owner_next` as a string. A role menu here would post
-          values the backend never described, so this stays free text. */}
-      <TextField
-        label="Next owner"
-        required
-        value={owner}
-        onChange={(event) => setOwner(event.target.value)}
-        placeholder="Team or operator"
-      />
-
-      <TextAreaField
-        label="Reason"
-        required
-        rows={3}
-        value={reason}
-        onChange={(event) => setReason(event.target.value)}
-        placeholder="What the next owner needs to know"
-        hint="Recorded with your name and the time."
-      />
-
-      {error ? (
-        <p role="alert" className="text-sm text-blocking">
-          {error}
-        </p>
-      ) : null}
-
-      {!valid ? <BlockedReason>Next owner and reason are required.</BlockedReason> : null}
-
-      {/* The act the product exists for. It is the only lg control on this pane. */}
-      <Button
-        type="submit"
-        variant="primary"
-        size="lg"
-        className="w-full"
-        loading={pending === "route"}
-        disabled={!valid || busy}
-      >
-        Route action
-      </Button>
+  return <div className="space-y-4 px-4 py-5">
+    {suggestion ? <div className="rounded-sm border border-focus/25 bg-focus-wash px-3 py-2"><p className="label-field">Policy suggestion</p><p className="mt-1 text-base text-ink">{OWNER_ROLE_LABELS[suggestion.owner_role]} · {RESOLUTION_PATH_LABELS[suggestion.resolution_path]}</p><p className="mt-1 text-xs text-ink-muted">{suggestion.because} ({HOLD_TYPE_LABELS[suggestion.decided_by_hold_type]} hold)</p><p className="mt-1 text-2xs text-ink-faint">{suggestion.note}</p></div> : null}
+    {recorded.length > 0 ? <ul className="space-y-2 border-b border-line pb-3">{recorded.map((decision) => <li key={decision.id} className="border-l-2 border-cleared pl-3"><p className="text-sm font-medium text-cleared">{DECISION_ACTION_LABELS[decision.action]}{decision.resolution_path ? ` · ${RESOLUTION_PATH_LABELS[decision.resolution_path]}` : ""}</p><p className="mt-1 text-xs text-ink-muted">{decision.reason}</p><p className="mt-1 font-mono text-2xs text-ink-faint">{OWNER_ROLE_LABELS[decision.owner_next.role]}{decision.owner_next.party ? ` · ${decision.owner_next.party}` : ""} · {decision.reviewer} · {formatDateTime(decision.timestamp)}</p></li>)}</ul> : null}
+    <form className="space-y-4" onSubmit={async (event) => { event.preventDefault(); if (!valid) return; const ok = await onSubmit({ action, reviewer, reason: reason.trim(), resolution_path: path, owner_next: { role, party: party.trim() || null } }); if (ok) { setReason(""); setParty(""); } }}>
+      <p className="text-base text-ink-muted">Choose who should act next. This records a routing decision; it does not release a hold.</p>
+      <label className="block"><span className="label-field">Action</span><select className={SELECT} value={action} onChange={(event) => setAction(event.target.value as "route" | "escalate")}><option value="route">Route</option><option value="escalate">Escalate</option></select></label>
+      <label className="block"><span className="label-field">Resolution path</span><select className={SELECT} value={path} onChange={(event) => setPath(event.target.value as ResolutionPath)}>{RESOLUTION_PATHS.map((value) => <option key={value} value={value}>{RESOLUTION_PATH_LABELS[value]}</option>)}</select></label>
+      <label className="block"><span className="label-field">Owner role</span><select className={SELECT} value={role} onChange={(event) => setRole(event.target.value as OwnerRole)}>{OWNER_ROLES.map((value) => <option key={value} value={value}>{OWNER_ROLE_LABELS[value]}</option>)}</select></label>
+      <TextField label="Named party (optional)" value={party} onChange={(event) => setParty(event.target.value)} placeholder="Individual or team" />
+      <TextAreaField label="Reason" required rows={3} value={reason} onChange={(event) => setReason(event.target.value)} hint={`At least ${MIN_REASON} characters; recorded against ${reviewer}.`} />
+      {error ? <p role="alert" className="text-sm text-blocking">{error}</p> : null}{!valid ? <BlockedReason>A reason of at least {MIN_REASON} characters is required.</BlockedReason> : null}
+      <Button type="submit" variant="primary" size="lg" className="w-full" loading={pending === "route"} disabled={!valid || busy}>Record decision</Button>
     </form>
-  );
+  </div>;
 }

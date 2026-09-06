@@ -6,11 +6,12 @@ import { cn } from "@/lib/cn";
 import { config } from "@/lib/config";
 import { useRunSummary } from "@/hooks/useRunSummary";
 import { HoldfastLogo } from "@/components/site/HoldfastLogo";
-import { OverviewGlyph, QueueGlyph } from "./NavGlyphs";
+import { AuditGlyph, OverviewGlyph, QueueGlyph } from "./NavGlyphs";
 
 const NAV = [
   { href: "/overview", label: "Overview", Glyph: OverviewGlyph },
   { href: "/exceptions", label: "Exceptions", Glyph: QueueGlyph },
+  { href: "/audit", label: "Audit", Glyph: AuditGlyph },
 ] as const;
 
 function isActive(pathname: string, href: string): boolean {
@@ -52,7 +53,7 @@ export function Sidebar() {
       <ul className="flex flex-col gap-1 px-2 py-2 lg:px-3">
         {NAV.map(({ href, label, Glyph }) => {
           const active = isActive(pathname, href);
-          const count = href === "/exceptions" ? summary?.open : undefined;
+          const count = href === "/exceptions" ? summary?.exceptions.open_case_count : undefined;
           return (
             <li key={href}>
               <Link
