@@ -496,9 +496,11 @@ given to every agent verbatim and applied in order: any false clear or any rupee
 risk. All eight completed agents passed the filter. Five of them independently found the
 same defect — punctuation stripping shattering a document number before candidates were
 extracted — from five different starting directions. Two returned null results and said so
-rather than manufacturing a change. Three declined changes that would have raised coverage,
-including one that measured a higher score and refused it: *"coverage rising because the
-match got worse; not taken."*
+rather than manufacturing a change. Three refused an easy win: one measured that disabling a
+guard scored *higher* and declined it — *"coverage rising because the match got worse; not
+taken"* — one fixed a defect the baseline had been profiting from, at a temporary cost, and
+one found a real defect, observed that it changed no decision, and reverted it rather than
+pad the diff.
 
 **Nine CI failures were routed back and fixed**, and they are numbered in the orchestration
 log. Two of them were in the orchestrator's own code, caught by gates the orchestrator wrote:

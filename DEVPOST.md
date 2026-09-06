@@ -190,9 +190,9 @@ is a spend, not a result.
   itself; the orchestrator re-ran every evaluation. The selection rule was given verbatim and
   applied in order — any false clear or any rupee at risk is **discarded, not ranked lower**.
   All eight that finished passed that filter. Five independently found the same defect from
-  five different starting directions. Two returned null results and said so. Three declined
-  changes that would have raised coverage, one of them measuring a higher score and refusing
-  it: *"coverage rising because the match got worse; not taken."*
+  five different starting directions. Two returned null results and said so. Three refused an
+  easy win, one of them measuring a *higher* score and declining it: *"coverage rising because
+  the match got worse; not taken."*
 - **4 critic sessions, no merges, all four found something.** Two of the four adverse findings
   above came from them.
 - **Nine CI failures were routed back and fixed**, numbered in the log — including two in the

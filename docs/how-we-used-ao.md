@@ -127,7 +127,7 @@ filter.** Not one traded correctness for coverage.
   the distinct vendor residues and moved four invoices into correct auto-clears — and coverage
   did not move, because the holds it dissolved were handed straight back by another hold
   family. Both reported "this axis cannot move the metric" rather than manufacturing a change.
-- **Three agents declined changes that would have raised their score.** One measured that
+- **Three agents refused an easy win.** One measured that
   disabling a guard scored *higher* and refused it: *"coverage rising because the match got
   worse; not taken."* One found the baseline was profiting from an over-merge and fixed it
   anyway at a temporary cost. One found and fixed a real defect, observed that it changed no
