@@ -911,3 +911,91 @@ the fix is not more review — it is making the second copy import the first.
 act) and `withheld` with five typed reasons. Only a `widened` change releases anything, and
 `reconcileRelease` names holds that were released *without* governance — which is exactly
 the audit question the feature exists to answer.
+
+---
+
+# ADVERSE FINDINGS FROM THE CRITIQUE — recorded verbatim, ranked, and none of them softened
+
+Two critics returned damaging results. Both are correct. Both ship.
+
+## ADVERSE FINDING 5 — I aimed the sweep with holdout truth labels. The experimenter leaked.
+
+**Critic C5, and it is the sharpest thing anyone found in this run.**
+
+Before spawning the twelve sweep agents, the orchestrator ran a probe against **holdout truth
+labels** and published the per-label breakdown in this very log: `no_reference` 2,
+`price_variance` 2, `matching` 5, `cardinality_residual` 9 — then wrote *"every one of the
+four buckets is reference-recovery sensitive… the sweep is aimed, not speculative."*
+
+C5's verdict, quoted exactly: **"The twelve agents are clean; the experimenter is not."**
+
+It is right. Holdout truth determined *that* a sweep was run and *what it targeted*. Note
+`cardinality_residual` is the largest holdout bucket (9) but only 6 on selection — so the
+aim was partly holdout-specific structure. Every mechanical protection worked, and the
+protection that failed was the one nobody built a gate for: the person choosing what to
+search. **The holdout figures in this document are how it leaked, which is the one virtue
+of having written them down.**
+
+Two further paths, both real:
+- **The holdout score is in every sweep worktree's git log.** Commit `d9bf613` has the
+  subject `coverage 53.0% -> 70.5% selection, 43.3% -> 60.0% holdout`, and it is an ancestor
+  of every sweep branch. "No agent is told where the holdout lives" was true of the rows and
+  false of the score.
+- **Holdout truth structure is reachable by `git cat-file`.** Blobs of an untracked-then-
+  removed `eval/report.json` remain readable and carry holdout `per_hold_type.expected_count`
+  at 11-type granularity — finer than the committed 6-strata spec. Exactly the object-store
+  threat `holdout.spec.json` was written to describe, arriving through the report rather
+  than the dataset.
+
+**What genuinely survived**, and C5 verified it: all 14 worktree reports show `holdout=NULL`;
+the two datasets are disjoint on invoice ids, vendor ids and vendor names; the seed was
+frozen at 15:04 IST against a sweep spawned at 22:32. But the isolation is **incidental to
+path layout** — one `HOLDFAST_HOLDOUT_DIR` in the environment removes it.
+
+**Consequence for the submission: the holdout number is no longer clean, and we say so.**
+It is not a number produced by a search that never saw it; it is a number produced by a
+search a human aimed using it. That is a weaker claim than the one we set out to make, and
+it is the true one.
+
+## ADVERSE FINDING 6 — most of our novelty claims are prior art
+
+**Critic C6.** Four of five claims do not survive.
+
+1. **Typed holds with auto-release and an accounting block — DEAD.** Oracle ships it:
+   `AP_HOLD_CODES`, hold types including an accounting hold reason that prevents Payables
+   creating accounting entries, plus `POSTABLE_FLAG`. SAP's equivalent is blocking reasons
+   Q/P/D with MRBR auto-release. **We port a data model; we do not invent one.** We always
+   said we mirror Oracle — so the fix is to never imply otherwise.
+2. **Ranking exceptions by money at risk — DEAD.** Trintech's risk-based reconciliation
+   rates accounts by materiality and alerts on rating change.
+3. **Resolution path plus owner-next — DEAD.** Stampli: *"Give every exception three things:
+   a category, an owner, and a clock."*
+4. **"Nobody publishes how often they got it wrong" — DAMAGED, and false as written.**
+   Medius publishes 97.5% First Time Right. Vic.ai publishes 97–99% accuracy over 535M
+   invoices. Billtrust already argues publicly that match rate is gameable.
+5. **The negative claim DOES NOT SURVIVE.** Auditors publish exactly this: CMS CERT
+   re-reviews ~37,500 production claims a year and publishes a statistically valid
+   improper-payment rate — $186bn for FY2025. AP recovery audit publishes 0.1–0.5% of spend
+   wrongly paid.
+
+**What survives**, after ~14 queries: only the narrow form of the tolerance claim — a
+tolerance change recorded as a decision **on the specific hold it released**. And even there,
+SAP logs the config change via change documents, so **"nothing records that a judgement was
+made" must be dropped.**
+
+**The one safe headline C6 could not break:**
+
+> *No cash-application vendor publishes a false-clear rate for its own auto-matched items.*
+
+That is narrower than what this project has been saying all day. It is what we say now.
+
+### Binding on W11
+
+- Do **not** claim novelty for typed holds, money-at-risk ordering, or resolution-path routing.
+- Do **not** say "nobody measures accuracy" — name Medius and Vic.ai as counter-examples.
+- Do **not** say "no audited error rate exists" — CMS CERT is one, at scale.
+- Do **not** say "nothing records that a judgement was made" — SAP logs the config change.
+- The narrow tolerance claim and the narrow false-clear claim are the two that stand.
+- Both adverse findings above go in the submission under their own heading. A disclosed
+  flaw nobody asked about is the most credible thing we have; and we asked for critics that
+  find things, so publishing what they found is the whole point of having run them.

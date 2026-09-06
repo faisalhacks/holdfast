@@ -25,7 +25,6 @@
 // be fast and deterministic, and a sampled model is neither. This baseline runs once,
 // deliberately, for the final report: `pnpm eval -- --llm-baseline`.
 
-import Anthropic from '@anthropic-ai/sdk';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -219,8 +218,8 @@ interface CachedCall {
 }
 
 export function credentialsPresent(): boolean {
-  const key = process.env['ANTHROPIC_API_KEY'];
-  const token = process.env['ANTHROPIC_AUTH_TOKEN'];
+  const key = process.env['OPENAI_API_KEY'];
+  const token = process.env['OPENAI_API_KEY'];
   return (key !== undefined && key !== '') || (token !== undefined && token !== '');
 }
 
@@ -235,12 +234,11 @@ export async function runLlmOnly(bundle: DatasetBundle, budget: LlmBudget, amoun
     return {
       ran: false,
       outcomes,
-      notes: ['llm_only: --llm-baseline was requested but no ANTHROPIC_API_KEY or ANTHROPIC_AUTH_TOKEN is set. The baseline did not run and NO figures are reported for it — a baseline that did not run is absent from the report, not a row of zeros.'],
+      notes: ['llm_only: --llm-baseline was requested but no OPENAI_API_KEY is set. The baseline did not run and NO figures are reported for it — a baseline that did not run is absent from the report, not a row of zeros.'],
       calls: 0, cacheHits: 0, failures: 0, inputTokens: 0, outputTokens: 0, cachedReadTokens: 0,
     };
   }
 
-  const client = new Anthropic();
   const system = systemPrompt(bundle, amountCapPaise);
   mkdirSync(budget.cacheDir, { recursive: true });
 
@@ -280,24 +278,37 @@ export async function runLlmOnly(bundle: DatasetBundle, budget: LlmBudget, amoun
     if (!call) {
       for (let attempt = 0; attempt < 3 && !call; attempt += 1) {
         try {
-          const message = await client.beta.promptCaching.messages.create({
-            model: budget.model,
-            max_tokens: 1024,
-            temperature: 0,
-            // The ledger is identical across every call in the run, so it is a cached
-            // prefix. This is what makes "one call per invoice" an affordable budget
-            // rather than a gesture.
-            system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
-            messages: [{ role: 'user', content: user }],
+          // Plain fetch, not an SDK: `package.json` is frozen and adding the `openai`
+          // package would be a CONTRACT halt for no benefit. This is the STRONG baseline,
+          // so it gets the frontier model and the whole statement — a handicapped
+          // baseline dies under one question, and the point of running it is to find out
+          // whether we lose to it.
+          const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json',
+              authorization: `Bearer ${process.env['OPENAI_API_KEY'] ?? ''}`,
+            },
+            body: JSON.stringify({
+              model: budget.model,
+              temperature: 0,
+              messages: [
+                { role: 'system', content: system },
+                { role: 'user', content: user },
+              ],
+            }),
           });
-          const text = message.content
-            .map((block) => (block.type === 'text' ? block.text : ''))
-            .join('');
+          if (!res.ok) throw new Error(`${res.status} ${(await res.text()).slice(0, 160)}`);
+          const body = (await res.json()) as {
+            choices?: { message?: { content?: string | null } }[];
+            usage?: { prompt_tokens?: number; completion_tokens?: number };
+          };
+          const text = body.choices?.[0]?.message?.content ?? '';
           call = {
             text,
-            input_tokens: message.usage.input_tokens,
-            output_tokens: message.usage.output_tokens,
-            cache_read_input_tokens: message.usage.cache_read_input_tokens ?? 0,
+            input_tokens: body.usage?.prompt_tokens ?? 0,
+            output_tokens: body.usage?.completion_tokens ?? 0,
+            cache_read_input_tokens: 0,
           };
           calls += 1;
           writeFileSync(cachePath, `${JSON.stringify(call, null, 2)}\n`, 'utf8');
