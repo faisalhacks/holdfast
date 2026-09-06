@@ -328,3 +328,74 @@ land types and schema in one push, the outage would have cost the entire wave.
    is already >= 0.70 — misreads what the sweep buys. Selection ranks on coverage only
    *after* filtering on false clears and rupees at risk, so it finds the best
    correctness-per-coverage trade, and those are the numbers on camera at 2:10.
+
+---
+
+## THROUGHPUT PASS — measured before optimising, and one premise did not hold
+
+A research pass proposed six throughput actions, ranked with CI wall-time as the
+multiplier and a target of "CI under 10 minutes". **Measured first.**
+
+Actual CI on this repository, five jobs in parallel:
+
+| job | wall |
+|---|---|
+| ownership | 17s |
+| typecheck | 17s |
+| forbidden | 17s |
+| eval | 18s |
+| migrations | 38s |
+
+**Total wall-clock ~40 seconds, not minutes.** The cited 78min -> 20min template-database
+result came from a repository with a large migration suite; ours has nine tables. Template
+databases, tmpfs data directories and container reuse would together buy a few seconds on
+a 38-second job. Not worth the change surface mid-run, so they were not adopted wholesale.
+The two zero-risk pieces were taken: `POSTGRES_INITDB_ARGS=--nosync`, a tmpfs data
+directory, and a tighter health-check interval.
+
+**The serialisation the research identified is real, but the cause is different.** Branch
+protection had `strict: true` — every PR must be up to date with `main` before merging, so
+each merge invalidates every other open PR and forces a re-run. With six Wave 2 PRs
+inbound that is six sequential CI cycles of pure queue wait, and it grows non-linearly
+exactly as predicted.
+
+**Fix chosen: `strict: false`, not a merge queue.** Our workers own disjoint globs and the
+`ownership` gate enforces that mechanically, so two green PRs cannot touch the same file.
+The property that makes a merge queue necessary — PRs that pass alone but conflict when
+combined — is the property our ownership model already excludes by construction. Turning
+off `strict` removes the cascade immediately with no new machinery.
+
+`merge_group` was still added to the workflow triggers so the native merge queue can be
+switched on later without a workflow change, if arrival rate ever justifies it. Job names
+already match branch protection byte-for-byte.
+
+**Also adopted from the pass:**
+- Per-agent database, port and container for EVERY worker, not just the sweep. Worktrees
+  isolate code but share ports, databases, caches and host paths; shared-Postgres
+  contention produces flaky failures that get misattributed to the agent and burn retries
+  against a three-attempts-then-quarantine budget. Every Wave 2 brief carries a unique
+  container name, port and database name.
+- Racing held at N=3. pass@k on hard coding tasks knees at 3-4 (17.9 / 23.9 / 27.4 / 29.7
+  / 31.3; marginal +5.9, +3.5, +2.3, +1.7). A fifth racer is near-worthless. Crucially,
+  racing only reaches that ceiling **if the referee is reliable** — agents choosing their
+  own winner underperforms the bound. Our referee is the five green checks. **No racer
+  ever self-selects.**
+- W06 builds against a repository interface with an in-memory implementation, so it does
+  not wait on `db/**` and the human frontend collaborator is unblocked immediately.
+
+**Rejected, with reasons:** an orchestrator-of-orchestrators (practitioner evidence is
+uniform that integrator roles add bottlenecks), container isolation per agent (cost
+exceeds benefit for a trusted run), and more workers on Wave 1 (inherently serial).
+
+### A hole this pass exposed, and the fix
+
+`eval/**` is inside W03's glob by design — W03 builds the harness. Only `thresholds.json`,
+`thresholds.lock` and `floors.live` are frozen. So a sweep agent could edit its own
+evaluator inside its worktree and self-report a fabricated score. The Q2 guardrail
+(discard unevaluated if the diff touches `eval/**`) catches it only if the orchestrator
+inspects the diff rather than trusting the report.
+
+**Resolved by applying the reliable-referee principle to the sweep: sweep agents propose a
+strategy; the ORCHESTRATOR runs the eval.** No agent's self-reported number is ever
+entered into selection. Any candidate whose diff touches anything but `engine/normalise/**`
+is discarded unevaluated and logged with its agent id.
