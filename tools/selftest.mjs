@@ -170,6 +170,34 @@ const clean = runGateOn({
 });
 eq(clean.code, 0, 'a clean engine/ file must pass the gate');
 
+// ── race-suffix stripping: must catch racers, must never touch a declared name ──
+// Both W01 schema racers reported that no racer branch could pass the ownership gate,
+// which made the race unwinnable by construction. The fix strips a trailing single
+// uppercase letter. The dangerous failure is the opposite one: stripping a character off
+// a legitimately declared worker and scoring it against the wrong globs.
+console.log('\nrace-suffix stripping');
+{
+  const RACE_SUFFIX = /-[A-Z]$/;
+  const cfg = JSON.parse(readFileSync(new URL('../.github/ownership.json', import.meta.url), 'utf8'));
+  const stripCases = [
+    ['W01-schema-E', 'W01-schema'],
+    ['W01-schema-D', 'W01-schema'],
+    ['W01-contract-schema-B', 'W01-contract-schema'],
+    ['W02-data-generator-A', 'W02-data-generator'],
+    ['W02-data-generator-C', 'W02-data-generator'],
+  ];
+  for (const [branch, want] of stripCases) {
+    const got = RACE_SUFFIX.test(branch) ? branch.replace(RACE_SUFFIX, '') : branch;
+    eq(got, want, `${branch} -> ${want}`);
+    eq(Boolean(cfg.workers[got]), true, `${want} is a declared worker`);
+  }
+  // Every declared worker must survive stripping untouched, or a real branch gets
+  // scored against globs that are not its own.
+  for (const declared of Object.keys(cfg.workers)) {
+    eq(RACE_SUFFIX.test(declared), false, `declared worker "${declared}" is not mistaken for a race entry`);
+  }
+}
+
 // ── vocabulary allowlist: exact-line, and not extendable ────────────────────────
 // A file documenting a prohibition contains the prohibited token. That must pass. But the
 // exemption must be the LINE, not the file, or a worker inherits a licence to write
@@ -196,7 +224,8 @@ const total = globCases.length
   + 3
   + 5
   + 7
-  + 5;
+  + 5
+  + 23;
 console.log(failed === 0
   ? `\nselftest: all ${total} assertions passed`
   : `\nselftest: ${failed} FAILURE(S) of ${total}`);

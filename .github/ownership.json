@@ -3,6 +3,8 @@
 
   "_frontend_note": "app/(ui)/** is deliberately absent. The frontend is ceded to a human collaborator outside AO. Branches that do not match ^W\\d{2}[a-c]?- skip this check entirely, so the collaborator is unblocked without an entry here. The ui-metric-literal rule in check-forbidden.mjs still applies to their commits — that gate crosses the boundary and is not negotiable.",
 
+  "_race_note": "AMENDMENT 02 §2 races three agents on one brief in isolated worktrees, on branches suffixed -A/-B/-C/-D/-E. Those suffixed names are NOT listed here. check-ownership.mjs strips a trailing single-uppercase-letter suffix and looks up the base worker, so every racer is scored against the same globs and the same frozen list as the declared worker. Without that, no racer could ever go green and the race would be unwinnable by construction — which is exactly what both W01 schema racers reported.",
+
   "_precedence_note": "The frozen check runs BEFORE the scope check, so a frozen path is denied even when it falls inside the requesting worker's own glob. data/MANIFEST matches W02's data/** and is denied to W02 for exactly that reason — the eval trigger must not sit inside the glob of the one worker with a motive to regenerate the dataset. Verified by the ownership-matcher tests in tools/selftest.mjs.",
 
   "_truth_json_note": "data/truth.json is deliberately NOT frozen. W02 must create it, and freezing it would make its own author unable to write it. It is protected differently and more strongly: after `pnpm freeze` its bytes are hashed into data/MANIFEST, so any later edit fails the manifest gate (Q7). Before the freeze there is nothing to protect. Reading it is separately walled off — the firewall-truth rule bans any reference to truth.json under engine/, llm/, app/ or components/, proven end-to-end in tools/selftest.mjs.",
@@ -37,6 +39,7 @@
 
   "workers": {
     "W01-contract-schema":     ["lib/types.ts", "lib/**", "db/**"],
+    "W01-schema":              ["db/**"],
     "W02-data-generator":      ["scripts/**", "data/**"],
     "W03-eval-harness":        ["eval/**"],
     "W04a-engine-normalise":   ["engine/normalise/**"],
