@@ -30,6 +30,80 @@
 //   * `token_sort` OFF everywhere by default: `fuzzball`'s token-set ratio is already
 //     order-insensitive, so sorting buys nothing downstream and costs the reviewer the
 //     word order they read.
+//
+// ─── THOSE CLAIMS, MEASURED (SWEEP-11) ───────────────────────────────────────
+//
+// The seven claims above were treated as falsifiable and attacked by exhaustive search
+// over `order` and `enabled` alone, with the eval harness as the only referee. Every
+// permutation of the six steps between `unicode_fold` and `alias_map` in the vendor order
+// (720) and of the five in the reference order (120) was canonicalised over all 373
+// records of the selection set — 200 invoices, 173 statement lines — and deduplicated by
+// output. 720 vendor orderings produce 15 distinct outputs; 120 reference orderings
+// produce 10. The full product of those classes, 150 pipelines standing for all 86,400
+// orderings, was then run through the harness.
+//
+// NOT ONE beat the declared order. 90 of the 150 tie it at coverage 70.5%; the other 60
+// score 70.0%. Every one of the 150 reports 0 false clears, 0 rupees at risk and 100%
+// match precision, so the search never found a trade either — only a plateau and a cliff.
+//
+// WHAT SURVIVED. One adjacency, and it is one of the declared ones:
+//
+//   * `case_fold` before `reference_prefix_strip` — the one table lookup in the reference
+//     order. The ten reference classes split cleanly on it and on nothing else: fold
+//     first, 70.5%; fold after, 70.0%. `case_fold` commutes with `punctuation_strip`,
+//     `whitespace_collapse` and `leading_zero_strip`, so its position is free against
+//     everything EXCEPT the table, which is exactly what the claim says.
+//
+// WHAT IS FOLKLORE, on this dataset and these tables. Each of these is byte-identical on
+// all 373 records at every position tried, so it cannot be measured, not merely measured
+// as small:
+//
+//   * `abbreviation_expand` AFTER `legal_suffix_strip`. The two tables share no key and no
+//     expansion lands in the suffix set, so the steps commute. The `co` ambiguity the note
+//     describes is real in principle and absent in fact — the adjacency is a claim about
+//     the TABLES, and it will start to bite the day one of them grows into the other.
+//   * `noise_token_strip` before `legal_suffix_strip`, for the same reason. Note these two
+//     do NOT commute in general: the non-destructive guard in `pipeline.ts` means whichever
+//     runs SECOND is the one suppressed when it would empty the value, so "neft pvt" folds
+//     to "pvt" or to "neft" depending on order. No record in the set reaches that case.
+//   * `unicode_fold` first. The selection set is pure ASCII, so the step never fires. The
+//     claim is untested rather than wrong, and the first non-ASCII narration tests it.
+//   * `alias_map` LAST. Nothing wires an alias table into the engine — `prepareLedger`
+//     takes `DEFAULT_CONFIG`, whose `aliases` is `EMPTY_ALIAS_TABLE` — so the step is a
+//     no-op at every position. UNFALSIFIED, NOT CONFIRMED, and the distinction matters.
+//
+// WHAT IS REAL BUT NOT DECISIVE. These move canonical values, and the headline does not
+// follow:
+//
+//   * `punctuation_strip` before the token steps: moving it after them changes 9 of 373
+//     values and one decision. Coverage unchanged.
+//   * `case_fold` before the VENDOR tables: moving it after the suffix, noise and
+//     abbreviation lookups changes 160 of 373 values and five decisions, and the gains and
+//     losses cancel exactly. Coverage unchanged. The fold matters for the reference prefix
+//     table and, at this threshold, not for the vendor tables.
+//   * The vendor canonical value in general. Splicing `identifier_repair` into the vendor
+//     order — which compacts the whole value to one upper-case run with no token
+//     boundaries at all — changes two decisions and leaves coverage at 70.5%. The reason is
+//     visible in `engine/match/spec.ts`: `accept_min` is 0.75 and is DERIVED as
+//     reference 0.40 + amount 0.35, so vendor (0.15) can corroborate a pair but can never
+//     carry one over the bar. Vendor normalisation is not idle; it is out-weighted.
+//
+// WHAT IS UNREACHABLE. `narration.v1` and `identifier.v1` can be reversed end to end with
+// byte-identical results for every record, because `engine/match/prepare.ts` reads
+// `extraction.vendor` and `extraction.references` and never `extraction.narration` or
+// `extraction.identifiers`. Their orders are documentation today, not behaviour.
+//
+// `token_sort` stays off: on the vendor side it costs one invoice, on the reference side
+// nothing — which is what the note above predicted. Adding a step a profile does not
+// declare was tried too: `leading_zero_strip` in the vendor order and `noise_token_strip`,
+// `legal_suffix_strip` and `abbreviation_expand` in the reference order are inert at every
+// position, and `reference_prefix_strip` in the vendor order costs one invoice wherever it
+// is put.
+//
+// The orders below are therefore UNCHANGED. They are now orders that were attacked and
+// held, which is a different claim from an order nobody tried to break — and the six
+// verdicts above are the part of that worth carrying forward, because four of them say the
+// reason written beside the step is not the reason the step is where it is.
 
 import type { NormalisationProfile, NormaliseField, ProfileSet, StepId, StepRegistry } from './types';
 
