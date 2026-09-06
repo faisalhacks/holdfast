@@ -304,6 +304,74 @@ export function leadingZeroStripStep(): NormalisationStep {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// calendar_token_drop
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Four digits in a plausible calendar range. `2026` is a year; `2604` is a document. */
+const YEAR_SHAPED = /^\p{N}{4}$/u;
+/** One or two digits. A month, a day, a state code, a line number — never a document. */
+const POSITIONAL_NUMBER = /^\p{N}{1,2}$/u;
+
+export interface CalendarTokenDropOptions {
+  /** Inclusive lower bound of the year range. Default 1990. */
+  readonly minYear?: number;
+  /** Inclusive upper bound of the year range. Default 2039. */
+  readonly maxYear?: number;
+  /** Also drop one- and two-digit numerals. Default true. */
+  readonly dropPositional?: boolean;
+}
+
+/**
+ * Removes the numerals that describe WHEN a document was raised rather than WHICH document
+ * it is: a four-digit year, and the one- or two-digit month, day and sequence fragments a
+ * segmented reference is built from.
+ *
+ * This exists because of what the comparator does with them. `fuzzball`'s token-set ratio
+ * scores a perfect 1 whenever one side's tokens are a SUBSET of the other's, so a bank line
+ * offering the bare token `2026` matches every invoice reference containing `2026` —
+ * `INV/2026/01640`, `RCT/2026/01/472` and `INV/2026/05567` alike — at full similarity.
+ * Measured on the selection set that single token was the largest source of confident wrong
+ * pairings in the whole engine: it put an unrelated payment at the top of the ranking for
+ * dozens of invoices, and the invoice was then held for a variance against a settlement
+ * that never happened.
+ *
+ * The year is not discarded from the record. `NormalisationResult.digits` is taken from the
+ * RAW value and still carries every digit in order, so `INV/2026/01640` and `INV20260 1640`
+ * still meet on the digit view. What changes is only which strings the token comparator is
+ * asked to judge — the calendar stops being evidence of identity while remaining evidence
+ * of sequence.
+ *
+ * The year band is deliberately narrow — a payables ledger's documents are dated within
+ * living memory and not far into the future, so a year lands in a fifty-year band around
+ * now. `2070/26-27` and `2073/26-27` are real references on this ledger; a band running to
+ * 2099 would read both as years and throw away the only thing that identifies them.
+ *
+ * Applied symmetrically: an invoice reference and a narration token go through the same
+ * profile, so neither side is flattered. And it can never empty a value — the pipeline
+ * refuses a step that would, and records it as `suppressed`, so a reference that is nothing
+ * but a year survives intact and is scored as the weak evidence it is.
+ */
+export function calendarTokenDropStep(options: CalendarTokenDropOptions = {}): NormalisationStep {
+  const minYear = options.minYear ?? 1990;
+  const maxYear = options.maxYear ?? 2039;
+  const dropPositional = options.dropPositional ?? true;
+  return {
+    id: 'calendar_token_drop',
+    clause: dropPositional
+      ? 'calendar year and positional numerals removed'
+      : 'calendar year numerals removed',
+    apply(value: string): StepResult {
+      return mapTokens(value, 'calendar_token_removed', (t) => {
+        if (dropPositional && POSITIONAL_NUMBER.test(t)) return '';
+        if (!YEAR_SHAPED.test(t)) return null;
+        const year = Number(t);
+        return year >= minYear && year <= maxYear ? '' : null;
+      });
+    },
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // identifier_repair
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -459,6 +527,7 @@ export const DEFAULT_STEPS: StepRegistry = new Map<StepId, NormalisationStep>([
   ['abbreviation_expand', abbreviationExpandStep()],
   ['reference_prefix_strip', referencePrefixStripStep()],
   ['leading_zero_strip', leadingZeroStripStep()],
+  ['calendar_token_drop', calendarTokenDropStep()],
   ['identifier_repair', identifierRepairStep()],
   ['alias_map', aliasMapStep()],
   ['token_sort', tokenSortStep()],

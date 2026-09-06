@@ -76,6 +76,36 @@ export const REFERENCE_PROFILE_V1: NormalisationProfile = {
 };
 
 /**
+ * The reference profile the default set actually uses, and the only structural change this
+ * sweep makes to an order.
+ *
+ * `calendar_token_drop` sits after `leading_zero_strip` — `INV/02026/001648` has to become
+ * `2026 1648` before a year is recognisable as one — and before `alias_map`, because the
+ * alias table is keyed on the fully canonicalised string and a table keyed on a value that
+ * still carries the calendar would have to enumerate one entry per year.
+ *
+ * The id moves with the order, so a note produced under this profile cites `reference.v2`
+ * and is never confused with one produced under `reference.v1`. `REFERENCE_PROFILE_V1`
+ * stays exactly as it was: a sweep measures the difference between two orders and cannot
+ * do that if one of them was edited in place.
+ */
+export const REFERENCE_PROFILE_V2: NormalisationProfile = withOrder(
+  REFERENCE_PROFILE_V1,
+  'reference.v2',
+  [
+    'unicode_fold',
+    'case_fold',
+    'punctuation_strip',
+    'whitespace_collapse',
+    'reference_prefix_strip',
+    'leading_zero_strip',
+    'calendar_token_drop',
+    'alias_map',
+    'token_sort',
+  ],
+);
+
+/**
  * The whole bank narration line. Same shape as the vendor profile because the residue left
  * after the boilerplate is removed IS a vendor name; keeping the two orders identical is
  * what makes `fields.ts` able to hand the residue straight to the vendor profile.
@@ -111,7 +141,7 @@ export const IDENTIFIER_PROFILE_V1: NormalisationProfile = {
 
 export const DEFAULT_PROFILES: ProfileSet = {
   vendor: VENDOR_PROFILE_V1,
-  reference: REFERENCE_PROFILE_V1,
+  reference: REFERENCE_PROFILE_V2,
   narration: NARRATION_PROFILE_V1,
   identifier: IDENTIFIER_PROFILE_V1,
 };

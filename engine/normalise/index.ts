@@ -86,12 +86,13 @@ export {
 } from './tables';
 
 // ── Steps — the behaviour half ───────────────────────────────────────────────
-export type { PunctuationStripOptions, TokenSortOptions } from './steps';
+export type { CalendarTokenDropOptions, PunctuationStripOptions, TokenSortOptions } from './steps';
 export {
   DEFAULT_STEPS,
   IDENTIFIER_LENGTH,
   abbreviationExpandStep,
   aliasMapStep,
+  calendarTokenDropStep,
   caseFoldStep,
   identifierRepairStep,
   leadingZeroStripStep,
@@ -113,6 +114,7 @@ export {
   IDENTIFIER_PROFILE_V1,
   NARRATION_PROFILE_V1,
   REFERENCE_PROFILE_V1,
+  REFERENCE_PROFILE_V2,
   VENDOR_PROFILE_V1,
   isStepEnabled,
   validateProfile,
@@ -147,6 +149,7 @@ export {
   identifierCandidateTokens,
   looksLikeIdentifier,
   referenceCandidateTokens,
+  referenceRuns,
   vendorResidueTokens,
 } from './tokens';
 
