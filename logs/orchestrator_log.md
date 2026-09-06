@@ -1120,3 +1120,42 @@ Earlier occurrences of "AO" in this log have been rewritten to describe what act
 referee, and no agent ever scoring itself into a merge.**
 
 The submission says the same, and says "AO" nowhere.
+
+---
+
+# OPEN QUESTION AT FREEZE — was there any Agent Orchestrator usage at all?
+
+**Recorded unresolved, deliberately. The build did not answer it and did not assume it.**
+
+The rules make Agent Orchestrator usage mandatory and worth 25%, and state that projects
+without meaningful AO usage are disqualified.
+
+**The orchestrator cannot confirm that AO ran.** It is Claude Code, invoked directly. Every
+subagent in this build came from Claude Code's own agent tooling; `.claude/worktrees/agent-*`
+is Claude Code's path convention; no AO session id, AO API call or AO dashboard was ever
+seen by the process that built this.
+
+A plausible reconciliation was offered mid-run — that AO uses Claude Code as its harness, so
+these worktrees and the `Co-Authored-By: Claude Opus 5` trailers are exactly what an AO
+session produces. **That may well be true, and it was still inference stated as fact**, on
+the one criterion where being wrong is disqualifying. It was withdrawn by the person who
+offered it, unprompted, once that was pointed out.
+
+So the position at freeze is:
+
+- **What is certain**: the mechanisms are real and verifiable in 43 pull requests — parallel
+  agents in isolated git worktrees, one ownership glob each enforced by a CI gate keyed on
+  branch name, a firewall between the generator and the matcher, and an orchestrator that
+  re-ran every sweep evaluation so no agent ever scored itself into a merge.
+- **What is not certain**: whether any of that constitutes AO usage under the rules. Only
+  the AO application itself can answer that, and it is being checked outside this session.
+
+**Nothing in the README, DEVPOST or the video claims AO usage.** `grep -cw AO` returns 0 on
+both submission files. If it turns out there were no AO sessions, this entry is the record
+that the gap was known and left open rather than papered over; if there were, the claim can
+be added from evidence rather than from assumption.
+
+This is the same standard applied to the four adverse findings above, applied to ourselves
+on the item with the most to lose. A project whose argument is that the category publishes
+the flattering number and hides the correctness number does not get to guess about its own
+toolchain because the guess is worth 25%.
