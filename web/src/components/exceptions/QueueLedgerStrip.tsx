@@ -1,13 +1,27 @@
 import type { RunSummary } from "@/lib/api";
 import { formatMoney } from "@/lib/format";
-import { Skeleton } from "@/components/ui/States";
+import { InlineError, Skeleton } from "@/components/ui/States";
 
 /**
  * The run's figures as one quiet block, not a grid of tiles. Four of the five
  * values are single digits; giving each a card would spend a third of the pane
  * restating the queue that is directly below it.
  */
-export function QueueLedgerStrip({ summary }: { summary: RunSummary | null }) {
+export function QueueLedgerStrip({
+  summary,
+  error,
+}: {
+  summary: RunSummary | null;
+  error?: string | null;
+}) {
+  if (error) {
+    return (
+      <div className="border-b border-line px-4 py-3.5">
+        <InlineError label="Run summary unavailable" message={error} />
+      </div>
+    );
+  }
+
   if (!summary) {
     return (
       <div className="border-b border-line px-4 py-3.5">

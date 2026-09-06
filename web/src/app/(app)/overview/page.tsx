@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { config } from "@/lib/config";
 import { useExceptionQueue } from "@/hooks/useExceptionQueue";
 import { useRunSummary } from "@/hooks/useRunSummary";
@@ -18,7 +18,7 @@ import {
 import { SEVERITY_TONE } from "@/components/ui/Badge";
 import { BarList, type BarRow } from "@/components/ui/Bar";
 import { Panel, PanelBasis, PanelHeader } from "@/components/ui/Panel";
-import { LoadingRows, Skeleton } from "@/components/ui/States";
+import { ErrorState, LoadingRows, Skeleton } from "@/components/ui/States";
 import type { Tone } from "@/components/ui/Token";
 import { HighestExposure } from "@/components/overview/HighestExposure";
 import { KpiBand } from "@/components/overview/KpiBand";
@@ -56,8 +56,8 @@ const SLA_TONE: Record<SlaBucketKey, Tone> = {
  * counted over.
  */
 export default function OverviewPage() {
-  const { summary } = useRunSummary(config.currentRunId);
-  const { page, loading } = useExceptionQueue(OVERVIEW_QUERY);
+  const { summary, error: summaryError } = useRunSummary(config.currentRunId);
+  const { page, loading, error: queueError } = useExceptionQueue(OVERVIEW_QUERY);
 
   const items = useMemo(() => page?.items ?? [], [page]);
   const currency = summary?.currency ?? items[0]?.currency ?? "INR";
@@ -110,7 +110,20 @@ export default function OverviewPage() {
 
   const basis = page
     ? `counted over ${items.length} of ${page.total} in this run`
-    : "counting…";
+    : queueError
+      ? "counted over nothing — the queue read failed"
+      : "counting…";
+
+  /*
+   * Every panel below is assembled from queue rows. When that read fails there
+   * are no rows, and an empty bar list is indistinguishable from a run with
+   * nothing in it — so the failure is rendered instead of the chart. A chart
+   * drawn over a failed read is not a quiet chart, it is a wrong one.
+   */
+  const fromQueue = (skeleton: ReactNode, content: ReactNode) => {
+    if (queueError) return <ErrorState title="Queue unavailable" message={queueError} />;
+    return loading && !page ? skeleton : content;
+  };
 
   return (
     <div className="h-full overflow-y-auto">
@@ -137,17 +150,16 @@ export default function OverviewPage() {
           </Link>
         </header>
 
-        <KpiBand summary={summary} />
+        <KpiBand summary={summary} error={summaryError} />
 
         <div className="grid gap-4 lg:grid-cols-2">
           <Panel>
             <PanelHeader title="Recorded exposure by exception type" />
-            {loading && !page ? (
+            {fromQueue(
               <div className="p-4">
                 <Skeleton className="h-32 w-full" />
-              </div>
-            ) : (
-              <BarList rows={categoryRows} />
+              </div>,
+              <BarList rows={categoryRows} />,
             )}
             <PanelBasis>
               Each case&rsquo;s recorded exposure, summed across every status, {basis}. A case
@@ -158,14 +170,13 @@ export default function OverviewPage() {
 
           <Panel>
             <PanelHeader title="Where the run stands" />
-            <StatusComposition summary={summary} />
+            <StatusComposition summary={summary} error={summaryError} />
             <PanelHeader title="By severity" className="border-t" />
-            {loading && !page ? (
+            {fromQueue(
               <div className="p-4">
                 <Skeleton className="h-28 w-full" />
-              </div>
-            ) : (
-              <BarList rows={severityRows} />
+              </div>,
+              <BarList rows={severityRows} />,
             )}
             <PanelBasis>
               Status counts come from the run summary. Severity is {basis}.
@@ -186,21 +197,16 @@ export default function OverviewPage() {
                 </Link>
               }
             />
-            {loading && !page ? (
-              <LoadingRows rows={4} />
-            ) : (
-              <HighestExposure items={items.slice(0, 6)} />
-            )}
+            {fromQueue(<LoadingRows rows={4} />, <HighestExposure items={items.slice(0, 6)} />)}
           </Panel>
 
           <Panel>
             <PanelHeader title="Time remaining" />
-            {loading && !page ? (
+            {fromQueue(
               <div className="p-4">
                 <Skeleton className="h-28 w-full" />
-              </div>
-            ) : (
-              <BarList rows={slaRows} />
+              </div>,
+              <BarList rows={slaRows} />,
             )}
             <PanelBasis>
               Against each case&rsquo;s SLA target, {basis}

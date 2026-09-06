@@ -52,3 +52,29 @@ export function ErrorState({
     </div>
   );
 }
+
+/**
+ * A read that failed, stated in the space the value would have occupied.
+ *
+ * `ErrorState` owns a whole panel; this is for the small slots — a KPI cell, a
+ * ledger strip — where the alternative is a skeleton that never resolves. A
+ * skeleton is a promise that data is coming. When the read has already failed,
+ * that promise is a lie, and a reviewer left staring at it will assume the run
+ * is simply quiet.
+ */
+export function InlineError({
+  label = "Could not load",
+  message,
+  className,
+}: {
+  label?: string;
+  message: string;
+  className?: string;
+}) {
+  return (
+    <div role="alert" className={cn("space-y-1", className)}>
+      <p className="text-sm font-medium text-blocking">{label}</p>
+      <p className="text-xs text-ink-muted">{message}</p>
+    </div>
+  );
+}

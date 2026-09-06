@@ -1,6 +1,6 @@
 import type { RunSummary } from "@/lib/api";
 import { STATUS_LABELS } from "@/lib/labels";
-import { Skeleton } from "@/components/ui/States";
+import { InlineError, Skeleton } from "@/components/ui/States";
 
 const SEGMENTS = [
   { key: "open", label: STATUS_LABELS.open, fill: "bg-ink-faint/45" },
@@ -16,7 +16,23 @@ const SEGMENTS = [
  * position in this sequence, and an open case may or may not be held. It is
  * stated underneath instead of being wedged into the same hundred per cent.
  */
-export function StatusComposition({ summary }: { summary: RunSummary | null }) {
+export function StatusComposition({
+  summary,
+  error,
+}: {
+  summary: RunSummary | null;
+  error?: string | null;
+}) {
+  if (error) {
+    return (
+      <InlineError
+        className="px-4 py-4 sm:px-5"
+        label="Run summary unavailable"
+        message={error}
+      />
+    );
+  }
+
   if (!summary) {
     return (
       <div className="px-4 py-4 sm:px-5">

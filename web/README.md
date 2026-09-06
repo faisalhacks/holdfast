@@ -90,8 +90,9 @@ a backend contract change:
   free-text field in the UI.
 
 `low_confidence` remains the wire value for its category; the label a reviewer
-reads is "Below match floor", because a model's opinion of itself is not
-evidence and this console does not report one.
+reads is "Below threshold", because a model's opinion of itself is not evidence
+and this console does not report one. The enum is a backend contract value and
+is not renamed here; only the words on screen change.
 
 ## Keyboard
 

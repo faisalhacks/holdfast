@@ -2,7 +2,7 @@ import type { RunSummary } from "@/lib/api";
 import { cn } from "@/lib/cn";
 import { formatMoney } from "@/lib/format";
 import { Panel } from "@/components/ui/Panel";
-import { Skeleton } from "@/components/ui/States";
+import { InlineError, Skeleton } from "@/components/ui/States";
 
 function Cell({
   label,
@@ -39,8 +39,31 @@ function Cell({
  * "Held" is a count, not a sum. The frontend contract carries a hold's amount
  * only on the exception detail, so a rupee figure for held money would have to
  * be assembled from reads this screen does not make.
+ *
+ * A failed summary read is reported as a failure. It must never fall back to a
+ * skeleton, and it must never fall back to zeroes: "0 held" is a statement that
+ * no payment is blocked, which is a different and more dangerous claim than "we
+ * could not read the run".
  */
-export function KpiBand({ summary }: { summary: RunSummary | null }) {
+export function KpiBand({
+  summary,
+  error,
+}: {
+  summary: RunSummary | null;
+  error?: string | null;
+}) {
+  if (error) {
+    return (
+      <Panel>
+        <InlineError
+          className="px-5 py-4"
+          label="Run summary unavailable"
+          message={`${error} Money at risk and the run's status counts are not shown, rather than shown as zero.`}
+        />
+      </Panel>
+    );
+  }
+
   if (!summary) {
     return (
       <Panel>

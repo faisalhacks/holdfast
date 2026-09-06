@@ -29,7 +29,7 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
   const router = useRouter();
   const { query, patch, clear, activeFilterCount } = useQueueQuery();
   const { page, loading, error, refresh } = useExceptionQueue(query);
-  const { summary } = useRunSummary(config.currentRunId);
+  const { summary, error: summaryError } = useRunSummary(config.currentRunId);
 
   const items = useMemo(() => page?.items ?? [], [page]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -120,7 +120,7 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
         </span>
       </div>
 
-      <QueueLedgerStrip summary={summary} />
+      <QueueLedgerStrip summary={summary} error={summaryError} />
 
       <QueueToolbar
         query={query}

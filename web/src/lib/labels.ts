@@ -30,7 +30,7 @@ export const SEVERITY_LABELS: Record<Severity, string> = {
  */
 export const CATEGORY_LABELS: Record<ExceptionCategory, string> = {
   policy_violation: "Policy violation",
-  low_confidence: "Below match floor",
+  low_confidence: "Below threshold",
   data_mismatch: "Data mismatch",
   threshold_breach: "Threshold breach",
   missing_evidence: "Missing evidence",
