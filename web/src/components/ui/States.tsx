@@ -2,19 +2,14 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 export function Skeleton({ className }: { className?: string }) {
-  return (
-    <div
-      aria-hidden
-      className={cn("animate-pulse rounded bg-surface-3", className)}
-    />
-  );
+  return <div aria-hidden className={cn("animate-pulse rounded-xs bg-surface-3", className)} />;
 }
 
-export function LoadingRows({ rows = 6 }: { rows?: number }) {
+export function LoadingRows({ rows = 6, className }: { rows?: number; className?: string }) {
   return (
-    <div className="space-y-2 p-4" role="status" aria-label="Loading">
+    <div className={cn("space-y-px", className)} role="status" aria-label="Loading">
       {Array.from({ length: rows }, (_, index) => (
-        <Skeleton key={index} className="h-10 w-full" />
+        <Skeleton key={index} className="h-14 w-full opacity-60" />
       ))}
     </div>
   );
@@ -24,17 +19,17 @@ export function EmptyState({
   title,
   description,
   action,
+  className,
 }: {
   title: string;
   description?: string;
   action?: ReactNode;
+  className?: string;
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 px-6 py-14 text-center">
-      <p className="text-sm font-medium text-ink">{title}</p>
-      {description ? (
-        <p className="max-w-md text-sm text-ink-faint">{description}</p>
-      ) : null}
+    <div className={cn("flex flex-col items-center gap-1.5 px-6 py-12 text-center", className)}>
+      <p className="text-base font-medium text-ink">{title}</p>
+      {description ? <p className="max-w-sm text-sm text-ink-faint">{description}</p> : null}
       {action ? <div className="mt-2">{action}</div> : null}
     </div>
   );
@@ -50,12 +45,9 @@ export function ErrorState({
   action?: ReactNode;
 }) {
   return (
-    <div
-      role="alert"
-      className="flex flex-col items-center gap-2 px-6 py-14 text-center"
-    >
-      <p className="text-sm font-medium text-negative">{title}</p>
-      <p className="max-w-lg text-sm text-ink-faint">{message}</p>
+    <div role="alert" className="flex flex-col items-center gap-1.5 px-6 py-12 text-center">
+      <p className="text-base font-medium text-blocking">{title}</p>
+      <p className="max-w-md text-sm text-ink-faint">{message}</p>
       {action ? <div className="mt-2">{action}</div> : null}
     </div>
   );

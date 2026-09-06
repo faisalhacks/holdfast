@@ -1,20 +1,27 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-type Variant = "primary" | "ghost" | "outline";
+type Variant = "primary" | "ghost" | "outline" | "governed";
 type Size = "sm" | "md";
 
 const VARIANTS: Record<Variant, string> = {
+  /* A disabled primary must stop looking like the thing to press. */
   primary:
-    "bg-brand text-canvas hover:bg-brand-ink disabled:hover:bg-brand font-semibold",
-  outline:
-    "border border-line-strong text-ink hover:border-brand hover:text-brand-ink",
-  ghost: "text-ink-muted hover:text-ink hover:bg-surface-2",
+    "bg-focus font-semibold text-canvas hover:bg-focus-ink " +
+    "disabled:bg-surface-3 disabled:text-ink-faint disabled:hover:bg-surface-3",
+  outline: "border border-line-strong text-ink hover:border-focus hover:text-focus-ink",
+  ghost: "text-ink-muted hover:bg-surface-2 hover:text-ink",
+  /*
+   * Releasing a hold is a governed act, not a destructive one. A filled red
+   * button would read as "danger, don't" — the point is that it is allowed,
+   * attributable, and recorded.
+   */
+  governed: "border border-blocking/35 text-blocking hover:border-blocking hover:bg-blocking/10",
 };
 
 const SIZES: Record<Size, string> = {
-  sm: "h-8 px-3 text-xs",
-  md: "h-9 px-4 text-sm",
+  sm: "h-6 px-2 text-xs",
+  md: "h-7 px-3 text-base",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -39,8 +46,8 @@ export function Button({
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-md transition-colors",
-        "disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex items-center justify-center gap-1.5 rounded-sm transition-colors",
+        "disabled:cursor-not-allowed disabled:opacity-45",
         SIZES[size],
         VARIANTS[variant],
         className,
@@ -49,7 +56,7 @@ export function Button({
       {loading ? (
         <span
           aria-hidden
-          className="size-3 animate-spin rounded-full border-2 border-current border-t-transparent"
+          className="size-2.5 animate-spin rounded-full border border-current border-t-transparent"
         />
       ) : null}
       {children}

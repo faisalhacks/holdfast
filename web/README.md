@@ -1,10 +1,13 @@
-# Syndicate — web
+# Holdfast — web
 
-Operations console for reviewing what the agent fleet could not decide on its
-own. Next.js 16 (App Router) + React 19 + Tailwind CSS 4.
+The accounts-payable exception review workstation. Next.js 16 (App Router) +
+React 19 + Tailwind CSS 4.
 
-This is the **foundation build**. The exception queue and exception detail are
-real; Overview, Run replay, and Audit log are deliberate placeholders.
+Three panes: the money-ordered intake queue on the left, the diagnostic ledger
+in the centre, and the routing, hold, tolerance and audit console on the right.
+Every screen is backed by a frozen API route — there are no placeholder
+surfaces, because a workstation that advertises screens it cannot open is not
+one.
 
 ```bash
 npm install
@@ -17,11 +20,10 @@ npm run verify     # boundaries + typecheck + build
 ```
 src/
 ├── app/                    routes — pages compose components and hooks only
-│   ├── page.tsx                    Overview            (placeholder)
-│   ├── exceptions/page.tsx         Exception queue     ← built
-│   ├── exceptions/[exceptionId]/   Exception detail    ← built
-│   ├── runs/page.tsx               Run replay          (placeholder)
-│   └── audit/page.tsx              Audit log           (placeholder)
+│   ├── page.tsx                    Overview: run summary + composition
+│   ├── exceptions/layout.tsx       three-pane frame; owns the queue pane
+│   ├── exceptions/page.tsx         centre pane, nothing selected
+│   └── exceptions/[exceptionId]/   ledger + action console
 ├── components/             presentation only, no data access
 ├── hooks/                  data access, via `@/lib/api`
 ├── lib/
@@ -32,8 +34,10 @@ src/
 │   │       ├── mock/       in-memory demo adapter (the only fixture consumer)
 │   │       └── live/       backend transport mapping
 │   ├── config.ts           env-driven settings
-│   ├── format.ts           money / time / SLA formatting
-│   └── labels.ts           display labels for domain enums
+│   ├── format.ts           money / time / SLA formatting, and field deltas
+│   ├── keyboard.ts         shortcut guards
+│   ├── labels.ts           display labels for domain enums
+│   └── revalidate.ts       "a write happened" channel, so the queue re-reads
 └── mocks/fixtures/         demo data only — never imported by UI code
 ```
 
@@ -66,8 +70,35 @@ They mutate a module-level object seeded from fixtures:
 - a persistent banner in the app shell reports the active data source, driven by
   `api.info.isMock` rather than by an environment check in a component.
 
-Tolerance changes expose the backend-returned affected hold IDs. The UI does
-not infer hold releases.
+Tolerance changes expose the backend-returned affected hold IDs, including an
+empty list, which is rendered as such. The UI does not infer hold releases.
+
+## What the contract does not carry
+
+The engine domain model in `lib/types.ts` is richer than the frontend contract.
+These are deliberately absent rather than guessed at, and adding any of them is
+a backend contract change:
+
+- typed hold codes, `auto_releasable`, and `blocks_accounting`; a hold here has
+  an amount, a reason, an id, and a status, and `hold` is singular;
+- structured conflict codes — the conflict summary bar restates the failing
+  fields and hold state already rendered above it, and emits no ERP tokens;
+- any pre-flight tolerance simulation. The API cannot say what a proposed
+  threshold would release until the change is made, so no capital-release or
+  workload figure is shown;
+- `owner_next` as a role enum. It is a free-text string on the wire, so it is a
+  free-text field in the UI.
+
+`low_confidence` remains the wire value for its category; the label a reviewer
+reads is "Below match floor", because a model's opinion of itself is not
+evidence and this console does not report one.
+
+## Keyboard
+
+`j`/`k` move the queue highlight, `Enter` opens, `/` searches, `]` toggles the
+action console, and `r`/`h`/`t`/`a` reveal a console section. **No shortcut
+commits a mutation.** Routing, hold release, and tolerance change each require
+an explicit form submit.
 
 ## Configuration
 
@@ -81,11 +112,14 @@ See `.env.example`. All variables are optional in mock mode.
 
 ## Known gaps
 
-- Queue filters live in component state, not the URL, so a filtered queue is not
-  shareable or restorable on reload.
-- Authentication and reviewer attribution remain backend responsibilities.
+- Authentication and reviewer attribution remain backend responsibilities: the
+  UI states that a decision is recorded with your name, and the backend is what
+  supplies the name.
 - No tests and no linter yet — `verify` covers boundaries, types, and the build.
-- The mock store is a module singleton. All mutations happen client-side, so this
-  is per-tab in practice, but a future server-side mock would need per-request
-  isolation.
-- Overview, Run replay, and Audit log render planned scope, not real data.
+- The mock dataset is a module singleton. All mutations happen client-side, so
+  this is per-tab in practice, but a future server-side mock would need
+  per-request isolation.
+- The live adapter fetches a run and filters and pages it in the browser. That
+  is fine at review scale and wrong at ledger scale.
+- Overview counts composition over the page it fetched and says so on the panel.
+  There is no history endpoint, so there is no trend on that screen.

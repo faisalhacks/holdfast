@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { AppShell } from "@/components/layout/AppShell";
+import { WorkbenchShell } from "@/components/layout/WorkbenchShell";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Syndicate — Operations console",
+  title: "Holdfast — Exception review workstation",
   description:
-    "Human review surface for autonomous agent runs: exception queue, decisions, and audit trail.",
+    "Accounts-payable exception review: typed holds, field-level evidence, and a recorded routing decision.",
 };
 
 export default function RootLayout({
@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AppShell>{children}</AppShell>
+        <WorkbenchShell>{children}</WorkbenchShell>
       </body>
     </html>
   );

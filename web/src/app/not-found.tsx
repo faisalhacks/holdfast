@@ -2,12 +2,14 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="flex flex-col items-center gap-3 px-6 py-24 text-center">
-      <p className="font-mono text-xs tracking-widest text-ink-faint uppercase">404</p>
-      <h1 className="text-lg font-semibold text-ink">This page does not exist</h1>
+    <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
+      <p className="label-section">Not found</p>
+      <p className="max-w-sm text-base text-ink-muted">
+        This address is not part of the workstation.
+      </p>
       <Link
         href="/exceptions"
-        className="text-sm text-brand-ink underline underline-offset-2"
+        className="mt-1 text-base text-focus-ink underline underline-offset-2"
       >
         Go to the exception queue
       </Link>

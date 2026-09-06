@@ -20,20 +20,15 @@ export function Pagination({
   const last = Math.min(total, page * pageSize);
 
   return (
-    <div className="flex items-center justify-between border-t border-line px-4 py-2.5">
-      <p className="font-mono text-xs text-ink-faint tabular-nums">
+    <div className="flex h-8 shrink-0 items-center justify-between border-t border-line bg-surface px-3">
+      <p className="num font-mono text-xs text-ink-faint">
         {first}–{last} of {total}
       </p>
-      <div className="flex items-center gap-2">
-        <Button
-          size="sm"
-          variant="ghost"
-          disabled={page <= 1}
-          onClick={() => onPageChange(page - 1)}
-        >
-          Previous
+      <div className="flex items-center gap-1">
+        <Button size="sm" variant="ghost" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
+          ‹
         </Button>
-        <span className="font-mono text-xs text-ink-muted tabular-nums">
+        <span className="num font-mono text-xs text-ink-muted">
           {page} / {totalPages}
         </span>
         <Button
@@ -42,7 +37,7 @@ export function Pagination({
           disabled={page >= totalPages}
           onClick={() => onPageChange(page + 1)}
         >
-          Next
+          ›
         </Button>
       </div>
     </div>

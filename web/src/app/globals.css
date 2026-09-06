@@ -1,40 +1,57 @@
 @import "tailwindcss";
 
 /*
- * Design tokens for the operations console. Dense, dark, low-chrome: the
- * interface is read for long stretches, so colour is reserved for state
- * (severity, SLA, decision outcome) rather than decoration.
+ * Holdfast — AP exception review workstation.
+ *
+ * Structure is near-neutral. Saturation is reserved for state and nothing
+ * else: a colour in this interface always means the same thing, and a value
+ * with no state behind it gets no colour at all.
  */
 @theme {
-  --color-canvas: #090b10;
-  --color-surface: #0f131b;
-  --color-surface-2: #151a24;
-  --color-surface-3: #1b2130;
-  --color-line: #1f2634;
-  --color-line-strong: #2c3547;
+  --color-canvas: #0b0d0f;
+  --color-surface: #121519;
+  --color-surface-2: #171b21;
+  --color-surface-3: #1e232b;
+  --color-line: #232830;
+  --color-line-strong: #333a45;
 
-  --color-ink: #e8edf5;
-  --color-ink-muted: #98a4b7;
-  --color-ink-faint: #6a7689;
+  --color-ink: #e6e9ed;
+  --color-ink-muted: #99a2ae;
+  --color-ink-faint: #6a7480;
 
-  --color-brand: #7c8cff;
-  --color-brand-ink: #b8c1ff;
-  --color-brand-wash: #171b33;
+  /* Focus and selection only. Never a fill, never a brand mark, never a status. */
+  --color-focus: #5b8db8;
+  --color-focus-ink: #9dc2dc;
+  --color-focus-wash: #16202a;
 
-  --color-critical: #f2415a;
-  --color-high: #f59e42;
-  --color-medium: #e0c04a;
-  --color-low: #4cc4f0;
-
-  --color-positive: #37c98b;
-  --color-negative: #f2415a;
-  --color-caution: #e0c04a;
-  --color-demo: #e2a13c;
+  /* The four semantic states. One meaning each. */
+  --color-blocking: #c6414d;
+  --color-material: #c4862c;
+  --color-advisory: #a9962f;
+  --color-cleared: #3d9873;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono",
     Consolas, "Liberation Mono", monospace;
+
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 0.875rem;
+  --text-xs: 0.6875rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.75rem;
+  --text-sm--line-height: 1.05rem;
+  --text-base: 0.8125rem;
+  --text-base--line-height: 1.15rem;
+  --text-md: 0.875rem;
+  --text-md--line-height: 1.25rem;
+  --text-lg: 0.9375rem;
+  --text-lg--line-height: 1.3rem;
+  --text-xl: 1.0625rem;
+  --text-xl--line-height: 1.35rem;
+
+  --radius-xs: 2px;
+  --radius-sm: 3px;
 }
 
 @layer base {
@@ -46,19 +63,24 @@
     background-color: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    font-size: 0.8125rem;
     -webkit-font-smoothing: antialiased;
   }
 
   ::selection {
-    background-color: color-mix(in srgb, var(--color-brand) 35%, transparent);
+    background-color: color-mix(in srgb, var(--color-focus) 40%, transparent);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brand);
-    outline-offset: 2px;
+    outline: 2px solid var(--color-focus);
+    outline-offset: -1px;
   }
 
-  /* Dark, unobtrusive scrollbars to match the shell. */
+  /* Digits must stack in a column of money. Applied wherever a number is read. */
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+
   * {
     scrollbar-color: var(--color-line-strong) transparent;
     scrollbar-width: thin;
@@ -66,7 +88,20 @@
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  /* Section label: the smallest type in the system, and the most repeated. */
+  .label-section {
+    font-size: 0.65625rem;
+    line-height: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+
+  .clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }

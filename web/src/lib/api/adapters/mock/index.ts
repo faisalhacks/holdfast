@@ -7,6 +7,10 @@ import { ConflictError, NotFoundError } from "@/lib/api/types";
 
 const clone = <T,>(value: T): T => structuredClone(value);
 
+let sequence = 0;
+/** Monotonic suffix, so ids created inside one mutation cannot collide. */
+const sequenceToken = (): string => (sequence += 1).toString(36);
+
 export function createMockAdapter({ latencyMs = 0 }: { latencyMs?: number } = {}): SyndicateApi {
   const dataset = buildDemoDataset();
   const pause = () => new Promise((resolve) => setTimeout(resolve, latencyMs));
@@ -67,15 +71,58 @@ export function createMockAdapter({ latencyMs = 0 }: { latencyMs?: number } = {}
       return { data: { exception: clone(exception), hold: clone(hold) }, notice };
     },
     async changeTolerance(exceptionId: string, input: ChangeToleranceInput) {
-      await pause(); requireException(exceptionId);
-      if (!Number.isInteger(input.from) || !Number.isInteger(input.to)) throw new Error("Tolerance values must be integers.");
-      if (!input.scope.trim() || !input.reason.trim()) throw new Error("Scope and reason are required.");
-      const affected = dataset.exceptions.filter((i) => i.hold?.status === "held" && i.tolerance?.scope === input.scope && i.tolerance.from === input.from);
+      await pause();
+      requireException(exceptionId);
+      if (!Number.isInteger(input.from) || !Number.isInteger(input.to)) {
+        throw new Error("Tolerance values must be integers.");
+      }
+      if (!input.scope.trim() || !input.reason.trim()) {
+        throw new Error("Scope and reason are required.");
+      }
+
+      const affected = dataset.exceptions.filter(
+        (i) => i.hold?.status === "held" && i.tolerance?.scope === input.scope && i.tolerance.from === input.from,
+      );
+      const now = new Date().toISOString();
+
+      /*
+       * A widened tolerance releases the holds it covers, and the release is
+       * recorded like any other: reason, time, and an event on the timeline.
+       * Reporting affected holds while leaving them held would show a reviewer
+       * a consequence that never happened.
+       */
       for (const item of affected) {
         if (item.tolerance) item.tolerance = { from: input.to, to: input.to, scope: input.scope };
-        item.timeline.push({ id: `tl_${item.id}_${Date.now()}`, kind: "tolerance", actor: "reviewer", at: new Date().toISOString(), title: `Tolerance changed from ${input.from} to ${input.to}`, detail: input.reason.trim() });
+        item.timeline.push({
+          id: `tl_tol_${item.id}_${sequenceToken()}`,
+          kind: "tolerance",
+          actor: "reviewer",
+          at: now,
+          title: `Tolerance changed from ${input.from} to ${input.to}`,
+          detail: input.reason.trim(),
+        });
+        if (item.hold && item.hold.status === "held") {
+          item.hold.status = "released";
+          item.hold.releasedAt = now;
+          item.hold.releaseReason = `Released by tolerance change on ${input.scope}: ${input.reason.trim()}`;
+          item.timeline.push({
+            id: `tl_rel_${item.id}_${sequenceToken()}`,
+            kind: "hold",
+            actor: "reviewer",
+            at: now,
+            title: "Hold released by tolerance change",
+            detail: item.hold.releaseReason,
+          });
+        }
       }
-      return { data: { exception: clone(requireException(exceptionId)), affected_hold_ids: affected.flatMap((i) => i.hold ? [i.hold.id] : []) }, notice };
+
+      return {
+        data: {
+          exception: clone(requireException(exceptionId)),
+          affected_hold_ids: affected.flatMap((i) => (i.hold ? [i.hold.id] : [])),
+        },
+        notice,
+      };
     },
   } satisfies SyndicateApi;
 }
