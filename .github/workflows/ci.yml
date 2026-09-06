@@ -15,6 +15,10 @@ on:
     branches: [main]
   push:
     branches: [main]
+  # Required for GitHub's native merge queue. EVERY required check must fire on
+  # merge_group and the job names must match branch protection byte-for-byte, or PRs
+  # sit pending until the queue timeout ejects them — which reads as "agents are slow".
+  merge_group:
   workflow_dispatch:
 
 concurrency:
@@ -47,12 +51,15 @@ jobs:
         env:
           POSTGRES_PASSWORD: holdfast
           POSTGRES_DB: holdfast
+          # Durability is worthless in a throwaway CI container and costs real seconds.
+          POSTGRES_INITDB_ARGS: '--nosync'
         ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready
-          --health-interval 10s
+          --health-interval 5s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 10
+          --tmpfs /var/lib/postgresql/data:rw,noexec,nosuid,size=512m
     env:
       DATABASE_URL: postgres://postgres:holdfast@localhost:5432/holdfast
     steps:
