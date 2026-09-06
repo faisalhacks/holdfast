@@ -681,3 +681,80 @@ invoices would manufacture exactly the spurious solutions the anchoring exists t
 **This ships as an adverse finding.** The threshold's own rationale says a payment settling
 an invoice from six months earlier is an exception a human should see, not a match to find
 — so the ceiling is the policy working, and the honest report is that it costs us recall.
+
+---
+
+## WAVE 3 MERGE GATE — the system runs, and the number says what we hoped it would
+
+`engine/holds/registry.ts` wired with the three families; `engine/run.ts` written as the
+assembly point. Both orchestrator-owned and frozen: no worker owns the wiring, because
+each was scored on its own glob and none of them could see the whole. Assembling them is a
+decision about the SYSTEM, and it belongs to whoever is accountable for the system's number.
+
+### FIRST REAL MEASUREMENT
+
+| | coverage | false clears | rupees at risk | precision | decided |
+|---|---|---|---|---|---|
+| **holdfast** (selection) | 53.0% | **0** | **Rs 0** | 100.0% | 106/200 |
+| naive_exact (selection) | **80.0%** | **34** | **Rs 2,05,16,608.51** | 78.8% | 160/200 |
+| **holdfast** (holdout) | 43.3% | **0** | **Rs 0** | 100.0% | 26/60 |
+| naive_exact (holdout) | **65.0%** | **9** | **Rs 23,01,540.23** | 76.9% | 39/60 |
+
+**The naive baseline wins on the number the category publishes and loses catastrophically
+on the number it does not.** 80% coverage against our 53% — and 34 wrong auto-clears worth
+Rs 2.05 crore, against zero. That is the entire thesis, measured, with the headline taken
+from a holdout set frozen before any search agent existed.
+
+### PREDICTION.md scored — one confirmed, one FALSIFIED
+
+W03 wrote five falsifiable predictions before the harness ran, in their own commit, so the
+ordering is checkable in `git log`.
+
+- **P3 CONFIRMED.** "The naive baseline looks acceptable on aggregate coverage; only the
+  false-clear count and rupees expose it." It does, and they do.
+- **P1 FALSIFIED.** "The deterministic layer over-matches and surfaces false clears." It
+  does not. It produces ZERO false clears on both sets and under-matches instead: coverage
+  53% and 43%, well below the 0.70 floor. We predicted our own failure mode and got the
+  opposite one.
+
+That falsification ships. It is more interesting than the confirmation, and a project that
+only reports its confirmed predictions is not running an experiment.
+
+### The gap is coverage, and it is what Wave 3.5 is for
+
+53% selection / 43% holdout against a 0.70 floor. The floors are recorded and NOT enforced
+(stage 1), which is exactly why stage 1 exists — hard floors here would have failed every
+Wave 3 PR for not yet having built the thing that makes the floors reachable.
+
+Two structural ceilings are already known and neither is a bug:
+- **57 of 200 invoices are above the frozen Rs 5,00,000 amount cap** and go to a human
+  regardless of score. That is 28.5% of the ledger, and it was written into the policy
+  before any data existed.
+- **The bulk remittance names invoices 93-163 days out**, outside the frozen 45-day window,
+  so its 22 members are unreachable by design.
+
+Neither will be "fixed" by moving a constant. That is the tolerance move, and it is Q2.
+
+### The gate caught the orchestrator
+
+`pnpm verify` failed on `engine/run.ts:120` — `Number(policy.amount_cap_paise)`, the
+money-number-cast rule, in code written by the orchestrator that wrote the rule. The cast
+was not merely unwise, it was unnecessary: `Paise` is a branded number and already
+assignable. Removed.
+
+Worth recording plainly. The gates were built to catch workers optimising for green; the
+first thing they caught at the assembly point was the person who built them.
+
+### Integration cost of the firewall, paid here as designed
+
+The harness may not read `engine/`, so W03 defined `EvalInvoice` as a seven-field
+PROJECTION — what it validates before scoring. Correct for scoring, and wrong for running:
+the engine needs `net_paise`, the tax breakdown, received and due dates, `recurrence` and
+the purchase-order reference, none of which the harness has any business validating.
+
+Passing the projection made the engine throw and the harness reported the throw honestly
+rather than recording a zero as a measurement. The bundle now carries `rawInvoices` /
+`rawPayments` alongside the projection, and the adapter hands the engine the unnarrowed
+rows. **This is the firewall's cost, and it is the cost we chose to pay**: the alternative
+is a harness shaped by the engine's internals, which is the arrangement that makes a
+headline number an artifact.

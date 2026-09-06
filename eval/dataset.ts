@@ -99,6 +99,21 @@ export interface DatasetBundle {
   readonly root: string | null;
   readonly invoices: readonly EvalInvoice[];
   readonly payments: readonly EvalPayment[];
+  /**
+   * The rows exactly as the frozen dataset provides them, unnarrowed.
+   *
+   * `EvalInvoice` and `EvalPayment` above are deliberately a PROJECTION — the seven or so
+   * fields this harness validates before it scores anything. That projection is correct
+   * for scoring and wrong for running: the engine needs net_paise, the tax breakdown,
+   * received and due dates, recurrence and the purchase-order reference, none of which the
+   * harness has any business validating.
+   *
+   * The harness could not have known that. It may not read `engine/`, which is the whole
+   * point — the thing that judges the engine must not be shaped by the engine's internals.
+   * So it passes the rows through untouched and lets the engine take what it needs.
+   */
+  readonly rawInvoices: readonly unknown[];
+  readonly rawPayments: readonly unknown[];
   readonly truth: readonly EvalTruthRow[];
   readonly hash: Sha256;
   readonly frozenAt: IsoTimestamp;
@@ -155,6 +170,8 @@ const emptyBundle = (name: EvalDatasetName, notes: readonly string[]): DatasetBu
   invoices: [],
   payments: [],
   truth: [],
+  rawInvoices: [],
+  rawPayments: [],
   hash: EMPTY_TREE_HASH,
   frozenAt: NOT_FROZEN,
   declaredMix: null,
@@ -306,6 +323,8 @@ export function loadDataset(
     root,
     invoices: invoices.rows,
     payments: payments.rows,
+    rawInvoices: Array.isArray(invoicesRaw.value) ? invoicesRaw.value : [],
+    rawPayments: Array.isArray(paymentsRaw.value) ? paymentsRaw.value : [],
     truth,
     hash: brand<Sha256>(hash),
     frozenAt,

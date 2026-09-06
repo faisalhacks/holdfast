@@ -20,6 +20,9 @@
  * eval/thresholds.json rather than in the code that enforces it.
  */
 
+import { cardinalityFamily } from './cardinality';
+import { duplicateFamily } from './duplicate';
+import { varianceFamily } from './variance';
 import type {
   CaseId,
   Conflict,
@@ -185,9 +188,9 @@ export interface HoldFamily {
  * is readable in one place and cannot depend on module import order.
  */
 const FAMILIES: readonly HoldFamily[] = [
-  // W05a: import { duplicateFamily } from './duplicate';
-  // W05b: import { varianceFamily } from './variance';
-  // W05c: import { cardinalityFamily } from './cardinality';
+  duplicateFamily,   // W05a — over invoices, before matching. An overpayment control.
+  varianceFamily,    // W05b — deltas classified by cause; tax splits by tolerance TYPE.
+  cardinalityFamily, // W05c — bounded subset-sum; an empty set rather than a guess on a tie.
 ];
 
 export function registeredFamilies(): readonly HoldFamily[] {
