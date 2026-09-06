@@ -76,6 +76,52 @@ export const REFERENCE_PROFILE_V1: NormalisationProfile = {
 };
 
 /**
+ * The reference profile with DELIMITER HANDLING CLOSED, and the default.
+ *
+ * `reference.v1` canonicalises every delimiter that was written and is defenceless against
+ * the one that was not. `punctuation_strip` turns `TX/01021`, `TX-01021` and `TX 01021`
+ * into the same two tokens; `TX01021` stays one token and reads to the comparator as a
+ * different document. On this dataset that is not an edge case — 46 of 200 invoice
+ * references are written in the fused `BILL004844` form and the bank side fuses references
+ * that the ledger delimits, in both directions.
+ *
+ * `delimiter_segment` sits immediately after `whitespace_collapse` and restores the
+ * boundary at every letter/digit transition, which is the only place a delimiter can have
+ * been dropped from a document number. Its position is forced from both sides:
+ *
+ *   * AFTER `punctuation_strip`, so written and unwritten delimiters have become the same
+ *     kind of boundary before anything counts tokens. Running it first would leave the two
+ *     spellings in different shapes for the rest of the pipeline.
+ *   * BEFORE `reference_prefix_strip`, so a fused prefix is a standalone token by the time
+ *     the prefix table is consulted. The prefix step has its own fused-form rule and would
+ *     still catch `inv0042`; it has no rule for `99inv0199`, where the prefix is in the
+ *     MIDDLE, and after segmentation it needs none.
+ *   * BEFORE `leading_zero_strip`, which only ever acts on a wholly numeric token. This is
+ *     the pairing that does the real work: `TX/01021` and `TX01021` both reach the zero
+ *     strip as `tx 01021` and both leave it as `tx 1021`, so a zero-padding convention and
+ *     a delimiter convention stop multiplying into four spellings of one number.
+ *
+ * Nothing is dropped: the step only inserts boundaries, so `TX01021` and `TX01022` are as
+ * distinguishable afterwards as they were before.
+ */
+export const REFERENCE_PROFILE_V2: NormalisationProfile = {
+  id: 'reference.v2',
+  field: 'reference',
+  order: [
+    'unicode_fold',
+    'case_fold',
+    'punctuation_strip',
+    'whitespace_collapse',
+    'delimiter_segment',
+    'reference_prefix_strip',
+    'leading_zero_strip',
+    'alias_map',
+    'token_sort',
+  ],
+  enabled: { token_sort: false },
+};
+
+/**
  * The whole bank narration line. Same shape as the vendor profile because the residue left
  * after the boilerplate is removed IS a vendor name; keeping the two orders identical is
  * what makes `fields.ts` able to hand the residue straight to the vendor profile.
@@ -111,7 +157,7 @@ export const IDENTIFIER_PROFILE_V1: NormalisationProfile = {
 
 export const DEFAULT_PROFILES: ProfileSet = {
   vendor: VENDOR_PROFILE_V1,
-  reference: REFERENCE_PROFILE_V1,
+  reference: REFERENCE_PROFILE_V2,
   narration: NARRATION_PROFILE_V1,
   identifier: IDENTIFIER_PROFILE_V1,
 };

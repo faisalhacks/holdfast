@@ -9,12 +9,30 @@
 // An explicitly ordered pipeline of named, individually toggleable, pure steps:
 //
 //     unicode_fold -> case_fold -> punctuation_strip -> whitespace_collapse
-//       -> noise_token_strip -> legal_suffix_strip -> abbreviation_expand
-//       -> alias_map        [profiles.ts declares the exact order per field]
+//       -> delimiter_segment -> noise_token_strip -> legal_suffix_strip
+//       -> abbreviation_expand -> alias_map   [profiles.ts declares the order per field]
 //
 // plus token classification, which answers a different question: is this token even in the
 // field it belongs to? Bank feeds put references in vendor names and vendor fragments in
 // references, and canonicalising a field cannot fix a field that holds the wrong thing.
+//
+// ─── DELIMITERS, WHICH ARE TWO PROBLEMS AND NOT ONE ──────────────────────────────────
+//
+// `punctuation_strip` handles the delimiter that was WRITTEN: `TX/01021`, `TX-01021` and
+// `TX 01021` become the same two tokens. Two things it cannot do, and both are here:
+//
+//   THE DELIMITER NOBODY WROTE. `TX01021` stays one token and reads as a different
+//   document. `delimiter_segment` (steps.ts) restores the boundary at the letter/digit
+//   transition, which is the only place a document number can have lost one, and it only
+//   ever INSERTS a boundary — so `TX01021` and `TX01022` stay as distinct as they were.
+//
+//   THE DELIMITER THAT MEANT SOMETHING. Flattening every delimiter to a space also throws
+//   away which pieces belonged to the same reference. `RCT-2026-01-472` then reaches a
+//   matcher as `2026` and `472`, and a bare `2026` agrees perfectly, by token-set
+//   containment, with every invoice of that fiscal year. `separatorBonds` and `segmentRuns`
+//   (tokens.ts) read that structure off the RAW line before it is flattened, offer the
+//   reference whole, and withdraw the pieces — while never reading across a comma, because
+//   `TX.02973,06495` on a bulk remittance is two documents and always was.
 //
 // ─── What this module is NOT ─────────────────────────────────────────────────────────
 //
@@ -93,6 +111,7 @@ export {
   abbreviationExpandStep,
   aliasMapStep,
   caseFoldStep,
+  delimiterSegmentStep,
   identifierRepairStep,
   leadingZeroStripStep,
   legalSuffixStripStep,
@@ -113,6 +132,7 @@ export {
   IDENTIFIER_PROFILE_V1,
   NARRATION_PROFILE_V1,
   REFERENCE_PROFILE_V1,
+  REFERENCE_PROFILE_V2,
   VENDOR_PROFILE_V1,
   isStepEnabled,
   validateProfile,
@@ -138,7 +158,13 @@ export {
 } from './pipeline';
 
 // ── Token classification ─────────────────────────────────────────────────────
-export type { ClassifiedToken, DisplacementOptions, ExtractionOptions } from './tokens';
+export type {
+  ClassifiedToken,
+  DisplacementOptions,
+  ExtractionOptions,
+  SegmentRun,
+  SeparatorBond,
+} from './tokens';
 export {
   IDENTIFIER_SHAPE,
   classifyToken,
@@ -147,6 +173,8 @@ export {
   identifierCandidateTokens,
   looksLikeIdentifier,
   referenceCandidateTokens,
+  segmentRuns,
+  separatorBonds,
   vendorResidueTokens,
 } from './tokens';
 
