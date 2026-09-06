@@ -7,3 +7,6 @@ next-env.d.ts
 .env.*
 !.env.example
 .DS_Store
+
+# Agent worktrees — full repo copies, each runs its own gates against its own root.
+.claude/

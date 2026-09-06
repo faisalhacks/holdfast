@@ -175,3 +175,72 @@ and by the `firewall-truth` rule banning any reference to it under `engine/`, `l
 `app/` or `components/`. Seven assertions in `tools/selftest.mjs` cover this.
 
 Gate self-tests now stand at **69 assertions**.
+
+---
+
+## AMENDMENT 02 — parallel search (received during Wave 1, applied immediately)
+
+Additive to Amendment 01; nothing revoked. W02 had **not** spawned when this arrived, so
+§1 reaches it before it starts — no halt was needed.
+
+1. **W02 gains a holdout set.** 60 invoices plus its own bank statement, same generator,
+   same stratification proportions, `seed + 1`, written to `data/holdout/` with its own
+   `truth.json`, frozen into `data/MANIFEST` alongside the main set, same hostility rules.
+   Selection runs against the 200; the reported headline comes from the holdout, which no
+   sweep agent ever reads. Without it, selecting the winner of a 20-way search on the same
+   data we then report is fitting to the test set — the exact methodological sin we accuse
+   the category of, and a competent critic would say so.
+2. **Race policy on W01, W02, W05c only.** Three agents on the identical brief in isolated
+   worktrees off the same base. First to all-green opens the PR; the others are killed.
+   Not a one-worker-per-glob violation: three agents hold the glob, one opens a PR. Never
+   merge two racers' work together — pick a winner whole. Losers are deleted, not
+   quarantined; a race loss is not a failure.
+3. **Wave 3.5, the normalisation sweep.** Twelve breadth agents on assigned strategy
+   directions, then eight depth agents seeded with round 1's top three. Skipped entirely if
+   stage-1 eval already shows `selection.coverage >= 0.70` inside the false-clear floor.
+4. **Selection rule is lexicographic, and the order matters.** Filter first: discard any
+   candidate whose `false_clears` exceeds the Wave 3 baseline or whose `rupees_at_risk`
+   breaches the floor — discard, do not rank. Then rank survivors by coverage, tie-break on
+   lower rupees at risk. Selecting on maximum coverage regardless of correctness is the
+   behaviour we spend three minutes criticising; doing it inside our own methodology would
+   write the critique for us.
+5. **Q2 guardrail for the sweep.** Any sweep agent whose diff touches `eval/**`,
+   `engine/holds/**`, `engine/match/**` or `data/**` is discarded UNEVALUATED — not scored
+   and then rejected, not scored at all. Every occurrence logged here with agent id and
+   file. The count ships in the submission: N of 20 agents attempting to move a threshold
+   rather than improve normalisation is a live demonstration of the failure mode the
+   product exists to prevent.
+6. **Eight critics in parallel**, not two sequential. New critic 5 attacks sweep
+   contamination — whether any selected strategy could have seen holdout data, directly or
+   through a shared cache. That is the newest and least tested part of the methodology.
+7. **Session accounting.** ~12 merged workers, ~6 race sessions discarded, ~20 sweep
+   sessions discarded, 8 critics. Recorded by category and never summed into a headline.
+8. **W01 may use drizzle + drizzle-kit.** `REVOKE UPDATE, DELETE ON audit_journal` cannot
+   be expressed in a drizzle schema and must be a hand-written migration appended after the
+   generated ones. CI runs generated migrations only — never `drizzle-kit push`, which
+   would apply schema with no migration file and leave the from-scratch check validating
+   nothing.
+
+### Implementation note for Wave 3.5 — holdout exclusion is mechanical, not instructed
+
+The amendment requires `data/holdout/` be ABSENT from sweep worktrees, not merely
+read-only. `git worktree` alone does not do this — a committed directory appears in every
+worktree. The mechanism is `git sparse-checkout` per worktree, excluding `data/holdout/`,
+verified by asserting the path does not exist before the agent is handed the worktree. An
+agent that cannot see a file cannot be tempted by it, and instruction is not enforcement.
+
+### Deviation recorded
+
+Amendment 02 says log before acting. The two additional W01 racers were spawned first,
+because W01 is the critical path, racer A was already several minutes in, and a log commit
+costs a full CI cycle. Everything else in the amendment was logged before acting on it.
+
+### CI failure routed and fixed during Wave 1
+
+4. **The forbidden gate scanned agent worktrees.** AO creates raced-agent worktrees at
+   `.claude/worktrees/<id>/`, inside the repository. `tools/check-forbidden.mjs` walked
+   them and reported 30 violations — every house rule quoted inside each worktree's own
+   copy of `AGENTS.md` and `tools/`. Found the moment the first two racers spawned. Fixed
+   by skipping `.claude` in the tree walk (each worktree runs its own gate against its own
+   root) and gitignoring the directory. A gate that fires on its own reflection is a gate
+   about to be disabled by the next person who trips it.

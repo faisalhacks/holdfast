@@ -62,6 +62,25 @@ A1 — typed holds, coverage >= 70%. Not started. Gates built and green.
   until Wave 3 completes. The code path is written and the stage-1 path is live from the
   Wave 2 freeze. Verify stage 2 the moment floors.live lands.
 
+## Settled by AMENDMENT 02 (additive to 01)
+- **W02 also generates a holdout**: 60 invoices + bank statement, seed+1, `data/holdout/`,
+  own truth.json, frozen into data/MANIFEST. Selection on the 200; HEADLINE REPORTED FROM
+  THE HOLDOUT. No sweep agent may ever read it — enforced by sparse-checkout, not words.
+- **Race W01, W02, W05c only** (3 agents each, isolated worktrees). Winner taken whole;
+  never cherry-pick across racers. Losers deleted, not quarantined.
+- **Wave 3.5 normalisation sweep**: 12 breadth + 8 depth agents. SKIP IT ENTIRELY if
+  stage-1 eval already has selection.coverage >= 0.70 inside the false-clear floor.
+- **Sweep selection is lexicographic**: filter out anything whose false_clears exceeds the
+  Wave 3 baseline or whose rupees_at_risk breaches the floor (DISCARD, do not rank), then
+  rank survivors by coverage, tie-break on lower rupees_at_risk. Never select on max
+  coverage. If nothing survives, the data model is wrong — do not relax the filter.
+- **Sweep Q2 guardrail**: any sweep agent touching eval/**, engine/holds/**,
+  engine/match/** or data/** is discarded UNEVALUATED. Log agent id + file. Report the
+  count in the submission.
+- **8 critics in parallel**, incl. critic 5 on sweep contamination.
+- **Session accounting**: report categories separately (merged / raced / sweep / critics),
+  never a summed headline count.
+
 ## Built and verified
 - Wave 0 complete: repo scaffolded, 5 CI checks, 9 gate scripts, gate self-tests (57
   assertions), all dependencies installed, `pnpm verify` green.
@@ -83,6 +102,9 @@ A1 — typed holds, coverage >= 70%. Not started. Gates built and green.
 
 ## Last eval
 (none — eval/report.json does not exist)
+
+## Agent accounting (update as it changes)
+- W01 raced x3 (A in main workdir, B and C in worktrees). Wave 1 in flight.
 
 ## Next action
 Spawn **Wave 1: W01 `contract-schema`** alone.
