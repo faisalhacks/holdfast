@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 type Variant = "primary" | "ghost" | "outline" | "governed";
-type Size = "sm" | "md";
+type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
   /* A disabled primary must stop looking like the thing to press. */
@@ -22,7 +22,21 @@ const VARIANTS: Record<Variant, string> = {
 const SIZES: Record<Size, string> = {
   sm: "h-6 px-2 text-xs",
   md: "h-7 px-3 text-base",
+  /* A step of the same object, for the public page where targets are larger. */
+  lg: "h-9 px-4 text-lg",
 };
+
+const BASE =
+  "inline-flex items-center justify-center gap-1.5 rounded-sm transition-colors " +
+  "disabled:cursor-not-allowed disabled:opacity-45";
+
+/*
+ * Exported so the marketing surface can dress an anchor as the very same
+ * control rather than growing a parallel set of buttons. The classes are the
+ * classes, not a copy of them.
+ */
+export const buttonClass = (variant: Variant = "outline", size: Size = "md", className?: string) =>
+  cn(BASE, SIZES[size], VARIANTS[variant], className);
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -45,13 +59,7 @@ export function Button({
       {...rest}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      className={cn(
-        "inline-flex items-center justify-center gap-1.5 rounded-sm transition-colors",
-        "disabled:cursor-not-allowed disabled:opacity-45",
-        SIZES[size],
-        VARIANTS[variant],
-        className,
-      )}
+      className={buttonClass(variant, size, className)}
     >
       {loading ? (
         <span

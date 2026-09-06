@@ -54,26 +54,35 @@
   --radius-sm: 3px;
 
   /*
-   * The public site palette. Additive: nothing above changes, so the
-   * workstation keeps the exact surfaces it was built and reviewed against.
+   * The public site palette.
    *
-   * Light, because the brand mark is dark-on-white and because the product
-   * screenshot should be the darkest thing on the page.
+   * Additive — every workstation token above is untouched — but deliberately
+   * the same system seen in daylight. The greys sit on the workstation's cool
+   * blue axis rather than a warm neutral one, so the dark product frame reads
+   * as part of the page instead of a screenshot pasted onto a different site.
+   *
+   * `--color-graphite-3` is `--color-ink-faint`. Same value, same job, both
+   * surfaces.
    */
-  --color-paper: #fbfbfa;
-  --color-paper-2: #f4f4f2;
-  --color-paper-3: #ecedea;
-  --color-rule: #e0e1dd;
-  --color-rule-strong: #c9cbc5;
+  --color-paper: #f7f9fa;
+  --color-paper-2: #eff2f5;
+  --color-paper-3: #e4e9ee;
+  --color-rule: #dde2e8;
+  --color-rule-strong: #c3cbd4;
 
-  --color-graphite: #1b1f22;
-  --color-graphite-2: #4a5257;
-  --color-graphite-3: #646c72;
+  --color-graphite: #151a20;
+  --color-graphite-2: #46505c;
+  --color-graphite-3: #636d79;
 
-  /* Taken from the mark itself, so brand and product agree. */
-  --color-steel: #557390;
-  --color-steel-deep: #3d5872;
-  --color-steel-wash: #eef1f4;
+  /*
+   * One accent, two members of one ramp. `--color-steel` IS the workstation's
+   * focus colour: the blue a reader learns on this page is the blue that marks
+   * the selected row inside the product. `--color-steel-deep` is the same hue
+   * darkened enough to carry text on paper.
+   */
+  --color-steel: #5b8db8;
+  --color-steel-deep: #2f6087;
+  --color-steel-wash: #e7eef4;
 }
 
 @layer base {
@@ -90,13 +99,13 @@
   }
 
   /*
-   * The site is light. Scrollbar rendering and overscroll colour come from the
-   * document, which the page itself cannot reach, so the shell announces which
-   * surface is mounted and the document follows. Where :has() is unsupported
-   * the page still renders correctly; only the scrollbar stays dark.
+   * The site opens and closes on the workstation's own canvas, so the document
+   * keeps the dark colour scheme and the dark scrollbar throughout. One less
+   * thing that changes when a reader crosses from the page into the product.
    */
-  html:has(.site-root) {
-    color-scheme: light;
+  body:has(.site-root) {
+    color: var(--color-graphite);
+    font-size: 0.875rem;
   }
 
   /* In-page links glide rather than jump, unless the reader asked otherwise. */
@@ -104,16 +113,6 @@
     html:has(.site-root) {
       scroll-behavior: smooth;
     }
-  }
-
-  body:has(.site-root) {
-    background-color: var(--color-paper);
-    color: var(--color-graphite);
-    font-size: 1rem;
-  }
-
-  html:has(.site-root) * {
-    scrollbar-color: var(--color-rule-strong) transparent;
   }
 
   ::selection {
@@ -147,12 +146,17 @@
     color: var(--color-ink-faint);
   }
 
-  /* Site: an eyebrow above a headline. Small, spaced, never shouty. */
+  /*
+   * Site: an eyebrow above a headline. Metrically identical to
+   * `.label-section` in the workstation — same size, weight, tracking and case
+   * — differing only in the colour the surface calls for. One label, two
+   * surfaces, rather than two label systems.
+   */
   .label-eyebrow {
-    font-size: 0.6875rem;
-    line-height: 1rem;
+    font-size: 0.65625rem;
+    line-height: 0.875rem;
     font-weight: 600;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-graphite-3);
   }
@@ -196,4 +200,13 @@
   .skip-link {
     transition: transform 150ms ease-out;
   }
+}
+
+/*
+ * A surface modifier for the shared label, written outside every layer so it
+ * reliably outranks the label's own colour. The label keeps its metrics; only
+ * the surface it sits on changes what it has to be.
+ */
+.label-on-dark {
+  color: var(--color-ink-muted);
 }

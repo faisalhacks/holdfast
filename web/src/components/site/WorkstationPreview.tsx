@@ -239,8 +239,10 @@ export function WorkstationPreview({
   return (
     <figure
       className={cn(
-        "overflow-hidden rounded-sm border border-graphite/15 bg-canvas",
-        "shadow-[0_1px_2px_rgba(27,31,34,0.06),0_18px_48px_-24px_rgba(27,31,34,0.35)]",
+        // The workstation's own hairline, so the frame is bounded the way the
+        // panes inside it are rather than by a border invented for a website.
+        "overflow-hidden rounded-sm border border-line-strong bg-canvas",
+        "shadow-[0_18px_48px_-24px_rgba(0,0,0,0.55)]",
         className,
       )}
     >
