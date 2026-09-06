@@ -2,9 +2,9 @@
   "schema_version": 1,
   "dataset_hash": "457aeafbd8633387ca4fd102bef3582f2014ca3b02a8536e3ca737fd6a7184ef",
   "frozen_at": "2026-09-06T09:35:53.220Z",
-  "generated_at": "2026-09-06T09:36:57.308Z",
+  "generated_at": "2026-09-06T09:57:26.228Z",
   "dataset_commit": "71d4dbaef972129b4694711cf4b314df7a14067e",
-  "run_id": "run-485f726084f8ccdd",
+  "run_id": "run-103aa02dea075ff4",
   "thresholds_hash": "a90e09ce1999c9db59ac417334b550a027c6401f662ec68353c1578ec1c11957",
   "totals": {
     "invoices_total": 200,

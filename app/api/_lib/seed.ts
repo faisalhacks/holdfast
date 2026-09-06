@@ -15,6 +15,7 @@
 // relative to the moment the process starts, so the queue always looks like this month.
 
 import { HOLD_TYPES } from '@/lib/types';
+import { HOLD_POLICY } from '@/engine/holds/registry';
 import type {
   ActiveHold,
   AmountEvidence,
@@ -95,89 +96,16 @@ export const REVIEWERS = {
 
 // ── hold policy ─────────────────────────────────────────────────────────────────
 //
-// The registry at engine/holds/registry.ts is the eventual owner of this table. Until it
-// lands the API publishes its own copy so the UI can render "who may release this" and
-// "may accounting proceed" without guessing. Swapping to the registry is one import.
+// Read from engine/holds/registry.ts, which is frozen and is the single source.
+//
+// The API previously kept its own copy, written before the registry landed. The two had
+// drifted on four of eleven types — `matching`, `tax_amount_range`, `no_reference` and
+// `period_deferral` — so the queue was reporting that a tax_amount_range hold permitted
+// accounting entries while the engine's policy said it blocked them. A detail screen whose
+// "what this blocks" line disagrees with the engine is a screen that lies to a reviewer,
+// and it would have lied on camera. One table, one owner.
 
-export const HOLD_POLICIES: readonly HoldPolicy[] = [
-  {
-    type: 'matching',
-    auto_releasable: false,
-    blocks_accounting: false,
-    default_severity: 'material',
-    clause: 'no candidate cleared the scorer on its own merits',
-  },
-  {
-    type: 'price_variance',
-    auto_releasable: false,
-    blocks_accounting: false,
-    default_severity: 'material',
-    clause: 'settled amount differs from the ordered price beyond tolerance',
-  },
-  {
-    type: 'quantity_variance',
-    auto_releasable: false,
-    blocks_accounting: false,
-    default_severity: 'material',
-    clause: 'received quantity differs from the invoiced quantity beyond tolerance',
-  },
-  {
-    type: 'tax_variance',
-    auto_releasable: false,
-    blocks_accounting: true,
-    default_severity: 'blocking',
-    clause: 'tax split does not reconcile to the stated total',
-  },
-  {
-    type: 'tax_amount_range',
-    auto_releasable: true,
-    blocks_accounting: false,
-    default_severity: 'advisory',
-    clause: 'tax amount falls outside the absolute band for this document',
-  },
-  {
-    type: 'dist_variance',
-    auto_releasable: false,
-    blocks_accounting: true,
-    default_severity: 'blocking',
-    clause: 'distribution lines do not sum to the document total',
-  },
-  {
-    type: 'duplicate_candidate',
-    auto_releasable: false,
-    blocks_accounting: true,
-    default_severity: 'blocking',
-    clause: 'another document shares vendor, amount and date',
-  },
-  {
-    type: 'no_reference',
-    auto_releasable: true,
-    blocks_accounting: false,
-    default_severity: 'advisory',
-    clause: 'bank narration carries no reference token',
-  },
-  {
-    type: 'cardinality_residual',
-    auto_releasable: false,
-    blocks_accounting: false,
-    default_severity: 'material',
-    clause: 'settled set leaves an unexplained residual on the document',
-  },
-  {
-    type: 'period_deferral',
-    auto_releasable: true,
-    blocks_accounting: false,
-    default_severity: 'advisory',
-    clause: 'settlement falls outside the invoice accounting period',
-  },
-  {
-    type: 'credit_note_crossing',
-    auto_releasable: false,
-    blocks_accounting: true,
-    default_severity: 'material',
-    clause: 'credit note settles across an accounting period boundary',
-  },
-];
+export const HOLD_POLICIES: readonly HoldPolicy[] = HOLD_TYPES.map((t) => HOLD_POLICY[t]);
 
 const POLICY_BY_TYPE = new Map<HoldType, HoldPolicy>(HOLD_POLICIES.map((p) => [p.type, p]));
 

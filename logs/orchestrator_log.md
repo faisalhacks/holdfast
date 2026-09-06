@@ -534,3 +534,49 @@ NOT met, without being enforced — which is exactly what stage 1 is for.
    accepts both shapes and prefers the wrapper, which is the more useful of the two because
    it is what lets declared and realised disagree at all. Declared now reads
    120/20/15/15/15/15 against realised, as the disclosure claim requires.
+
+---
+
+## WAVE 3 IN FLIGHT — and two verifications the gates do not perform
+
+W06 merged and the frontend collaborator is unblocked: 16 routes, seeded in-memory so no
+database is needed on the first request, and `GET /api/meta` publishes every enum, hold
+policy, routing rule and the operation catalogue with `destructive: true` marked — so the
+UI drives its dropdowns and confirm dialogs from the API rather than hardcoding them.
+
+Two things were verified by hand because **no CI check covers them**:
+
+**1. The Next app had never actually been built.** The five checks run `tsc --noEmit`,
+which does not build. A route can typecheck and still fail to build. `pnpm build` is clean:
+all 12 API routes compile.
+
+**2. The API was started and queried.** `GET /api/runs/run_engine_a/queue` returns
+8 exceptions, one per exception shape the contract names, ordered
+`money_at_risk_paise DESC, then case_id` — Rs 7,20,830 at risk, largest first. The product
+claim is true of the running system, not only of the code.
+
+### DRIFT FOUND — the API kept a second hold-policy table
+
+W06 published its own `HOLD_POLICIES` because it began before `engine/holds/registry.ts`
+landed, and left a comment saying the registry was the eventual owner and "swapping to it
+is one import". By the time W06 finished, the registry had landed — and the two tables had
+drifted on **four of eleven** hold types: `matching` (auto_releasable), `tax_amount_range`
+(all three fields), `no_reference` (severity) and `period_deferral` (blocks_accounting).
+
+The visible consequence: the queue reported that a `period_deferral` hold permitted
+accounting entries while the engine's policy said it blocked them. **A detail screen whose
+"what this blocks" line disagrees with the engine is a screen that lies to a reviewer, and
+it would have lied on camera.**
+
+Swapped: `HOLD_POLICIES` is now `HOLD_TYPES.map((t) => HOLD_POLICY[t])`, read from the
+frozen registry. 2,161 characters of duplicated table deleted. One table, one owner —
+which is the reason the policy table was put in the registry rather than in the families
+that raise holds in the first place.
+
+Not a defect in W06's work: it flagged the reconciliation explicitly and named the fix.
+This is what "the orchestrator reconciles across globs" is for.
+
+**Verified afterwards** that `case_a_tax` still reports `blocks_accounting: false` — and
+that this is correct, not residual drift. Its `tax_amount_range` hold was RELEASED by a
+seeded tolerance change (controller, with a reason recorded). That is the demo's tolerance
+moment behaving exactly as the product claim requires.
