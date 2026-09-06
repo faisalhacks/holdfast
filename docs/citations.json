@@ -1,8 +1,6 @@
 {
   "_comment": "Orchestrator-owned and FROZEN. External figures the submission is permitted to state, each with its source. `pnpm audit:claims` passes a number in three cases only: it appears in eval/report.json (measured), it appears here (cited), or it is structural (versions, dates, worker ids, list numbering). Anything else fails the build, printing token, file and line.",
-
   "_note_to_w11": "docs/** is your glob, but this file is frozen and the frozen check runs first. You cannot add a citation to justify a number you wrote. If a figure you need is genuinely missing, open `CONTRACT: citation <figure>`. Our own results are never listed here — they come from eval/report.json or they do not ship.",
-
   "citations": {
     "70": {
       "source": "The Hackett Group — median AP auto-match rate",
@@ -53,8 +51,8 @@
       "use": "The range runs 0.05%-5% and every figure in it is self-reported by firms selling recovery. The variance IS the argument; we cite the spread, never a point estimate."
     },
     "5": {
-      "source": "Duplicate-payment loss estimates — high end of the self-reported range, % of AP spend",
-      "use": "As above. A hundred-fold spread is not a measurement."
+      "source": "OpenAI GPT-5 (model string `gpt-5`), and separately: duplicate-payment loss estimates, high end of the self-reported range (% of AP spend)",
+      "use": "GPT-5 is the STRONG LLM baseline, run on both the selection and holdout sets so the comparison table is like-for-like. A handicapped baseline dies under one question, so the baseline gets the frontier model and the full candidate set."
     },
     "30": {
       "source": "Recovery-audit practice — duplicates as share of recovery claims, lower bound of 30-40%",
@@ -71,6 +69,14 @@
     "2026": {
       "source": "OpenSanctions Pairs publication year",
       "use": "Citation year."
+    },
+    "4.7": {
+      "source": "Z.ai GLM-4.7-Flash, served via TensorMux (model string `glm-4-7-flash`)",
+      "use": "The residual-proposal model at the LLM boundary. Deliberately not a frontier model: every proposal is re-scored by engine/match and discarded if it does not clear on its own merits, so a weak proposer is a fair test of the gate rather than a handicap."
+    },
+    "4.1": {
+      "source": "OpenAI GPT-4.1 — available on the account but NOT used",
+      "use": "Recorded only so that a reader who inspects the model catalogue knows which model was chosen and which was passed over."
     }
   }
 }
