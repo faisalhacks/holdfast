@@ -34,7 +34,8 @@ import {
   classifyTokens,
   findDisplacedTokens,
   identifierCandidateTokens,
-  referenceCandidateTokens,
+  recoverReferences,
+  segmentValue,
   vendorResidueTokens,
 } from './tokens';
 import type {
@@ -44,6 +45,8 @@ import type {
   NormalisationTables,
   NormaliseField,
   ProfileSet,
+  ReferenceCandidate,
+  ReferenceRejectionFinding,
   StepId,
   StepRegistry,
 } from './types';
@@ -62,6 +65,12 @@ export interface NormaliseConfig {
   readonly tables: NormalisationTables;
   /** Minimum length for a purely numeric token to count as reference-shaped. */
   readonly minReferenceLength: number;
+  /**
+   * Assemble delimiter-joined fragments of a narration back into one reference candidate
+   * before normalising it. ON by default — see `recoverReferences`. Off, the module falls
+   * back to offering every fragment separately, which is what a sweep compares against.
+   */
+  readonly assembleReferenceRuns: boolean;
 }
 
 export const DEFAULT_CONFIG: NormaliseConfig = {
@@ -69,6 +78,7 @@ export const DEFAULT_CONFIG: NormaliseConfig = {
   steps: DEFAULT_STEPS,
   tables: DEFAULT_TABLES,
   minReferenceLength: 3,
+  assembleReferenceRuns: true,
 };
 
 /** Pure override. Returns a new config; the input is never mutated. */
@@ -109,6 +119,19 @@ const SCAN_ORDER: readonly StepId[] = [
 
 function scanProfileFor(field: NormaliseField): NormalisationProfile {
   return { id: 'scan.v1', field, order: SCAN_ORDER, enabled: {} };
+}
+
+/**
+ * Characters and case only — the punctuation is left ON.
+ *
+ * `segmentValue` reads the delimiters, so the one thing it must not be handed is a line
+ * whose delimiters have already been turned into spaces. `unicode_fold` still runs, because
+ * an en dash and a hyphen are the same delimiter and a bank export emits both.
+ */
+const FOLD_ORDER: readonly StepId[] = ['unicode_fold', 'case_fold'];
+
+function foldProfileFor(field: NormaliseField): NormalisationProfile {
+  return { id: 'fold.v1', field, order: FOLD_ORDER, enabled: {} };
 }
 
 export function normaliseField(
@@ -166,6 +189,18 @@ export interface NarrationExtraction {
   readonly vendor: NormalisedField;
   /** Reference-shaped tokens, each through `reference.v1`. Ordered as they appeared. */
   readonly references: readonly NormalisedField[];
+  /**
+   * HOW each entry of `references` was recovered — same length, same order, index for
+   * index. A consumer that wants to weigh an intact `INV/2026/01640` differently from a
+   * bare `2026` reads `recoveries[i].kind` and has its answer without re-parsing anything.
+   */
+  readonly recoveries: readonly ReferenceCandidate[];
+  /**
+   * Fragments that looked reference-shaped and were refused, with the reason. A rail
+   * tracking number, a masked account and a date are the three that matter, and a line
+   * whose only numerals are one of those is exactly the `no_reference` case.
+   */
+  readonly rejected: readonly ReferenceRejectionFinding[];
   /** Identifier-shaped tokens, each through `identifier.v1`. */
   readonly identifiers: readonly NormalisedField[];
 }
@@ -191,14 +226,30 @@ export function extractFromNarration(
   const residue = vendorResidueTokens(classified).join(' ');
   const vendor = normaliseField('vendor', residue, side, config);
 
-  const references = referenceCandidateTokens(classified, tables, { minReferenceLength }).map((t) =>
-    normaliseField('reference', t, side, config),
+  // Reference recovery reads the DELIMITERS, so it works from the folded line rather than
+  // the scan: by the time punctuation has become whitespace, `RCT-2026-01-472` and
+  // `SI4559,TX.02973,06405` are the same shape, and they are not the same evidence.
+  const folded = normalise(raw, { profile: foldProfileFor('narration'), side, steps, tables });
+  const recovery = recoverReferences(segmentValue(folded.value, tables), tables, {
+    minReferenceLength,
+    assembleRuns: config.assembleReferenceRuns,
+  });
+
+  const references = recovery.candidates.map((c) =>
+    normaliseField('reference', c.token, side, config),
   );
   const identifiers = identifierCandidateTokens(classified).map((t) =>
     normaliseField('identifier', t, side, config),
   );
 
-  return { narration, vendor, references, identifiers };
+  return {
+    narration,
+    vendor,
+    references,
+    recoveries: recovery.candidates,
+    rejected: recovery.rejected,
+    identifiers,
+  };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

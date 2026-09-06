@@ -253,11 +253,19 @@ export function abbreviationExpandStep(): NormalisationStep {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const ALPHA_HEAD = /^(\p{L}+)(\p{N}.*)$/u;
+/** `99INV0199` — a series number, a document prefix, and a document number, run together. */
+const ALPHA_INFIX = /^(\p{N}+)(\p{L}+)(\p{N}.*)$/u;
 
 /**
- * Removes a document-number prefix, whether it stands alone (`INV 0042`) or is fused to
- * the number (`INV0042`). Both spellings occur in the same vendor's own numbering within
- * a single year; that is what convention drift is.
+ * Removes a document-number prefix, whether it stands alone (`INV 0042`), is fused to the
+ * front of the number (`INV0042`), or sits BETWEEN two numeric parts (`99INV0199`). All
+ * three spellings occur in the same vendor's own numbering within a single year; that is
+ * what convention drift is.
+ *
+ * The infix case is the one a delimiter-blind rule misses. `99/INV/01991` and `99INV0199`
+ * are the same document written by a ledger and by a bank field that ran out of room, and
+ * only splitting at the embedded prefix makes the two comparable at all — without it the
+ * second is one opaque mixed token that agrees with nothing.
  */
 export function referencePrefixStripStep(): NormalisationStep {
   return {
@@ -266,12 +274,20 @@ export function referencePrefixStripStep(): NormalisationStep {
     apply(value: string, ctx: StepContext): StepResult {
       return mapTokens(value, 'reference_prefix_removed', (t) => {
         if (ctx.tables.referencePrefixes.has(t)) return '';
-        const m = ALPHA_HEAD.exec(t);
-        if (m === null) return null;
-        const head = m[1];
-        const rest = m[2];
-        if (head === undefined || rest === undefined) return null;
-        return ctx.tables.referencePrefixes.has(head) ? rest : null;
+        const head = ALPHA_HEAD.exec(t);
+        if (head !== null) {
+          const alpha = head[1];
+          const rest = head[2];
+          if (alpha === undefined || rest === undefined) return null;
+          return ctx.tables.referencePrefixes.has(alpha) ? rest : null;
+        }
+        const infix = ALPHA_INFIX.exec(t);
+        if (infix === null) return null;
+        const lead = infix[1];
+        const alpha = infix[2];
+        const rest = infix[3];
+        if (lead === undefined || alpha === undefined || rest === undefined) return null;
+        return ctx.tables.referencePrefixes.has(alpha) ? `${lead} ${rest}` : null;
       });
     },
   };

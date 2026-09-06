@@ -53,6 +53,41 @@ export function digitsOf(value: string): string {
   return value.replace(DIGITS_ONLY, '');
 }
 
+const HAS_DIGIT = /\p{N}/u;
+
+/**
+ * The digit view: every digit in order, separators discarded — taken from the raw string
+ * for a SIMPLE reference and from the canonicalised value for a COMPOUND one.
+ *
+ * Zero padding is convention drift like any other: the same vendor writes
+ * `INV/2026/05713` on the invoice and `INV/2026/5713` on the remittance in the same week.
+ * Where that padding sits decides which view can see past it, and the split below is that
+ * fact and nothing else.
+ *
+ *   SIMPLE — one number. The padding is at the HEAD of the digit string (`000560`), which
+ *            the comparator's own leading-zero rule already reaches. The raw digits are
+ *            kept, and keeping them is what preserves a short reference: `BILL000560`
+ *            canonicalises to `560`, three digits, below any sane minimum for claiming two
+ *            documents are the same. The padding is the only length it has.
+ *
+ *   COMPOUND — several parts. The padding sits in the MIDDLE of the concatenation
+ *            (`2026` + `05713` -> `202605713`), where no whole-string rule can reach it and
+ *            no token rule is looking. `leading_zero_strip` has already made the judgement
+ *            in the token view; this makes the digit view agree with it.
+ *
+ * The cost of getting this wrong is not symmetrical and it is worth stating. Measured on
+ * this ledger with the raw view everywhere, an invoice whose reference agreed TOKEN FOR
+ * TOKEN with a narration scored BELOW one that agreed on nothing but the year: `202605713`
+ * against `20265713` yields no containment at all, while `202605713` against a bare `2026`
+ * yields a four-of-nine head. The stronger evidence scored lower.
+ */
+export function digitViewOf(raw: string, value: string): string {
+  const numericTokens = tokensOf(value).filter((t) => HAS_DIGIT.test(t));
+  if (numericTokens.length < 2) return digitsOf(raw);
+  const canonical = digitsOf(value);
+  return canonical === '' ? digitsOf(raw) : canonical;
+}
+
 /**
  * Runs the profile. The return value is the whole record: the raw input, the canonical
  * output, the token and digit views, any identity the alias table pinned, and one trace
@@ -126,7 +161,7 @@ export function normalise(raw: string, options: NormaliseOptions): Normalisation
     raw,
     value,
     tokens: tokensOf(value),
-    digits: digitsOf(raw),
+    digits: digitViewOf(raw, value),
     resolved_vendor_id: resolvedVendorId,
     trace,
   };

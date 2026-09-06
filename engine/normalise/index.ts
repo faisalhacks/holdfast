@@ -58,7 +58,14 @@ export type {
   NormalisationTables,
   NormaliseField,
   ProfileSet,
+  ReferenceCandidate,
+  ReferenceRecoveryKind,
+  ReferenceRecoverySet,
+  ReferenceRejection,
+  ReferenceRejectionFinding,
   RuleDescriptor,
+  Segment,
+  SegmentJoin,
   StepChange,
   StepContext,
   StepId,
@@ -67,7 +74,15 @@ export type {
   StepTrace,
   TokenClass,
 } from './types';
-export { CHANGE_KINDS, NORMALISE_FIELDS, STEP_IDS, TOKEN_CLASSES } from './types';
+export {
+  CHANGE_KINDS,
+  NORMALISE_FIELDS,
+  REFERENCE_RECOVERY_KINDS,
+  REFERENCE_REJECTIONS,
+  SEGMENT_JOINS,
+  STEP_IDS,
+  TOKEN_CLASSES,
+} from './types';
 
 // ── Tables — the data half of a strategy ─────────────────────────────────────
 export type { AliasKeyFn } from './tables';
@@ -129,6 +144,7 @@ export {
   appliedSteps,
   citedFeedbackRuleId,
   describeRule,
+  digitViewOf,
   digitsOf,
   formatRule,
   normalise,
@@ -138,7 +154,12 @@ export {
 } from './pipeline';
 
 // ── Token classification ─────────────────────────────────────────────────────
-export type { ClassifiedToken, DisplacementOptions, ExtractionOptions } from './tokens';
+export type {
+  ClassifiedToken,
+  DisplacementOptions,
+  ExtractionOptions,
+  ReferenceRecoveryOptions,
+} from './tokens';
 export {
   IDENTIFIER_SHAPE,
   classifyToken,
@@ -146,7 +167,9 @@ export {
   findDisplacedTokens,
   identifierCandidateTokens,
   looksLikeIdentifier,
+  recoverReferences,
   referenceCandidateTokens,
+  segmentValue,
   vendorResidueTokens,
 } from './tokens';
 

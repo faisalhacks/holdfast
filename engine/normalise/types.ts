@@ -212,9 +212,15 @@ export interface NormalisationResult {
   /** `value` split on whitespace. Empty for an empty value. */
   readonly tokens: readonly string[];
   /**
-   * Every digit of `raw`, in order, separators discarded. The bridge across
-   * invoice-number convention drift: `INV/2024/0042` and `INV20240042` agree here even
-   * though no token-level rule can recover a boundary that was never written down.
+   * Every digit of `value`, in order, separators discarded — the CANONICALISED string, not
+   * the raw one, falling back to the raw digits only when canonicalisation left none.
+   *
+   * The bridge across invoice-number convention drift: `INV/2024/0042` and `INV20240042`
+   * agree here even though no token-level rule can recover a boundary that was never
+   * written down. Taking it off the canonical value extends that bridge across the OTHER
+   * half of the same drift — zero padding — so `INV/2026/05713` and `INV/2026/5713` agree
+   * too, and the digit view stops contradicting the token view about a convention both are
+   * looking at. See `digitViewOf` for what taking it off the raw string cost.
    */
   readonly digits: string;
   /** Set when the alias table pinned an identity. Null otherwise. */
@@ -256,6 +262,135 @@ export interface DisplacementFinding {
   readonly index: number;
   readonly found_in: NormaliseField;
   readonly belongs_to: NormaliseField;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Reference recovery — HOW a reference token was found, not only THAT it was
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * How a delimiter behaved between two adjacent fragments of a raw line.
+ *
+ * This is the distinction the old flat token stream threw away, and throwing it away is
+ * what made a reference recovery unattributable. `punctuation_strip` turns `/`, `-`, `.`
+ * and `,` all into the same space, so `RCT-2026-01-472` and `SI4559,TX.02973,06495` arrive
+ * downstream looking identical: six anonymous fragments. They are not the same thing. The
+ * first is ONE document number written with internal delimiters; the second is a LIST of
+ * three, and gluing it back together invents a document nobody issued.
+ *
+ *   `reference_delimiter`  `/ - . _ \ #` — an internal delimiter of one document number.
+ *   `list_delimiter`       `, ; | : & ( )` — a separator BETWEEN document numbers.
+ *   `space`                a whitespace boundary. Weakest evidence of belonging together.
+ *   `start`                first fragment of the line; nothing precedes it.
+ */
+export const SEGMENT_JOINS = ['start', 'reference_delimiter', 'list_delimiter', 'space'] as const;
+export type SegmentJoin = (typeof SEGMENT_JOINS)[number];
+
+/**
+ * One fragment of a raw line, with the boundary that introduced it.
+ *
+ * The token sequence is identical to `classifyTokens(scan.tokens)` — same fragments, same
+ * order, same indices — so a consumer can use either view without re-deriving positions.
+ * What this adds is `join`, and `join` is the whole point.
+ */
+export interface Segment {
+  readonly token: string;
+  readonly klass: TokenClass;
+  /** Position in the flat token stream. Matches `ClassifiedToken.index`. */
+  readonly index: number;
+  readonly join: SegmentJoin;
+}
+
+/**
+ * HOW STRONGLY a reference was recovered, as a code rather than a number.
+ *
+ * There is no numeric confidence field here and there is not going to be one. A number
+ * invites a threshold, a threshold invites tuning, and tuning a threshold is the move this
+ * project exists to refuse. What the recovery carries is the STRUCTURE that was observed,
+ * and a consumer that wants to rank recoveries ranks these codes.
+ *
+ * Ordered strongest to weakest:
+ *
+ *   `prefixed_compound`  a document prefix AND several delimiter-joined parts:
+ *                        `INV/2026/01640`. The prefix says "this is a document number" and
+ *                        the delimiters say where the number begins and ends. Nothing else
+ *                        in a bank line looks like this by accident.
+ *   `prefixed_single`    a document prefix fused or adjacent to one number: `BILL004856`.
+ *   `compound`           several delimiter-joined parts, no prefix: `2603-1379`, `1344/26`.
+ *   `alpha_series`       a short alphabetic series marker fused to a number: `TX02964`,
+ *                        `SI4559`. The letters are the vendor's own series, not furniture.
+ *   `bare_digits`        a lone digit run scraped out of free text: `472`, `2026`. The
+ *                        WEAKEST recovery there is. It carries no evidence that the digits
+ *                        are a document number rather than a year, a branch, a run number
+ *                        or the tail of an account, and on its own it is as likely to be a
+ *                        COMPONENT of a document number as a whole one.
+ */
+export const REFERENCE_RECOVERY_KINDS = [
+  'prefixed_compound',
+  'prefixed_single',
+  'compound',
+  'alpha_series',
+  'bare_digits',
+] as const;
+export type ReferenceRecoveryKind = (typeof REFERENCE_RECOVERY_KINDS)[number];
+
+/**
+ * Why a fragment that LOOKS reference-shaped was not offered as one. Recorded rather than
+ * silently dropped: a recovery that never happened is evidence about the feed, and a
+ * reviewer asking "why did nothing come off this line" deserves the answer.
+ */
+export const REFERENCE_REJECTIONS = [
+  /** `UTR295186958`, `RRN...` — a rail tracking number. Never the invoice reference. */
+  'rail_tracking_number',
+  /** `XXXX9484` — a masked account number. The digits are an account, not a document. */
+  'masked_account',
+  /** `16-01-26`, `29 01 26` — three or more two-digit groups in a row. A date. */
+  'date_fragment',
+  /** Fewer digits than the declared minimum. A branch code, not a document. */
+  'below_minimum_length',
+  /** GSTIN-shaped. It identifies a PARTY; treating it as a document is a category error. */
+  'party_identifier',
+] as const;
+export type ReferenceRejection = (typeof REFERENCE_REJECTIONS)[number];
+
+/**
+ * One reference candidate recovered from a line, with the evidence for how strong it is.
+ *
+ * `token` is what goes through `reference.v1`. Everything beside it is the SIGNAL: which
+ * fragments were assembled, whether a delimiter or only a space held them together, and
+ * which document prefix (if any) introduced the number. A consumer that wants to treat a
+ * `prefixed_compound` differently from a `bare_digits` has, here, everything it needs to
+ * do so without re-parsing a string.
+ */
+export interface ReferenceCandidate {
+  /** The assembled token, fragments space-joined. Feed this to the reference profile. */
+  readonly token: string;
+  readonly kind: ReferenceRecoveryKind;
+  /** The fragments that were assembled, in order. */
+  readonly parts: readonly string[];
+  /** Index of the first fragment in the flat token stream. */
+  readonly index: number;
+  /** How many fragments were assembled. One means nothing was joined. */
+  readonly span: number;
+  /** The document prefix that introduced it (`inv`, `bill`, `gst`), or null. */
+  readonly prefix: string | null;
+  /** True when every join inside the run was a delimiter, never a bare space. */
+  readonly delimited: boolean;
+  /** Digits carried by the assembled token. The digit view's raw material. */
+  readonly digit_length: number;
+}
+
+/** A fragment that looked reference-shaped and was refused, with the reason. */
+export interface ReferenceRejectionFinding {
+  readonly token: string;
+  readonly index: number;
+  readonly reason: ReferenceRejection;
+}
+
+/** Everything one line yielded on the reference axis: what was taken, and what was not. */
+export interface ReferenceRecoverySet {
+  readonly candidates: readonly ReferenceCandidate[];
+  readonly rejected: readonly ReferenceRejectionFinding[];
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
