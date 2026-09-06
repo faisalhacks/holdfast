@@ -192,6 +192,56 @@ export function whitespaceCollapseStep(): NormalisationStep {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// delimiter_segment
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * THE MISSING DELIMITER.
+ *
+ * `punctuation_strip` canonicalises every delimiter that was WRITTEN: `TX/01021`,
+ * `TX-01021`, `TX.01021` and `TX 01021` all reduce to the two tokens `tx` and `01021`.
+ * It cannot do anything at all about `TX01021`, where the delimiter was never written
+ * down, and that spelling is a third of the references on the bank side of this dataset.
+ * The result is that four spellings of one document number split into two token forms and
+ * a delimiter difference reads to the comparator as a different document.
+ *
+ * This step recovers the boundary the sender omitted. A run of letters abutting a run of
+ * digits IS a delimiter position — nobody writes a document number where the series code
+ * and the serial run together are one word — so the transition is where the token divides.
+ *
+ * WHAT IT DELIBERATELY DOES NOT DO. It inserts boundaries; it never removes characters and
+ * never joins anything. Every character of the input survives, in order, in the same token
+ * or the next one, so two references that differ anywhere other than in their delimiters
+ * still differ afterwards: `TX01021` and `TX01022` segment to `tx 01021` and `tx 01022`.
+ * Collapsing distinct references would take a rule that DROPS something, and there is no
+ * such rule here.
+ *
+ * A token that is all letters or all digits is left exactly as it is, so the step is a
+ * no-op on a vendor name and on any reference whose delimiters were written.
+ */
+export function delimiterSegmentStep(): NormalisationStep {
+  return {
+    id: 'delimiter_segment',
+    clause: 'boundary restored where a letter run abuts a digit run',
+    apply(value: string): StepResult {
+      return mapTokens(value, 'delimiter_segmented', (token) => {
+        const runs = token.match(SEGMENT_RUNS);
+        if (runs === null || runs.length < 2) return null;
+        const out = runs.join(' ');
+        return out === token ? null : out;
+      });
+    },
+  };
+}
+
+/**
+ * Maximal runs of one character class. Anything that is neither a letter nor a digit is a
+ * run of its own and is preserved rather than dropped — this step is not a second
+ * punctuation strip, and a profile that has not run one yet must not silently get one.
+ */
+const SEGMENT_RUNS = /\p{L}+|\p{N}+|[^\p{L}\p{N}]+/gu;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // noise_token_strip
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -454,6 +504,7 @@ export const DEFAULT_STEPS: StepRegistry = new Map<StepId, NormalisationStep>([
   ['case_fold', caseFoldStep()],
   ['punctuation_strip', punctuationStripStep()],
   ['whitespace_collapse', whitespaceCollapseStep()],
+  ['delimiter_segment', delimiterSegmentStep()],
   ['noise_token_strip', noiseTokenStripStep()],
   ['legal_suffix_strip', legalSuffixStripStep()],
   ['abbreviation_expand', abbreviationExpandStep()],
