@@ -30,6 +30,25 @@
 //   * `token_sort` OFF everywhere by default: `fuzzball`'s token-set ratio is already
 //     order-insensitive, so sorting buys nothing downstream and costs the reviewer the
 //     word order they read.
+//
+// WHERE `legal_suffix_strip` SITS AMONG THE TOKEN-WISE STEPS IS CURRENTLY INERT, and a
+// sweep should know that before it spends a run on it. Four orders were run end to end —
+// suffix before `noise_token_strip`, suffix after `abbreviation_expand`, suffix after
+// `alias_map`, and suffix twice — and all four produced BYTE-IDENTICAL decisions for all
+// 200 invoices. The reason is structural rather than lucky, and it is the condition to
+// re-check rather than the result:
+//
+//   * `noise_token_strip`, `legal_suffix_strip` and `abbreviation_expand` all rewrite one
+//     token at a time with no lookahead, so they commute unless their tables OVERLAP. The
+//     three tables in `tables.ts` are disjoint today — no abbreviation key is a company
+//     form, and no company form is a noise token — so nothing is competing for a token and
+//     the ordering claims above are untested rather than confirmed. Add `co -> company` to
+//     the abbreviations, or `ltd` to the noise tokens, and the order starts to matter
+//     immediately, in exactly the direction the `abbreviation_expand` note predicts.
+//   * `alias_map` is a whole-string lookup against a table that is EMPTY on the default
+//     path — `DEFAULT_TABLES.aliases` ships empty by design and the assembled engine passes
+//     no other table — so its position cannot matter until a caller supplies one. Moving
+//     the suffix strip across it is a no-op for as long as that holds.
 
 import type { NormalisationProfile, NormaliseField, ProfileSet, StepId, StepRegistry } from './types';
 

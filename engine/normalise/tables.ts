@@ -30,18 +30,65 @@ export type AliasKeyFn = (raw: string) => string;
  * characters, because "ACME SW PVT" is the shape we actually receive, not "Acme Software
  * Private Limited". Excludes geography tokens such as `india` on purpose: they are part of
  * the name often enough that dropping them merges genuinely distinct entities.
+ *
+ * ── WHAT A LEAVE-ONE-OUT SWEEP OVER THIS TABLE MEASURED ──────────────────────
+ *
+ * Every entry was removed on its own, and the whole table was emptied, with the rest of
+ * the engine held fixed. Two things came out of it and both are worth writing down,
+ * because the second one is the reason this table is a poor place to spend effort.
+ *
+ *   1. NO ENTRY IS DEAD WEIGHT, AND THE STRIP IS NOT POSITIONAL. Removing `private`
+ *      or `limited` loses two pairings; `pvt`, `ltd`, `prvt` and `co` lose one each.
+ *      Restricting the strip to the TAIL of a value — a legal suffix is a suffix, so
+ *      the restriction looks free — loses aggregate similarity and gains nothing: the
+ *      bank writes "ASHVARNE MRN SVC SOLN PVT LTD GSTIN NA REF ..." with the form in
+ *      the middle of the line, so tail-only stripping is asymmetric across the two
+ *      sides. Stripping anywhere is right.
+ *
+ *   2. STRIPPING IS NOT MONOTONE, because `token_set_ratio` scores the INTERSECTION.
+ *      When both sides spell the form out, removing it from both shrinks the
+ *      intersection and the similarity falls; when only the bank side carries it, or
+ *      the two sides spell it differently, removing it is a clear gain. Collapsing
+ *      every form to one shared marker instead of deleting it was tried for exactly
+ *      this reason and is WORSE (net two pairings), because the shared marker inflates
+ *      every vendor pair equally, including the wrong ones.
+ *
+ * And the finding that matters most to a sweep: NONE of this moves `selection.coverage`.
+ * Every variant tested, the empty table included, decided the same 141 of 200 invoices.
+ * A pairing lost here degrades into a `matching` hold and one gained here comes out of a
+ * `no_reference` hold, and both of those are `auto_releasable` in the registry, so they
+ * are already counted as decided. This table moves match precision and recall, not
+ * coverage. The coverage-bearing holds — `price_variance`, `cardinality_residual` — were
+ * not reachable from here on any variant tried.
  */
 export const DEFAULT_LEGAL_SUFFIXES: ReadonlySet<string> = new Set([
   // `p` earns its place: "(P) Ltd" is one of the commonest Indian spellings of a private
   // limited company, and after punctuation stripping it is a bare `p`. The cost is that a
   // single-letter initial is also removed — "P Kumar Traders" loses its `p`. That cost is
-  // paid symmetrically on both sides, so it degrades a comparison rather than skewing one,
-  // and it is the first entry a search should try removing.
+  // paid symmetrically on both sides, so it degrades a comparison rather than skewing one.
+  //
+  // It was the first entry a search was told to try removing, and removing it is WRONG:
+  // it costs aggregate vendor similarity and buys back nothing, because the single-letter
+  // initial the comment warns about does not occur on the ledger side at all while the
+  // bank side does write the form. The hypothesis is recorded as tested and falsified
+  // rather than deleted, so the next reader does not spend the run re-testing it.
   'p',
+  // `l` and `pl` are the same case as `p`, and they are what this feed actually sends.
+  // A narration field that runs out of characters mid-form emits the head of it:
+  // "NRVTH AUTO CMPNNTS L", "SVRNDH PCKGNG PRVT L", "TALPANI TLRM L". And "(P) Ltd"
+  // written without its punctuation fuses to a bare `pl` after the punctuation strip:
+  // "AMSS PL", "NPS PL", "SES PL", "QEI PL". Neither spelling occurs on the ledger side,
+  // so stripping them removes a token that could never have found a partner.
+  'pl',
+  'l',
   'pvt',
   'pvts',
   'prv',
   'prvt',
+  // A transposition of `pvt`, on the same footing as the truncations beside it:
+  // "N&VIRA SW VPT LTD". It fires rarely; it is listed because the shape is the table's
+  // own — a bank-side misspelling of a form that the ledger side spells correctly.
+  'vpt',
   'private',
   'ltd',
   'ltda',
