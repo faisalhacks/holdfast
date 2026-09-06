@@ -22,6 +22,7 @@
 
 import { cardinalityFamily } from './cardinality';
 import { duplicateFamily } from './duplicate';
+import { matchingFamily } from './matching';
 import { varianceFamily } from './variance';
 import type {
   CaseId,
@@ -191,6 +192,11 @@ const FAMILIES: readonly HoldFamily[] = [
   duplicateFamily,   // W05a — over invoices, before matching. An overpayment control.
   varianceFamily,    // W05b — deltas classified by cause; tax splits by tolerance TYPE.
   cardinalityFamily, // W05c — bounded subset-sum; an empty set rather than a guess on a tie.
+  // W05d — `matching` and `no_reference`. Added after the assembled engine was first
+  // measured and both types showed 0.0 recall: the original three briefs covered nine of
+  // eleven hold types and these two had no owner. It speaks last and only where no other
+  // family did, so it can never mask a sibling's stronger claim.
+  matchingFamily,
 ];
 
 export function registeredFamilies(): readonly HoldFamily[] {
