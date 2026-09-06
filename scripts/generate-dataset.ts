@@ -611,7 +611,10 @@ export function buildDataset(dataset: EvalDatasetName, seed: number, invoiceCoun
       const original = originalFor(k, dupCount);
       const v = original.vendor;
       const origDay = dayOf(original.invoice.invoice_date);
-      const receivedDay = origDay + intBetween(rng, 3, 16);
+      // A re-entry arrives AFTER the document it re-enters. Keying off the original's
+      // invoice date instead of its received date would sometimes place the duplicate
+      // first, which inverts the evidence and makes the row unfair rather than hard.
+      const receivedDay = dayOf(original.invoice.received_date) + intBetween(rng, 3, 16);
       const i = nextIndex();
       const invoice = buildInvoice(rng, tag, i, {
         vendor: v,
@@ -637,7 +640,7 @@ export function buildDataset(dataset: EvalDatasetName, seed: number, invoiceCoun
       const original = originalFor(k, dupCount);
       const v = original.vendor;
       const origDay = dayOf(original.invoice.invoice_date);
-      const receivedDay = origDay + intBetween(rng, 1, 14);
+      const receivedDay = dayOf(original.invoice.received_date) + intBetween(rng, 1, 14);
       const i = nextIndex();
       const invoice = buildInvoice(rng, tag, i, {
         vendor: v,

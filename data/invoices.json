@@ -3006,7 +3006,7 @@
     "vendor_id": "VEN-S-044",
     "vendor_name_raw": "Amberkot Techworks Solutions Pvt Ltd",
     "invoice_date": "2026-06-23",
-    "received_date": "2026-06-27",
+    "received_date": "2026-06-29",
     "due_date": "2026-09-21",
     "period": "2026-06",
     "gross_paise": 44997648,
@@ -3022,7 +3022,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": null,
-    "created_at": "2026-06-27T09:00:00.000Z"
+    "created_at": "2026-06-29T09:00:00.000Z"
   },
   {
     "id": "INV-S-0122",
@@ -3031,7 +3031,7 @@
     "vendor_id": "VEN-S-037",
     "vendor_name_raw": "Thalveka Chemicals Enterprises",
     "invoice_date": "2026-05-12",
-    "received_date": "2026-05-25",
+    "received_date": "2026-05-28",
     "due_date": "2026-07-11",
     "period": "2026-05",
     "gross_paise": 29068200,
@@ -3047,7 +3047,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": "PO/2026/7936",
-    "created_at": "2026-05-25T10:13:29.000Z"
+    "created_at": "2026-05-28T10:13:29.000Z"
   },
   {
     "id": "INV-S-0123",
@@ -3056,7 +3056,7 @@
     "vendor_id": "VEN-S-005",
     "vendor_name_raw": "Talpani Toolroom LLP",
     "invoice_date": "2026-06-05",
-    "received_date": "2026-06-20",
+    "received_date": "2026-06-25",
     "due_date": "2026-07-20",
     "period": "2026-06",
     "gross_paise": 46074224,
@@ -3072,7 +3072,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": null,
-    "created_at": "2026-06-20T11:26:58.000Z"
+    "created_at": "2026-06-25T11:26:58.000Z"
   },
   {
     "id": "INV-S-0124",
@@ -3081,7 +3081,7 @@
     "vendor_id": "VEN-S-049",
     "vendor_name_raw": "Fyrandel Facilities Enterprises",
     "invoice_date": "2026-01-16",
-    "received_date": "2026-01-22",
+    "received_date": "2026-01-29",
     "due_date": "2026-03-17",
     "period": "2026-01",
     "gross_paise": 5364156,
@@ -3097,7 +3097,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": null,
-    "created_at": "2026-01-22T12:39:27.000Z"
+    "created_at": "2026-01-29T12:39:27.000Z"
   },
   {
     "id": "INV-S-0125",
@@ -3106,7 +3106,7 @@
     "vendor_id": "VEN-S-017",
     "vendor_name_raw": "Zarkolin Techworks Industries Pvt Ltd",
     "invoice_date": "2026-06-21",
-    "received_date": "2026-06-29",
+    "received_date": "2026-07-04",
     "due_date": "2026-08-20",
     "period": "2026-06",
     "gross_paise": 748096636,
@@ -3122,7 +3122,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": null,
-    "created_at": "2026-06-29T13:52:56.000Z"
+    "created_at": "2026-07-04T13:52:56.000Z"
   },
   {
     "id": "INV-S-0126",
@@ -3131,7 +3131,7 @@
     "vendor_id": "VEN-S-044",
     "vendor_name_raw": "Amberkot Techworks Solutions Pvt Ltd",
     "invoice_date": "2026-03-05",
-    "received_date": "2026-03-16",
+    "received_date": "2026-03-20",
     "due_date": "2026-04-19",
     "period": "2026-03",
     "gross_paise": 4812748,
@@ -3147,7 +3147,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": "PO/2026/4948",
-    "created_at": "2026-03-16T14:05:25.000Z"
+    "created_at": "2026-03-20T14:05:25.000Z"
   },
   {
     "id": "INV-S-0127",
@@ -3156,7 +3156,7 @@
     "vendor_id": "VEN-S-046",
     "vendor_name_raw": "Cindraka Textiles Solutions Pvt Ltd",
     "invoice_date": "2026-04-19",
-    "received_date": "2026-05-04",
+    "received_date": "2026-05-05",
     "due_date": "2026-06-03",
     "period": "2026-04",
     "gross_paise": 57931156,
@@ -3172,7 +3172,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": "PO/2026/7369",
-    "created_at": "2026-05-04T15:18:54.000Z"
+    "created_at": "2026-05-05T15:18:54.000Z"
   },
   {
     "id": "INV-S-0128",
@@ -3181,7 +3181,7 @@
     "vendor_id": "VEN-S-010",
     "vendor_name_raw": "Rathovin Instruments Ltd",
     "invoice_date": "2026-02-05",
-    "received_date": "2026-02-18",
+    "received_date": "2026-02-19",
     "due_date": "2026-03-22",
     "period": "2026-02",
     "gross_paise": 70363518,
@@ -3197,7 +3197,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": null,
-    "created_at": "2026-02-18T16:31:23.000Z"
+    "created_at": "2026-02-19T16:31:23.000Z"
   },
   {
     "id": "INV-S-0129",
@@ -3206,7 +3206,7 @@
     "vendor_id": "VEN-S-060",
     "vendor_name_raw": "Zephrik Software and Sons",
     "invoice_date": "2026-04-23",
-    "received_date": "2026-04-28",
+    "received_date": "2026-05-07",
     "due_date": "2026-06-22",
     "period": "2026-04",
     "gross_paise": 67727104,
@@ -3222,7 +3222,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": "PO/2026/4089",
-    "created_at": "2026-04-28T09:44:52.000Z"
+    "created_at": "2026-05-07T09:44:52.000Z"
   },
   {
     "id": "INV-S-0130",
@@ -3231,7 +3231,7 @@
     "vendor_id": "VEN-S-044",
     "vendor_name_raw": "Amberkot Techworks Solutions Pvt Ltd",
     "invoice_date": "2026-01-05",
-    "received_date": "2026-01-09",
+    "received_date": "2026-01-10",
     "due_date": "2026-03-06",
     "period": "2026-01",
     "gross_paise": 1514428,
@@ -3247,7 +3247,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": null,
-    "created_at": "2026-01-09T10:57:21.000Z"
+    "created_at": "2026-01-10T10:57:21.000Z"
   },
   {
     "id": "INV-S-0131",
@@ -3256,7 +3256,7 @@
     "vendor_id": "VEN-S-032",
     "vendor_name_raw": "Orvaskar  Cold  Chain  Pvt  Ltd",
     "invoice_date": "2026-06-16",
-    "received_date": "2026-06-29",
+    "received_date": "2026-07-05",
     "due_date": "2026-07-01",
     "period": "2026-06",
     "gross_paise": 4792292,
@@ -3272,7 +3272,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": null,
-    "created_at": "2026-06-29T11:10:50.000Z"
+    "created_at": "2026-07-05T11:10:50.000Z"
   },
   {
     "id": "INV-S-0132",
@@ -3281,7 +3281,7 @@
     "vendor_id": "VEN-S-022",
     "vendor_name_raw": "Elmoreth Cold Chain Solutions Pvt Ltd",
     "invoice_date": "2026-04-13",
-    "received_date": "2026-04-23",
+    "received_date": "2026-04-25",
     "due_date": "2026-07-12",
     "period": "2026-04",
     "gross_paise": 3087616,
@@ -3297,7 +3297,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": "PO/2026/8667",
-    "created_at": "2026-04-23T12:23:19.000Z"
+    "created_at": "2026-04-25T12:23:19.000Z"
   },
   {
     "id": "INV-S-0133",
@@ -3306,7 +3306,7 @@
     "vendor_id": "VEN-S-020",
     "vendor_name_raw": "Ch&reth Infra Projects Industries Pvt Ltd",
     "invoice_date": "2026-02-12",
-    "received_date": "2026-02-26",
+    "received_date": "2026-03-07",
     "due_date": "2026-03-29",
     "period": "2026-02",
     "gross_paise": 8012466,
@@ -3322,7 +3322,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": "PO/2026/2480",
-    "created_at": "2026-02-26T13:36:48.000Z"
+    "created_at": "2026-03-07T13:36:48.000Z"
   },
   {
     "id": "INV-S-0134",
@@ -3331,7 +3331,7 @@
     "vendor_id": "VEN-S-006",
     "vendor_name_raw": "Durvaska Marine Services Solutions Pvt Ltd",
     "invoice_date": "2026-03-04",
-    "received_date": "2026-03-18",
+    "received_date": "2026-03-26",
     "due_date": "2026-06-02",
     "period": "2026-03",
     "gross_paise": 63219089,
@@ -3347,7 +3347,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": "PO/2026/9549",
-    "created_at": "2026-03-18T14:49:17.000Z"
+    "created_at": "2026-03-26T14:49:17.000Z"
   },
   {
     "id": "INV-S-0135",
@@ -3356,7 +3356,7 @@
     "vendor_id": "VEN-S-051",
     "vendor_name_raw": "Hurvanti Polymers Solutions Pvt Ltd",
     "invoice_date": "2026-05-09",
-    "received_date": "2026-05-14",
+    "received_date": "2026-05-23",
     "due_date": "2026-06-23",
     "period": "2026-05",
     "gross_paise": 1252276,
@@ -3372,7 +3372,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": "PO/2026/4142",
-    "created_at": "2026-05-14T15:02:46.000Z"
+    "created_at": "2026-05-23T15:02:46.000Z"
   },
   {
     "id": "INV-S-0136",
@@ -3381,7 +3381,7 @@
     "vendor_id": "VEN-S-028",
     "vendor_name_raw": "Kesmarti Metalcraft and Sons",
     "invoice_date": "2026-05-01",
-    "received_date": "2026-05-06",
+    "received_date": "2026-05-10",
     "due_date": "2026-06-30",
     "period": "2026-05",
     "gross_paise": 208512372,
@@ -3397,7 +3397,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": "PO/2026/9844",
-    "created_at": "2026-05-06T16:15:15.000Z"
+    "created_at": "2026-05-10T16:15:15.000Z"
   },
   {
     "id": "INV-S-0137",
@@ -3406,7 +3406,7 @@
     "vendor_id": "VEN-S-052",
     "vendor_name_raw": "Iskarmel Analytics Pvt Ltd",
     "invoice_date": "2026-04-12",
-    "received_date": "2026-04-20",
+    "received_date": "2026-04-23",
     "due_date": "2026-05-27",
     "period": "2026-04",
     "gross_paise": 9270198,
@@ -3422,7 +3422,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": null,
-    "created_at": "2026-04-20T09:28:44.000Z"
+    "created_at": "2026-04-23T09:28:44.000Z"
   },
   {
     "id": "INV-S-0138",
@@ -3431,7 +3431,7 @@
     "vendor_id": "VEN-S-025",
     "vendor_name_raw": "Hastavel Analytics & Sons",
     "invoice_date": "2026-04-21",
-    "received_date": "2026-04-24",
+    "received_date": "2026-04-30",
     "due_date": "2026-06-05",
     "period": "2026-04",
     "gross_paise": 9330114,
@@ -3447,7 +3447,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": null,
-    "created_at": "2026-04-24T10:41:13.000Z"
+    "created_at": "2026-04-30T10:41:13.000Z"
   },
   {
     "id": "INV-S-0139",
@@ -3456,7 +3456,7 @@
     "vendor_id": "VEN-S-025",
     "vendor_name_raw": "Hastavel Analytics and Sons",
     "invoice_date": "2026-06-15",
-    "received_date": "2026-06-22",
+    "received_date": "2026-06-23",
     "due_date": "2026-08-14",
     "period": "2026-06",
     "gross_paise": 2684640,
@@ -3472,7 +3472,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": "PO/2026/4048",
-    "created_at": "2026-06-22T11:54:42.000Z"
+    "created_at": "2026-06-23T11:54:42.000Z"
   },
   {
     "id": "INV-S-0140",
@@ -3481,7 +3481,7 @@
     "vendor_id": "VEN-S-021",
     "vendor_name_raw": "Dhaviska Facilities Pvt Ltd",
     "invoice_date": "2026-04-13",
-    "received_date": "2026-04-19",
+    "received_date": "2026-04-25",
     "due_date": "2026-05-13",
     "period": "2026-04",
     "gross_paise": 5115648,
@@ -3497,7 +3497,7 @@
     "is_credit_note": false,
     "recurrence": null,
     "purchase_order_reference": null,
-    "created_at": "2026-04-19T12:07:11.000Z"
+    "created_at": "2026-04-25T12:07:11.000Z"
   },
   {
     "id": "INV-S-0141",

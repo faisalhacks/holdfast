@@ -48,7 +48,7 @@
     "sources": [
       {
         "path": "scripts/generate-dataset.ts",
-        "sha256": "ffaa5029be89bac0f7b414e7a9b8a595e17d05b7e60f79c94faf931c9d51aac4"
+        "sha256": "1acf58ed97a5501fabdc5641692704648384dc315cbc32ae9f21a1bed8faa79f"
       },
       {
         "path": "scripts/mangle.ts",
@@ -67,7 +67,7 @@
   "outputs": [
     {
       "name": "invoices.json",
-      "sha256": "76aff7679fbf25276187a28df1709ad2e7deb39a66e4b537b89a9b4b41ef3d46"
+      "sha256": "3f2a9171cd00b23d6b4520d52b8e666951d6b8c91b3d5de7e90e2100d219e400"
     },
     {
       "name": "payments.json",
