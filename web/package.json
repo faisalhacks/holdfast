@@ -1,0 +1,27 @@
+{
+  "name": "@syndicate/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Syndicate operations console (Next.js App Router).",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "check:boundaries": "node scripts/check-boundaries.mjs",
+    "verify": "npm run check:boundaries && npm run typecheck && npm run build"
+  },
+  "dependencies": {
+    "next": "^16.3.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.0"
+  }
+}
