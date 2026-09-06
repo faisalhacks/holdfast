@@ -44,13 +44,49 @@ export interface NormaliseOptions {
   readonly steps?: StepRegistry;
   /** Defaults to `DEFAULT_TABLES`. Swap the data without touching the transforms. */
   readonly tables?: NormalisationTables;
+  /**
+   * Fold each digit run's zero padding out of `NormalisationResult.digits`.
+   *
+   * DECLARED OFF, and the reason is a measurement rather than a preference. See
+   * `unpaddedDigitsOf` below.
+   */
+  readonly unpaddedDigits?: boolean;
 }
 
 const DIGITS_ONLY = /\D+/g;
+const DIGIT_RUN = /\d+/g;
+const PADDING = /^0+(?=\d)/;
 
 /** Every digit of the input, in order, separators discarded. */
 export function digitsOf(value: string): string {
   return value.replace(DIGITS_ONLY, '');
+}
+
+/**
+ * The same digits with each RUN's zero padding removed — `INV/2026/05713` and
+ * `INV/2026/5713` both reduce to `20265713`.
+ *
+ * Zero padding is convention drift of exactly the kind `digits` exists to bridge, and it is
+ * drift the token view already survives: `leading_zero_strip` makes both spellings
+ * canonicalise to `2026 5713`, so the two sides agree on the tokens and then disagree on
+ * the digits, which is the wrong way round. The fold has to be PER RUN because the padding
+ * sits inside the number and not at the front of it: stripping the leading zeros of the
+ * whole string, which is what `digit_strip_leading_zeros` in engine/match already does,
+ * never reaches the `05713`.
+ *
+ * MEASURED AND DECLINED, which is why the switch defaults to off. On the frozen selection
+ * set the fold recovers the padding cases and loses more truncation cases than it recovers:
+ * correct auto-clears fell from 95 to 88 with coverage unchanged. The reason is that
+ * padding is what makes a TRUNCATED reference containable — `BILL000557` against a line
+ * that only had room for `BILL0005` agrees on four of six padded digits and on one of three
+ * unpadded ones — and truncation is commoner in this feed than padding drift. The function
+ * stays, and so does the switch, because a knob a sweep cannot reach is a knob nobody
+ * tested; what is recorded here is that this sweep reached it and the answer was no.
+ */
+export function unpaddedDigitsOf(value: string): string {
+  const runs = value.match(DIGIT_RUN);
+  if (runs === null) return '';
+  return runs.map((run) => run.replace(PADDING, '')).join('');
 }
 
 /**
@@ -62,6 +98,7 @@ export function normalise(raw: string, options: NormaliseOptions): Normalisation
   const { profile, side } = options;
   const steps = options.steps ?? DEFAULT_STEPS;
   const tables = options.tables ?? DEFAULT_TABLES;
+  const unpaddedDigits = options.unpaddedDigits ?? false;
   const ctx = { side, field: profile.field, tables };
 
   const trace: StepTrace[] = [];
@@ -126,7 +163,7 @@ export function normalise(raw: string, options: NormaliseOptions): Normalisation
     raw,
     value,
     tokens: tokensOf(value),
-    digits: digitsOf(raw),
+    digits: unpaddedDigits ? unpaddedDigitsOf(raw) : digitsOf(raw),
     resolved_vendor_id: resolvedVendorId,
     trace,
   };

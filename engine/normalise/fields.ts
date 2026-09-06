@@ -30,6 +30,8 @@ import { DEFAULT_TABLES } from './tables';
 import { DEFAULT_STEPS } from './steps';
 import { DEFAULT_PROFILES, withStepEnabled } from './profiles';
 import { normalise, toNote } from './pipeline';
+import type { ReferenceGroupOptions } from './groups';
+import { referenceGroups } from './groups';
 import {
   classifyTokens,
   findDisplacedTokens,
@@ -62,6 +64,18 @@ export interface NormaliseConfig {
   readonly tables: NormalisationTables;
   /** Minimum length for a purely numeric token to count as reference-shaped. */
   readonly minReferenceLength: number;
+  /**
+   * Recover a payment-side reference as a delimiter-joined GROUP rather than as the
+   * fragments punctuation stripping leaves behind. See `groups.ts` for why: a fragment that
+   * survives the numeric floor is usually a fiscal year, and a fiscal year agrees perfectly
+   * with every reference of that year under `token_set_ratio`.
+   *
+   * Declared as a switch so a sweep can measure what the grouping is worth rather than
+   * assert it.
+   */
+  readonly groupReferences: boolean;
+  /** Group construction bounds. See `ReferenceGroupOptions`. */
+  readonly groups: ReferenceGroupOptions;
 }
 
 export const DEFAULT_CONFIG: NormaliseConfig = {
@@ -69,6 +83,8 @@ export const DEFAULT_CONFIG: NormaliseConfig = {
   steps: DEFAULT_STEPS,
   tables: DEFAULT_TABLES,
   minReferenceLength: 3,
+  groupReferences: true,
+  groups: {},
 };
 
 /** Pure override. Returns a new config; the input is never mutated. */
@@ -109,6 +125,17 @@ const SCAN_ORDER: readonly StepId[] = [
 
 function scanProfileFor(field: NormaliseField): NormalisationProfile {
   return { id: 'scan.v1', field, order: SCAN_ORDER, enabled: {} };
+}
+
+/**
+ * Characters and case only. Punctuation SURVIVES, which is the whole point: the delimiters
+ * are the evidence `referenceGroups` reads, and the scan above has already destroyed them
+ * by the time it is useful for anything else.
+ */
+const FOLD_ORDER: readonly StepId[] = ['unicode_fold', 'case_fold'];
+
+function foldProfileFor(field: NormaliseField): NormalisationProfile {
+  return { id: 'fold.v1', field, order: FOLD_ORDER, enabled: {} };
 }
 
 export function normaliseField(
@@ -191,14 +218,51 @@ export function extractFromNarration(
   const residue = vendorResidueTokens(classified).join(' ');
   const vendor = normaliseField('vendor', residue, side, config);
 
-  const references = referenceCandidateTokens(classified, tables, { minReferenceLength }).map((t) =>
-    normaliseField('reference', t, side, config),
-  );
+  const references = config.groupReferences
+    ? groupedReferences(raw, side, config)
+    : referenceCandidateTokens(classified, tables, { minReferenceLength }).map((t) =>
+        normaliseField('reference', t, side, config),
+      );
   const identifiers = identifierCandidateTokens(classified).map((t) =>
     normaliseField('identifier', t, side, config),
   );
 
   return { narration, vendor, references, identifiers };
+}
+
+/**
+ * The payment-side reference candidates, recovered as whole document numbers.
+ *
+ * `referenceGroups` decides what was written down; this decides what survives
+ * canonicalisation. A group whose profile output is empty named nothing — `INV/` is a
+ * prefix and no document — and a value already offered is not offered twice, because the
+ * scorer takes the best pairing and a duplicate only widens the loop.
+ */
+function groupedReferences(
+  raw: string,
+  side: Side,
+  config: NormaliseConfig,
+): readonly NormalisedField[] {
+  const { steps, tables, groups } = config;
+  const folded = normalise(raw, {
+    profile: foldProfileFor('narration'),
+    side,
+    steps,
+    tables,
+  }).value;
+
+  const out: NormalisedField[] = [];
+  const seen = new Set<string>();
+
+  for (const group of referenceGroups(folded, tables, groups)) {
+    const field = normaliseField('reference', group.text, side, config);
+    const value = field.result.value;
+    if (value === '') continue;
+    if (seen.has(value)) continue;
+    seen.add(value);
+    out.push(field);
+  }
+  return out;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

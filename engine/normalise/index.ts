@@ -137,6 +137,16 @@ export {
   toNote,
 } from './pipeline';
 
+// ── Reference groups — delimiter-aware recovery ──────────────────────────────
+export type { ReferenceGroup, ReferenceGroupOptions, SegmentRole } from './groups';
+export {
+  DEFAULT_DATE_MARKERS,
+  DEFAULT_IDENTIFIER_MARKERS,
+  chunksOf,
+  referenceGroups,
+  segmentRole,
+} from './groups';
+
 // ── Token classification ─────────────────────────────────────────────────────
 export type { ClassifiedToken, DisplacementOptions, ExtractionOptions } from './tokens';
 export {
