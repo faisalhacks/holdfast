@@ -90,6 +90,82 @@ is worth more to us than any remaining metric on this page.
 
 ---
 
+
+## Running it
+
+Node 20 or newer. The package manager version is pinned in the `packageManager` field of
+`package.json`; `corepack enable` will match it, or install pnpm globally.
+
+```bash
+# the pinned version is in package.json -> packageManager
+npm i -g pnpm@$(node -p "require('./package.json').packageManager.split('@')[1]")
+
+pnpm install
+pnpm dev            # http://localhost:3000
+```
+
+**No database is required to start.** The API ships seeded in-memory rows and answers real
+data on the first request, so the UI has something to render immediately. Call
+`GET /api/meta` first — it returns every enum, every hold policy, the routing rules and the
+operation catalogue, so nothing in a client needs hardcoding.
+
+### Reproducing the numbers
+
+The evaluation reports two datasets. The **selection** set (200 invoices) is committed. The
+**holdout** (60 invoices) is deliberately *not* in this repository and is not a git object —
+that is what kept it out of reach of the twelve parallel agents that searched normalisation
+strategies. Regenerate it from the seed frozen in `data/MANIFEST`:
+
+```bash
+export HOLDFAST_HOLDOUT_DIR=/tmp/holdfast-holdout        # any path outside the repo
+pnpm exec tsx scripts/generate-dataset.ts --dataset holdout
+pnpm eval
+```
+
+`pnpm check:manifest` compares the regenerated files against the digests frozen before any
+search agent existed. If the five hashes match, you have rebuilt the exact set our headline
+figures come from — you do not have to take our word for the number.
+
+### Running every gate
+
+```bash
+pnpm verify
+```
+
+Runs the gate self-tests, typecheck, the forbidden-pattern wall, the ownership check, the
+dataset freeze, the threshold lock, the evaluation, the regression gate and the claims
+audit. `migrations` will report `skip` unless a database is configured — see below. It
+passes in CI on every pull request.
+
+### With Postgres (optional)
+
+```bash
+docker run --rm -d -p 5432:5432   -e POSTGRES_PASSWORD=holdfast -e POSTGRES_DB=holdfast   --name holdfast-pg postgres:16
+
+export DATABASE_URL=postgres://postgres:holdfast@localhost:5432/holdfast
+pnpm migrate                # applies every migration from scratch, in one transaction
+export HOLDFAST_REPO=pg     # switch the API off the in-memory repository
+```
+
+`pnpm migrate` also asserts that `UPDATE` and `DELETE` are actually revoked on
+`audit_journal`. The append-only guarantee is enforced twice — by `GRANT`, and by a trigger,
+because a superuser bypasses `GRANT` and CI connects as one.
+
+### The LLM boundary (optional)
+
+Nothing above needs an API key. Residual proposals are behind a flag and degrade cleanly
+without credentials rather than inventing a proposal:
+
+```bash
+export ANTHROPIC_API_KEY=...   # or OPENAI_API_KEY for the strong baseline
+pnpm eval -- --llm-baseline
+```
+
+Every proposal is re-scored by `engine/match` and discarded if it does not clear on its own
+merits. `llm/boundary.test.ts` fails if any LLM code path can reach a hold release; run it
+with `pnpm exec tsx llm/boundary.test.ts`.
+
+
 # 1. Is this a genuine pain point for the Office of the CFO?
 
 The pain is not that matching is hard. The pain is that **matching wrongly is invisible.**
