@@ -32,32 +32,32 @@ export function HoldGovernance({
   const held = hold.status === "held";
 
   return (
-    <div className="space-y-2.5 px-3 py-2.5">
+    <div className="space-y-4 px-4 py-4">
       {/* The section header already carries the held/released token. */}
       <div className="min-w-0">
         <p
           className={
             held
-              ? "num font-mono text-xl font-semibold text-blocking"
-              : "num font-mono text-xl font-semibold text-ink-muted"
+              ? "num text-2xl font-semibold tracking-tight text-blocking"
+              : "num text-2xl font-semibold tracking-tight text-ink-muted"
           }
         >
           {formatMoney(hold.amount_paise, hold.currency)}
         </p>
-        <p className="mt-0.5 text-sm text-ink-muted">{hold.reason}</p>
-        <p className="mt-1 font-mono text-2xs text-ink-faint">{hold.id}</p>
+        <p className="mt-1.5 text-base text-ink-muted">{hold.reason}</p>
+        <p className="mt-1.5 font-mono text-xs text-ink-faint">{hold.id}</p>
       </div>
 
       {held ? (
         <form
-          className="space-y-2 border-t border-line pt-2.5"
+          className="space-y-3.5 border-t border-line pt-4"
           onSubmit={async (event) => {
             event.preventDefault();
             if (!trimmed) return;
             if (await onRelease(trimmed)) setReason("");
           }}
         >
-          <p className="text-sm text-ink-muted">
+          <p className="text-base text-ink-muted">
             Releasing records your name, the time, and this reason. It does not pay the invoice.
           </p>
           <TextAreaField
@@ -68,7 +68,7 @@ export function HoldGovernance({
             onChange={(event) => setReason(event.target.value)}
           />
           {error ? (
-            <p role="alert" className="text-xs text-blocking">
+            <p role="alert" className="text-sm text-blocking">
               {error}
             </p>
           ) : null}
@@ -84,10 +84,10 @@ export function HoldGovernance({
           </Button>
         </form>
       ) : (
-        <div className="border-t border-line pt-2.5">
-          <p className="label-section">Release reason</p>
-          <p className="mt-0.5 text-sm text-ink-muted">{hold.releaseReason}</p>
-          <p className="mt-1 font-mono text-2xs text-ink-faint">
+        <div className="border-t border-line pt-4">
+          <p className="label-field">Release reason</p>
+          <p className="mt-1.5 text-base text-ink-muted">{hold.releaseReason}</p>
+          <p className="mt-1.5 font-mono text-xs text-ink-faint">
             {hold.releasedAt ? formatDateTime(hold.releasedAt) : ""}
           </p>
         </div>

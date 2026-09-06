@@ -7,23 +7,25 @@ type Size = "sm" | "md" | "lg";
 const VARIANTS: Record<Variant, string> = {
   /* A disabled primary must stop looking like the thing to press. */
   primary:
-    "bg-focus font-semibold text-canvas hover:bg-focus-ink " +
+    "bg-focus font-semibold text-white hover:bg-focus-ink " +
     "disabled:bg-surface-3 disabled:text-ink-faint disabled:hover:bg-surface-3",
-  outline: "border border-line-strong text-ink hover:border-focus hover:text-focus-ink",
+  outline:
+    "border border-line-strong bg-surface text-ink hover:border-focus hover:text-focus-ink",
   ghost: "text-ink-muted hover:bg-surface-2 hover:text-ink",
   /*
    * Releasing a hold is a governed act, not a destructive one. A filled red
    * button would read as "danger, don't" — the point is that it is allowed,
    * attributable, and recorded.
    */
-  governed: "border border-blocking/35 text-blocking hover:border-blocking hover:bg-blocking/10",
+  governed:
+    "border border-blocking/40 bg-surface text-blocking hover:border-blocking hover:bg-blocking/6",
 };
 
 const SIZES: Record<Size, string> = {
-  sm: "h-6 px-2 text-xs",
-  md: "h-7 px-3 text-base",
+  sm: "h-8 px-2.5 text-xs",
+  md: "h-9 px-3.5 text-base",
   /* A step of the same object, for the public page where targets are larger. */
-  lg: "h-9 px-4 text-lg",
+  lg: "h-11 px-5 text-md",
 };
 
 const BASE =
@@ -64,7 +66,7 @@ export function Button({
       {loading ? (
         <span
           aria-hidden
-          className="size-2.5 animate-spin rounded-full border border-current border-t-transparent"
+          className="size-3 animate-spin rounded-full border border-current border-t-transparent"
         />
       ) : null}
       {children}

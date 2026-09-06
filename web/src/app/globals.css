@@ -3,66 +3,83 @@
 /*
  * Holdfast — AP exception review workstation.
  *
- * Structure is near-neutral. Saturation is reserved for state and nothing
- * else: a colour in this interface always means the same thing, and a value
+ * Light-first enterprise finance surface: white panels on a cool grey canvas,
+ * one steel-blue accent for focus and action, and saturation reserved for
+ * state. A colour in this interface always means the same thing, and a value
  * with no state behind it gets no colour at all.
  */
 @theme {
-  --color-canvas: #0b0d0f;
-  --color-surface: #121519;
-  --color-surface-2: #171b21;
-  --color-surface-3: #1e232b;
-  --color-line: #232830;
-  --color-line-strong: #333a45;
+  /* Structure. Cool grey axis, so the greys agree with the steel accent. */
+  --color-canvas: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-surface-2: #f7f9fa;
+  --color-surface-3: #eef2f5;
+  --color-line: #e5eaef;
+  --color-line-strong: #d3dae1;
 
-  --color-ink: #e6e9ed;
-  --color-ink-muted: #99a2ae;
-  --color-ink-faint: #6a7480;
+  --color-ink: #111820;
+  --color-ink-muted: #4c5866;
+  --color-ink-faint: #6b7683;
 
-  /* Focus and selection only. Never a fill, never a brand mark, never a status. */
-  --color-focus: #5b8db8;
-  --color-focus-ink: #9dc2dc;
-  --color-focus-wash: #16202a;
+  /* Focus, action and selection. Never a status. */
+  --color-focus: #2f6087;
+  --color-focus-ink: #21496a;
+  --color-focus-wash: #e9f0f6;
 
-  /* The four semantic states. One meaning each. */
-  --color-blocking: #c6414d;
-  --color-material: #c4862c;
-  --color-advisory: #a9962f;
-  --color-cleared: #3d9873;
+  /* The four semantic states. One meaning each, legible on white. */
+  --color-blocking: #b3303c;
+  --color-material: #a2650f;
+  --color-advisory: #857414;
+  --color-cleared: #1f7a55;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Roboto Mono",
     Consolas, "Liberation Mono", monospace;
 
-  --text-2xs: 0.625rem;
-  --text-2xs--line-height: 0.875rem;
-  --text-xs: 0.6875rem;
+  /*
+   * Type scale. The floor is 11px and it is used for one thing (field labels);
+   * everything a reviewer reads for meaning starts at 12px, and body text is
+   * 14px. The old scale topped out at 17px, which left the screen with no
+   * hierarchy at all.
+   */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 0.9375rem;
+  --text-xs: 0.75rem;
   --text-xs--line-height: 1rem;
-  --text-sm: 0.75rem;
-  --text-sm--line-height: 1.05rem;
-  --text-base: 0.8125rem;
-  --text-base--line-height: 1.15rem;
-  --text-md: 0.875rem;
-  --text-md--line-height: 1.25rem;
-  --text-lg: 0.9375rem;
-  --text-lg--line-height: 1.3rem;
-  --text-xl: 1.0625rem;
-  --text-xl--line-height: 1.35rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.15rem;
+  --text-base: 0.875rem;
+  --text-base--line-height: 1.35rem;
+  --text-md: 1rem;
+  --text-md--line-height: 1.45rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.5rem;
+  --text-xl: 1.375rem;
+  --text-xl--line-height: 1.6rem;
+  --text-2xl: 1.75rem;
+  --text-2xl--line-height: 1.9rem;
+  --text-3xl: 2.25rem;
+  --text-3xl--line-height: 2.3rem;
 
-  --radius-xs: 2px;
-  --radius-sm: 3px;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+
+  /*
+   * Two shadows, both barely there. A panel is a border first and a shadow
+   * second; the overlay depth exists only for the console drawer, which has to
+   * read as floating above the ledger it covers.
+   */
+  --shadow-panel: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-overlay: 0 12px 32px rgba(16, 24, 40, 0.14);
 
   /*
    * The public site palette.
    *
-   * Additive — every workstation token above is untouched — but deliberately
-   * the same system seen in daylight. The greys sit on the workstation's cool
-   * blue axis rather than a warm neutral one, so the dark product frame reads
-   * as part of the page instead of a screenshot pasted onto a different site.
-   *
-   * `--color-graphite-3` is `--color-ink-faint`. Same value, same job, both
-   * surfaces.
+   * Additive, and now the same family as the workstation above rather than its
+   * inverse. Left in place while the landing page is reconciled separately.
    */
   --color-paper: #f7f9fa;
   --color-paper-2: #eff2f5;
@@ -74,12 +91,6 @@
   --color-graphite-2: #46505c;
   --color-graphite-3: #636d79;
 
-  /*
-   * One accent, two members of one ramp. `--color-steel` IS the workstation's
-   * focus colour: the blue a reader learns on this page is the blue that marks
-   * the selected row inside the product. `--color-steel-deep` is the same hue
-   * darkened enough to carry text on paper.
-   */
   --color-steel: #5b8db8;
   --color-steel-deep: #2f6087;
   --color-steel-wash: #e7eef4;
@@ -87,25 +98,20 @@
 
 @layer base {
   html {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   body {
     background-color: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     -webkit-font-smoothing: antialiased;
   }
 
-  /*
-   * The site opens and closes on the workstation's own canvas, so the document
-   * keeps the dark colour scheme and the dark scrollbar throughout. One less
-   * thing that changes when a reader crosses from the page into the product.
-   */
+  /* The public page keeps its own ground. */
   body:has(.site-root) {
     color: var(--color-graphite);
-    font-size: 0.875rem;
   }
 
   /* In-page links glide rather than jump, unless the reader asked otherwise. */
@@ -116,12 +122,12 @@
   }
 
   ::selection {
-    background-color: color-mix(in srgb, var(--color-focus) 40%, transparent);
+    background-color: color-mix(in srgb, var(--color-focus) 22%, transparent);
   }
 
   :focus-visible {
     outline: 2px solid var(--color-focus);
-    outline-offset: -1px;
+    outline-offset: 1px;
   }
 
   /* Digits must stack in a column of money. Applied wherever a number is read. */
@@ -136,7 +142,13 @@
 }
 
 @layer utilities {
-  /* Section label: the smallest type in the system, and the most repeated. */
+  /*
+   * The public site's section label. The workstation no longer uses it: a
+   * panel title and a field label were the same object there, which meant the
+   * screen marked regions and fields identically and so marked neither.
+   * Panels now carry a plain sentence-case title, and `.label-field` below is
+   * the only micro-label left in the product.
+   */
   .label-section {
     font-size: 0.65625rem;
     line-height: 0.875rem;
@@ -146,11 +158,19 @@
     color: var(--color-ink-faint);
   }
 
+  /* Field label. The smallest type in the system, and the only uppercase. */
+  .label-field {
+    font-size: 0.6875rem;
+    line-height: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-faint);
+  }
+
   /*
-   * Site: an eyebrow above a headline. Metrically identical to
-   * `.label-section` in the workstation — same size, weight, tracking and case
-   * — differing only in the colour the surface calls for. One label, two
-   * surfaces, rather than two label systems.
+   * Site: an eyebrow above a headline. Held at its old metrics so the landing
+   * page is untouched by the workstation's larger scale.
    */
   .label-eyebrow {
     font-size: 0.65625rem;
@@ -204,8 +224,7 @@
 
 /*
  * A surface modifier for the shared label, written outside every layer so it
- * reliably outranks the label's own colour. The label keeps its metrics; only
- * the surface it sits on changes what it has to be.
+ * reliably outranks the label's own colour.
  */
 .label-on-dark {
   color: var(--color-ink-muted);

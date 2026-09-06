@@ -9,8 +9,8 @@ export function KeyHint({ children, className }: { children: string; className?:
   return (
     <kbd
       className={cn(
-        "hidden h-4 min-w-4 items-center justify-center rounded-xs border border-line-strong lg:inline-flex",
-        "bg-surface-2 px-1 font-mono text-2xs text-ink-faint",
+        "hidden h-5 min-w-5 items-center justify-center rounded-xs border border-line-strong lg:inline-flex",
+        "bg-surface-2 px-1.5 font-mono text-2xs text-ink-faint",
         className,
       )}
     >

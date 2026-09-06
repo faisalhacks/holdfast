@@ -4,57 +4,81 @@ import { cn } from "@/lib/cn";
 import { describeSla, formatDateTime, formatMoney, formatRelative } from "@/lib/format";
 import { CATEGORY_LABELS } from "@/lib/labels";
 import { SeverityToken, StatusToken } from "@/components/ui/Badge";
-import { Field } from "@/components/ui/Fields";
+import { Metric } from "@/components/ui/Fields";
 
+/**
+ * The selected case, stated once and at full size.
+ *
+ * The metric strip carries only fields every `ExceptionDetail` has. Variance
+ * and tolerance exist on some cases and not others, so they stay in the
+ * comparison ledger and the tolerance console where the contract guarantees
+ * them, rather than appearing here and vanishing on the next case.
+ */
 export function CaseHeader({ exception }: { exception: ExceptionDetail }) {
   const sla = describeSla(exception.slaDueAt);
   const hasExposure = exception.exposure_paise !== null;
 
   return (
-    <header className="border-b border-line bg-surface px-3 py-2.5">
-      <div className="flex flex-wrap items-center gap-2">
-        <Link
-          href="/exceptions"
-          className="rounded-xs font-mono text-xs text-ink-faint hover:text-ink lg:hidden"
-        >
-          ← Queue
-        </Link>
-        <span className="font-mono text-sm text-ink-muted">{exception.reference}</span>
-        <SeverityToken severity={exception.severity} />
-        <StatusToken status={exception.status} />
-        <span className="text-xs text-ink-faint">{CATEGORY_LABELS[exception.category]}</span>
+    <header className="rounded-md border border-line-strong bg-surface shadow-panel">
+      <div className="px-4 pt-4 pb-4 sm:px-5 sm:pt-5">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link
+            href="/exceptions"
+            className="rounded-xs text-xs text-ink-muted hover:text-ink lg:hidden"
+          >
+            &larr; Queue
+          </Link>
+          <span className="font-mono text-sm text-ink-muted">{exception.reference}</span>
+          <SeverityToken severity={exception.severity} />
+          <StatusToken status={exception.status} />
+          <span className="text-xs text-ink-faint">{CATEGORY_LABELS[exception.category]}</span>
+        </div>
+
+        <h1 className="mt-2.5 text-xl leading-snug font-semibold tracking-tight text-ink">
+          {exception.title}
+        </h1>
+
+        <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-muted">
+          {exception.entity.label !== exception.reference ? (
+            <>
+              <span className="font-medium text-ink">{exception.entity.label}</span>
+              <span aria-hidden className="opacity-40">·</span>
+            </>
+          ) : null}
+          <span>{exception.agent}</span>
+          <span aria-hidden className="opacity-40">·</span>
+          <span className="font-mono text-xs">{exception.runId}</span>
+        </p>
       </div>
 
-      <h1 className="mt-1.5 text-lg leading-snug font-semibold text-ink">{exception.title}</h1>
-
-      <dl className="mt-2.5 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-line pt-2 sm:grid-cols-3 xl:grid-cols-5">
-        <Field label="Subject">{exception.entity.label}</Field>
-        <Field label="Agent" mono>
-          {exception.agent}
-        </Field>
-        <Field label="Run" mono>
-          {exception.runId}
-        </Field>
-        <Field label="Exposure">
-          <span
-            className={cn("font-mono text-md font-semibold", hasExposure ? "text-ink" : "text-ink-faint")}
-          >
+      <dl className="grid grid-cols-1 gap-px border-t border-line bg-line sm:grid-cols-3">
+        <Metric
+          label="Amount at risk"
+          tone={hasExposure ? "default" : undefined}
+          className={cn("bg-surface", !hasExposure && "text-ink-faint")}
+        >
+          <span className={hasExposure ? undefined : "text-ink-faint"}>
             {formatMoney(exception.exposure_paise, exception.currency)}
           </span>
-        </Field>
-        <Field label="SLA">
-          <span
-            className={cn(
-              "text-base",
-              sla.breached ? "text-blocking" : sla.urgent ? "text-material" : "text-ink",
-            )}
-          >
-            {sla.label}
+        </Metric>
+        <Metric label="Raised" className="bg-surface">
+          <span className="text-base font-medium text-ink">
+            {formatRelative(exception.raisedAt)}
           </span>
-          <span className="mt-0.5 block font-mono text-xs text-ink-faint">
-            raised {formatRelative(exception.raisedAt)} · {formatDateTime(exception.raisedAt)}
+          <span className="mt-0.5 block text-xs font-normal text-ink-faint">
+            {formatDateTime(exception.raisedAt)}
           </span>
-        </Field>
+        </Metric>
+        <Metric
+          label="Time left"
+          tone={sla.breached ? "blocking" : sla.urgent ? "material" : "default"}
+          className="bg-surface"
+        >
+          <span className="text-md">{sla.label}</span>
+          <span className="mt-0.5 block text-xs font-normal text-ink-faint">
+            due {formatDateTime(exception.slaDueAt)}
+          </span>
+        </Metric>
       </dl>
     </header>
   );

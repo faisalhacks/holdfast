@@ -38,14 +38,14 @@ export function ToleranceConsole({
   const busy = pending !== null;
 
   return (
-    <div className="space-y-2.5 px-3 py-2.5">
+    <div className="space-y-4 px-4 py-4">
       <div>
-        <p className="label-section">Scope</p>
-        <p className="mt-0.5 font-mono text-2xs break-all text-ink-muted">{tolerance.scope}</p>
+        <p className="label-field">Scope</p>
+        <p className="mt-1 font-mono text-xs break-all text-ink-muted">{tolerance.scope}</p>
       </div>
 
       <form
-        className="space-y-2.5"
+        className="space-y-4"
         onSubmit={async (event) => {
           event.preventDefault();
           if (!valid) return;
@@ -58,27 +58,27 @@ export function ToleranceConsole({
           if (ok) setReason("");
         }}
       >
-        <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-1.5">
+        <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-2">
           <label className="block">
-            <span className="label-section">Current</span>
+            <span className="label-field">Current</span>
             <input
               readOnly
               value={tolerance.from}
-              className="num mt-1 h-7 w-full rounded-sm border border-line bg-surface-2 px-2 font-mono text-base text-ink-faint"
+              className="num mt-1.5 h-9 w-full rounded-sm border border-line bg-surface-2 px-2.5 text-base text-ink-faint"
             />
           </label>
-          <span aria-hidden className="pb-1.5 text-ink-faint">
+          <span aria-hidden className="pb-2.5 text-ink-faint">
             &rarr;
           </span>
           <label className="block">
-            <span className="label-section">New</span>
+            <span className="label-field">New</span>
             <input
               required
               type="number"
               step="1"
               value={next}
               onChange={(event) => setNext(event.target.value)}
-              className="num mt-1 h-7 w-full rounded-sm border border-line-strong bg-surface-2 px-2 font-mono text-base text-ink focus:border-focus focus:outline-none"
+              className="num mt-1.5 h-9 w-full rounded-sm border border-line-strong bg-surface px-2.5 text-base text-ink focus:border-focus focus:outline-none"
             />
           </label>
         </div>
@@ -91,13 +91,13 @@ export function ToleranceConsole({
           onChange={(event) => setReason(event.target.value)}
         />
 
-        <p className="text-sm text-ink-muted">
+        <p className="text-base text-ink-muted">
           A tolerance change is recorded as a decision: who changed it, from what to what, over
           which scope, why, and which holds it affected.
         </p>
 
         {error ? (
-          <p role="alert" className="text-xs text-blocking">
+          <p role="alert" className="text-sm text-blocking">
             {error}
           </p>
         ) : null}
@@ -120,18 +120,18 @@ export function ToleranceConsole({
       </form>
 
       {affectedHoldIds ? (
-        <div className="border-t border-line pt-2.5">
-          <p className="label-section">Affected holds &middot; {affectedHoldIds.length}</p>
+        <div className="border-t border-line pt-4">
+          <p className="label-field">Affected holds &middot; {affectedHoldIds.length}</p>
           {affectedHoldIds.length > 0 ? (
-            <ul className="mt-1 space-y-0.5">
+            <ul className="mt-1.5 space-y-1">
               {affectedHoldIds.map((id) => (
-                <li key={id} className="font-mono text-2xs text-ink-muted">
+                <li key={id} className="font-mono text-xs text-ink-muted">
                   {id}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-0.5 text-sm text-ink-faint">
+            <p className="mt-1.5 text-base text-ink-faint">
               No holds affected. The backend returned an empty list.
             </p>
           )}

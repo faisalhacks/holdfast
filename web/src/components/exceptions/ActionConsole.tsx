@@ -10,6 +10,7 @@ import { RoutingConsole } from "./RoutingConsole";
 import { ToleranceConsole } from "./ToleranceConsole";
 import { KeyHint } from "@/components/ui/KeyHint";
 import { NoticeBanner } from "@/components/ui/NoticeBanner";
+import { Panel } from "@/components/ui/Panel";
 import { Token } from "@/components/ui/Token";
 
 type State = ReturnType<typeof useExceptionDetail>;
@@ -33,7 +34,7 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section className="border-t border-line">
+    <Panel>
       <h3>
         <button
           type="button"
@@ -41,24 +42,24 @@ function Section({
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={`console-panel-${id}`}
-          className="flex h-8 w-full items-center justify-between gap-2 bg-surface px-3 text-left transition-colors hover:bg-surface-2"
+          className="flex min-h-11 w-full items-center justify-between gap-3 px-4 py-2 text-left transition-colors hover:bg-surface-2"
         >
-          <span className="flex items-center gap-1.5">
+          <span className="flex items-center gap-2">
             <span aria-hidden className="text-ink-faint">
               {open ? "▾" : "▸"}
             </span>
-            <span className="label-section">{title}</span>
+            <span className="text-md font-semibold text-ink">{title}</span>
           </span>
-          <span className="flex items-center gap-1.5">
+          <span className="flex shrink-0 items-center gap-2">
             {status}
             <KeyHint>{hint}</KeyHint>
           </span>
         </button>
       </h3>
-      <div id={`console-panel-${id}`} hidden={!open}>
+      <div id={`console-panel-${id}`} hidden={!open} className="border-t border-line">
         {children}
       </div>
-    </section>
+    </Panel>
   );
 }
 
@@ -127,16 +128,17 @@ export function ActionConsole({
     state.actionError?.action === action ? state.actionError.message : null;
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto bg-surface">
+    <div className="space-y-4 p-4">
       {state.notice ? (
-        <div className="border-b border-line p-2">
-          <NoticeBanner notice={state.notice} onDismiss={state.dismissNotice} />
-        </div>
+        <NoticeBanner notice={state.notice} onDismiss={state.dismissNotice} />
       ) : null}
 
-      <section id="console-route">
-        <div className="flex h-8 items-center justify-between gap-2 border-b border-line bg-surface px-3">
-          <h3 className="label-section">Route next action</h3>
+      <Panel>
+        <div
+          id="console-route"
+          className="flex min-h-11 items-center justify-between gap-3 border-b border-line px-4 py-2"
+        >
+          <h3 className="text-md font-semibold text-ink">Route next action</h3>
           <KeyHint>r</KeyHint>
         </div>
         <RoutingConsole
@@ -145,7 +147,7 @@ export function ActionConsole({
           error={actionError("route")}
           onRoute={state.route}
         />
-      </section>
+      </Panel>
 
       {exception.hold ? (
         <Section
@@ -154,9 +156,7 @@ export function ActionConsole({
           hint="h"
           open={open.hold}
           onToggle={() => toggle("hold")}
-          status={
-            <Token tone={held ? "blocking" : "cleared"}>{held ? "Held" : "Released"}</Token>
-          }
+          status={<Token tone={held ? "blocking" : "cleared"}>{held ? "Held" : "Released"}</Token>}
         >
           <HoldGovernance
             hold={exception.hold}
@@ -174,11 +174,7 @@ export function ActionConsole({
           hint="t"
           open={open.tolerance}
           onToggle={() => toggle("tolerance")}
-          status={
-            <span className="num font-mono text-2xs text-ink-faint">
-              {exception.tolerance.from}
-            </span>
-          }
+          status={<span className="num text-xs text-ink-faint">{exception.tolerance.from}</span>}
         >
           <ToleranceConsole
             tolerance={exception.tolerance}
@@ -196,16 +192,10 @@ export function ActionConsole({
         hint="a"
         open={open.audit}
         onToggle={() => toggle("audit")}
-        status={
-          <span className="num font-mono text-2xs text-ink-faint">
-            {exception.timeline.length}
-          </span>
-        }
+        status={<span className="num text-xs text-ink-faint">{exception.timeline.length}</span>}
       >
         <AuditStream events={exception.timeline} />
       </Section>
-
-      <div className="flex-1 border-t border-line" />
     </div>
   );
 }

@@ -12,7 +12,7 @@ import { ConflictBar } from "@/components/exceptions/ConflictBar";
 import { EvidenceReferences } from "@/components/exceptions/EvidenceReferences";
 import { Button } from "@/components/ui/Button";
 import { KeyHint } from "@/components/ui/KeyHint";
-import { PanelHeader } from "@/components/ui/Panel";
+import { Panel, PanelHeader } from "@/components/ui/Panel";
 import { EmptyState, ErrorState, LoadingRows, Skeleton } from "@/components/ui/States";
 
 export default function ExceptionDetailPage() {
@@ -41,10 +41,10 @@ export default function ExceptionDetailPage() {
 
   if (state.loading && !exception) {
     return (
-      <div className="space-y-3 p-3">
-        <Skeleton className="h-5 w-1/3" />
+      <div className="space-y-4 p-4 sm:p-5">
+        <Skeleton className="h-32 w-full" />
         <Skeleton className="h-16 w-full" />
-        <LoadingRows rows={4} />
+        <LoadingRows rows={3} className="p-0" />
       </div>
     );
   }
@@ -68,7 +68,7 @@ export default function ExceptionDetailPage() {
         title="Exception not found"
         description={`Nothing in this run matches "${exceptionId}".`}
         action={
-          <Link href="/exceptions" className="text-base text-focus-ink underline underline-offset-2">
+          <Link href="/exceptions" className="text-base text-focus-ink underline underline-offset-4">
             Back to the queue
           </Link>
         }
@@ -83,35 +83,38 @@ export default function ExceptionDetailPage() {
        the page would gain a horizontal scroll the width of the drawer. */
     <div className="relative flex h-full min-h-0 overflow-hidden">
       <div className="min-w-0 flex-1 overflow-y-auto">
-        <CaseHeader exception={exception} />
+        <div className="space-y-4 p-4 pb-20 sm:p-5 xl:pb-5">
+          <CaseHeader exception={exception} />
 
-        <PanelHeader
-          title="Diagnostic ledger"
-          count={
-            exception.signals.length > 0
-              ? `${exception.signals.length} fields · ${failingCount} failing`
-              : undefined
-          }
-        />
-        <ComparisonLedger signals={exception.signals} />
+          <ConflictBar exception={exception} />
 
-        <ConflictBar exception={exception} />
+          <Panel>
+            <PanelHeader
+              title="Field comparison"
+              count={
+                exception.signals.length > 0
+                  ? `${exception.signals.length} fields · ${failingCount} failing`
+                  : undefined
+              }
+            />
+            <ComparisonLedger signals={exception.signals} />
+          </Panel>
 
-        {exception.policy ? (
-          <>
-            <PanelHeader title="Policy" count={exception.policy.id} />
-            <div className="border-b border-line px-3 py-2">
-              <p className="text-base text-ink">{exception.policy.name}</p>
-              <p className="mt-0.5 text-sm text-ink-muted">{exception.policy.clause}</p>
-            </div>
-          </>
-        ) : null}
+          {exception.policy ? (
+            <Panel>
+              <PanelHeader title="Policy" count={exception.policy.id} />
+              <div className="px-4 py-4 sm:px-5">
+                <p className="font-medium text-ink">{exception.policy.name}</p>
+                <p className="mt-1.5 text-base text-ink-muted">{exception.policy.clause}</p>
+              </div>
+            </Panel>
+          ) : null}
 
-        <PanelHeader title="Evidence references" count={exception.evidence.length} />
-        <EvidenceReferences items={exception.evidence} />
-
-        {/* The console is a drawer here; the ledger keeps the full width. */}
-        <div className="h-16 xl:hidden" />
+          <Panel>
+            <PanelHeader title="Evidence references" count={exception.evidence.length} />
+            <EvidenceReferences items={exception.evidence} />
+          </Panel>
+        </div>
       </div>
 
       {/* Console: docked at xl and above, drawer below. One instance either way. */}
@@ -119,12 +122,12 @@ export default function ExceptionDetailPage() {
         aria-label="Context and action console"
         className={
           consoleOpen
-            ? "absolute inset-y-0 right-0 z-40 flex w-full max-w-96 translate-x-0 flex-col border-l border-line-strong bg-surface shadow-[0_8px_24px_rgba(0,0,0,0.45)] transition-transform xl:static xl:z-auto xl:w-80 xl:max-w-none xl:shadow-none 2xl:w-96"
-            : "absolute inset-y-0 right-0 z-40 flex w-full max-w-96 translate-x-full flex-col border-l border-line-strong bg-surface transition-transform xl:static xl:z-auto xl:w-80 xl:max-w-none xl:translate-x-0 2xl:w-96"
+            ? "absolute inset-y-0 right-0 z-40 flex w-full max-w-[400px] translate-x-0 flex-col border-l border-line-strong bg-canvas shadow-overlay transition-transform xl:static xl:z-auto xl:w-[360px] xl:max-w-none xl:shadow-none 2xl:w-[400px]"
+            : "absolute inset-y-0 right-0 z-40 flex w-full max-w-[400px] translate-x-full flex-col border-l border-line-strong bg-canvas transition-transform xl:static xl:z-auto xl:w-[360px] xl:max-w-none xl:translate-x-0 2xl:w-[400px]"
         }
       >
-        <div className="flex h-8 shrink-0 items-center justify-between border-b border-line px-3 xl:hidden">
-          <span className="label-section">Console</span>
+        <div className="flex h-12 shrink-0 items-center justify-between border-b border-line-strong bg-surface px-4 xl:hidden">
+          <span className="text-md font-semibold text-ink">Console</span>
           <button
             type="button"
             onClick={() => setConsoleOpen(false)}
@@ -140,7 +143,7 @@ export default function ExceptionDetailPage() {
       </aside>
 
       {/* The action bar that raises the console when it is not docked. */}
-      <div className="absolute inset-x-0 bottom-0 z-30 flex h-14 items-center gap-2 border-t border-line-strong bg-surface px-3 xl:hidden">
+      <div className="absolute inset-x-0 bottom-0 z-30 flex h-16 items-center gap-3 border-t border-line-strong bg-surface px-4 xl:hidden">
         <Button variant="primary" className="flex-1" onClick={() => setConsoleOpen(true)}>
           Route, hold, tolerance
         </Button>

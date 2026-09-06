@@ -113,9 +113,9 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
 
   return (
     <div className="flex h-full min-h-0 flex-col border-r border-line-strong bg-surface">
-      <div className="flex h-8 shrink-0 items-center justify-between border-b border-line px-3">
-        <h2 className="label-section">Exception queue</h2>
-        <span className="num font-mono text-xs text-ink-faint">
+      <div className="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-line px-4">
+        <h2 className="text-md font-semibold text-ink">Exception queue</h2>
+        <span className="num shrink-0 text-xs text-ink-faint">
           {page ? `${page.total} item${page.total === 1 ? "" : "s"}` : "—"}
         </span>
       </div>
@@ -141,7 +141,7 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
             }
           />
         ) : loading && !page ? (
-          <LoadingRows rows={7} />
+          <LoadingRows rows={5} />
         ) : items.length > 0 ? (
           <div
             ref={listRef}
@@ -198,7 +198,7 @@ export function QueuePane({ selectedId }: { selectedId: string | null }) {
         />
       ) : null}
 
-      <div className="hidden h-6 shrink-0 items-center gap-2 border-t border-line px-3 text-2xs text-ink-faint lg:flex">
+      <div className="hidden h-9 shrink-0 items-center gap-2 border-t border-line px-4 text-xs text-ink-faint lg:flex">
         <KeyHint>j</KeyHint>
         <KeyHint>k</KeyHint>
         <span>move</span>

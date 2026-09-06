@@ -24,8 +24,8 @@ export default function ExceptionsLayout({ children }: { children: ReactNode }) 
       <div
         className={
           selectedId
-            ? "hidden w-72 shrink-0 lg:flex lg:flex-col xl:w-80"
-            : "flex w-full shrink-0 flex-col lg:w-72 xl:w-80"
+            ? "hidden w-[340px] shrink-0 lg:flex lg:flex-col xl:w-[360px] 2xl:w-[400px]"
+            : "flex w-full shrink-0 flex-col lg:w-[340px] xl:w-[360px] 2xl:w-[400px]"
         }
       >
         <Suspense fallback={<LoadingRows rows={8} className="p-2" />}>

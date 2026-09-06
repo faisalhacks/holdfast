@@ -23,40 +23,44 @@ export function ConflictBar({ exception }: { exception: ExceptionDetail }) {
     <div
       className={
         held
-          ? "flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-blocking/25 bg-blocking/8 px-3 py-2"
-          : "flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-line bg-surface-2/50 px-3 py-2"
+          ? "rounded-md border border-blocking/25 bg-blocking/6 px-4 py-3.5 sm:px-5"
+          : "rounded-md border border-line-strong bg-surface-2 px-4 py-3.5 sm:px-5"
       }
     >
-      <span className="flex items-center gap-1.5">
+      <p className="flex items-center gap-2">
         <StateDot tone={held ? "blocking" : "cleared"} />
-        <span className="label-section">Conflict summary</span>
-      </span>
+        <span className="label-field">Conflict summary</span>
+      </p>
 
-      {failing.length > 0 ? (
-        <span className="text-base text-ink">
-          {failing.length} field{failing.length === 1 ? "" : "s"} outside reference:{" "}
-          <span className="text-ink-muted">
-            {failing.map((signal) => signal.label).join(", ")}
-          </span>
-        </span>
-      ) : null}
-
-      {missing.length > 0 ? (
-        <span className="text-base text-ink-muted">
-          {missing.length} without a reference value
-        </span>
-      ) : null}
-
-      {hold ? (
-        <span className="flex items-center gap-2">
-          <Token tone={held ? "blocking" : "cleared"}>{held ? "Payment held" : "Hold released"}</Token>
-          {held && hold.amount_paise !== null ? (
-            <span className="num font-mono text-base font-semibold text-blocking">
-              {formatMoney(hold.amount_paise, hold.currency)}
+      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2">
+        {failing.length > 0 ? (
+          <p className="text-base text-ink">
+            {failing.length} field{failing.length === 1 ? "" : "s"} outside reference:{" "}
+            <span className="text-ink-muted">
+              {failing.map((signal) => signal.label).join(", ")}
             </span>
-          ) : null}
-        </span>
-      ) : null}
+          </p>
+        ) : null}
+
+        {missing.length > 0 ? (
+          <p className="text-base text-ink-muted">
+            {missing.length} without a reference value
+          </p>
+        ) : null}
+
+        {hold ? (
+          <span className="flex items-center gap-2.5">
+            <Token tone={held ? "blocking" : "cleared"}>
+              {held ? "Payment held" : "Hold released"}
+            </Token>
+            {held && hold.amount_paise !== null ? (
+              <span className="num text-md font-semibold text-blocking">
+                {formatMoney(hold.amount_paise, hold.currency)}
+              </span>
+            ) : null}
+          </span>
+        ) : null}
+      </div>
     </div>
   );
 }

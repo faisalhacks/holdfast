@@ -4,12 +4,12 @@ import { cn } from "@/lib/cn";
 export type Tone = "neutral" | "focus" | "blocking" | "material" | "advisory" | "cleared";
 
 const TONES: Record<Tone, string> = {
-  neutral: "border-line-strong text-ink-muted",
-  focus: "border-focus/40 bg-focus-wash text-focus-ink",
-  blocking: "border-blocking/35 bg-blocking/10 text-blocking",
-  material: "border-material/35 bg-material/10 text-material",
-  advisory: "border-advisory/35 bg-advisory/10 text-advisory",
-  cleared: "border-cleared/35 bg-cleared/10 text-cleared",
+  neutral: "border-line-strong bg-surface text-ink-muted",
+  focus: "border-focus/30 bg-focus-wash text-focus-ink",
+  blocking: "border-blocking/30 bg-blocking/8 text-blocking",
+  material: "border-material/30 bg-material/8 text-material",
+  advisory: "border-advisory/30 bg-advisory/8 text-advisory",
+  cleared: "border-cleared/30 bg-cleared/8 text-cleared",
 };
 
 const DOTS: Record<Tone, string> = {
@@ -22,8 +22,9 @@ const DOTS: Record<Tone, string> = {
 };
 
 /**
- * An uppercase monospace chip. Deliberately not a filled pill: four competing
- * pill families is what made the previous build read as a generic dashboard.
+ * An outlined chip. Deliberately not a filled pill, and deliberately sentence
+ * case: four competing pill families in shouting caps is what made the earlier
+ * build read as a generic dashboard. A row carries one of these at most.
  */
 export function Token({
   children,
@@ -37,8 +38,8 @@ export function Token({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-xs border px-1.5 py-px",
-        "font-mono text-2xs font-medium tracking-wider uppercase whitespace-nowrap",
+        "inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5",
+        "text-xs font-medium whitespace-nowrap",
         TONES[tone],
         className,
       )}

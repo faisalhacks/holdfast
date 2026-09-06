@@ -8,7 +8,7 @@ import { StateDot, Token, type Tone } from "./Token";
  * `low` severity and an `unknown` signal get no colour at all: nothing is
  * wrong, and painting them would spend attention the reviewer needs elsewhere.
  */
-const SEVERITY_TONE: Record<Severity, Tone> = {
+export const SEVERITY_TONE: Record<Severity, Tone> = {
   critical: "blocking",
   high: "material",
   medium: "advisory",
@@ -19,7 +19,7 @@ export function SeverityToken({ severity }: { severity: Severity }) {
   return <Token tone={SEVERITY_TONE[severity]}>{SEVERITY_LABELS[severity]}</Token>;
 }
 
-const STATUS_TONE: Record<ExceptionStatus, Tone> = {
+export const STATUS_TONE: Record<ExceptionStatus, Tone> = {
   open: "neutral",
   in_review: "focus",
   routed: "cleared",

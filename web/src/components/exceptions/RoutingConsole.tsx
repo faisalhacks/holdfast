@@ -30,22 +30,22 @@ export function RoutingConsole({
   if (exception.routingDecision) {
     const decision = exception.routingDecision;
     return (
-      <div className="border-l-2 border-cleared px-3 py-2.5">
-        <p className="label-section">Action routed</p>
-        <p className="mt-1 text-base font-medium text-cleared">
+      <div className="border-l-[3px] border-cleared px-4 py-4">
+        <p className="label-field">Action routed</p>
+        <p className="mt-1.5 text-md font-medium text-cleared">
           {RESOLUTION_PATH_LABELS[decision.resolution_path]}
         </p>
-        <dl className="mt-2 space-y-1.5">
+        <dl className="mt-3 space-y-2.5">
           <div>
-            <dt className="label-section">Next owner</dt>
-            <dd className="font-mono text-base text-ink">{decision.owner_next}</dd>
+            <dt className="label-field">Next owner</dt>
+            <dd className="mt-0.5 font-mono text-sm text-ink">{decision.owner_next}</dd>
           </div>
           <div>
-            <dt className="label-section">Reason</dt>
-            <dd className="text-sm text-ink-muted">{decision.reason}</dd>
+            <dt className="label-field">Reason</dt>
+            <dd className="mt-0.5 text-base text-ink-muted">{decision.reason}</dd>
           </div>
         </dl>
-        <p className="mt-2 font-mono text-2xs text-ink-faint">{formatDateTime(decision.routedAt)}</p>
+        <p className="mt-3 font-mono text-xs text-ink-faint">{formatDateTime(decision.routedAt)}</p>
       </div>
     );
   }
@@ -57,7 +57,7 @@ export function RoutingConsole({
 
   return (
     <form
-      className="space-y-2.5 px-3 py-2.5"
+      className="space-y-4 px-4 py-4"
       onSubmit={async (event) => {
         event.preventDefault();
         if (!valid) return;
@@ -72,16 +72,16 @@ export function RoutingConsole({
         }
       }}
     >
-      <p className="text-sm text-ink-muted">
+      <p className="text-base text-ink-muted">
         Choosing who acts next. This does not determine whether the match is correct.
       </p>
 
-      <fieldset className="space-y-1">
-        <legend className="label-section">Resolution path</legend>
+      <fieldset className="space-y-1.5">
+        <legend className="label-field mb-1.5">Resolution path</legend>
         {PATHS.map((value) => (
           <label
             key={value}
-            className="flex cursor-pointer gap-2 rounded-sm px-1.5 py-1 hover:bg-surface-2"
+            className="flex cursor-pointer gap-2.5 rounded-sm px-2 py-2 hover:bg-surface-2"
           >
             <input
               type="radio"
@@ -92,8 +92,8 @@ export function RoutingConsole({
               className="mt-1 accent-[var(--color-focus)]"
             />
             <span className="min-w-0">
-              <span className="block text-base text-ink">{RESOLUTION_PATH_LABELS[value]}</span>
-              <span className="block text-xs text-ink-faint">{RESOLUTION_PATH_HINTS[value]}</span>
+              <span className="block text-base font-medium text-ink">{RESOLUTION_PATH_LABELS[value]}</span>
+              <span className="mt-0.5 block text-xs text-ink-faint">{RESOLUTION_PATH_HINTS[value]}</span>
             </span>
           </label>
         ))}
@@ -120,7 +120,7 @@ export function RoutingConsole({
       />
 
       {error ? (
-        <p role="alert" className="text-xs text-blocking">
+        <p role="alert" className="text-sm text-blocking">
           {error}
         </p>
       ) : null}
