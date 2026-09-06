@@ -86,6 +86,30 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
 
+      # THE HOLDOUT IS REGENERATED, NEVER CHECKED OUT.
+      #
+      # It is deliberately not in the repository and not a git object — that is what kept
+      # it out of reach of twelve sweep agents. The cost is that a CI runner has no
+      # holdout either, so `holdout` comes back null and `audit:claims` rejects every
+      # holdout figure in the submission. W11 hit exactly that and escalated it rather
+      # than quoting selection figures as though they were the headline.
+      #
+      # Regenerating it here turns the cost into the proof. The claim is that anyone can
+      # reproduce the holdout byte-identically from the committed generator and the seed
+      # frozen in data/MANIFEST before any search agent existed. This step performs that
+      # reproduction on a clean machine on every PR, and `check:manifest` compares the
+      # digests. If the generator ever stops being deterministic, CI says so.
+      - name: regenerate the holdout from the frozen seed
+        env:
+          HOLDFAST_HOLDOUT_DIR: ${{ runner.temp }}/holdfast-holdout
+        run: |
+          if [ -f data/holdout.spec.json ] && [ -f scripts/generate-dataset.ts ]; then
+            pnpm exec tsx scripts/generate-dataset.ts --dataset holdout
+            echo "HOLDFAST_HOLDOUT_DIR=${{ runner.temp }}/holdfast-holdout" >> "$GITHUB_ENV"
+          else
+            echo "no holdout spec or generator yet — nothing to regenerate"
+          fi
+
       # The dataset is frozen before anything is tuned. Drift here means the numbers
       # we publish describe a dataset that no longer exists. Quarantine Q7.
       - name: dataset freeze
