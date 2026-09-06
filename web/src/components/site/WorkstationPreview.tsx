@@ -237,30 +237,48 @@ export function WorkstationPreview({
       : "[--pane-width:34rem] sm:[--pane-width:52rem]";
 
   return (
-    <div
-      role="img"
-      aria-label="The Holdfast workstation: a money-ordered exception queue, a diagnostic ledger comparing observed and reference values for each field, and a console for routing the exception to its next owner."
+    <figure
       className={cn(
-        "@container overflow-hidden rounded-sm border border-graphite/15 bg-canvas",
+        "overflow-hidden rounded-sm border border-graphite/15 bg-canvas",
         "shadow-[0_1px_2px_rgba(27,31,34,0.06),0_18px_48px_-24px_rgba(27,31,34,0.35)]",
         className,
       )}
     >
       <div
-        aria-hidden
-        className={cn(
-          // min(1, …) so a wide viewport never enlarges the frame past the
-          // size the interface is actually designed at.
-          "flex w-(--pane-width) text-ink",
-          "[--zoom-basis:26rem] sm:[--zoom-basis:var(--pane-width)]",
-          "[zoom:min(1,calc(100cqw/var(--zoom-basis)))]",
-          width,
-        )}
+        role="img"
+        aria-label="The Holdfast workstation: a money-ordered exception queue, a diagnostic ledger comparing observed and reference values for each field, and a console for routing the exception to its next owner."
+        className="@container overflow-hidden"
       >
-        <QueueColumn className="hidden w-64 sm:flex" />
-        <LedgerColumn />
-        <ConsoleColumn className={variant === "full" ? "hidden lg:flex" : "hidden"} />
+        <div
+          aria-hidden
+          className={cn(
+            // min(1, …) so a wide viewport never enlarges the frame past the
+            // size the interface is actually designed at.
+            "flex w-(--pane-width) text-ink",
+            "[--zoom-basis:26rem] sm:[--zoom-basis:var(--pane-width)]",
+            "[zoom:min(1,calc(100cqw/var(--zoom-basis)))]",
+            width,
+          )}
+        >
+          <QueueColumn className="hidden w-64 sm:flex" />
+          <LedgerColumn />
+          <ConsoleColumn className={variant === "full" ? "hidden lg:flex" : "hidden"} />
+        </div>
       </div>
-    </div>
+
+      {/*
+        Says plainly what this is. The values above mirror the demo dataset and
+        never move, so without this a reader could take them for a live run or
+        an evaluation result. It sits outside the `role="img"` element so it is
+        read out rather than swallowed by the image label.
+
+        The colour is set here rather than taken from `ink-faint`, which lands
+        at 3.9:1 on this surface. A disclosure has to be readable to do its job,
+        so this is the quietest tone that still clears 4.5:1 at this size.
+      */}
+      <figcaption className="border-t border-line-strong bg-surface px-3 py-1.5 text-2xs text-[#7a838f]">
+        Illustrative product preview &middot; sample data
+      </figcaption>
+    </figure>
   );
 }

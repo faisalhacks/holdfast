@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { cn } from "@/lib/cn";
 import { Reveal } from "@/components/site/Reveal";
 import { WorkstationPreview } from "@/components/site/WorkstationPreview";
 
@@ -174,13 +175,24 @@ export default function LandingPage() {
           </Reveal>
 
           <Reveal delay={80} className="mt-12">
-            <div className="grid gap-2 sm:grid-cols-3">
+            {/*
+              The console pane only enters the frame at `lg`. Below that its
+              label would point at something the reader cannot see, so the
+              annotation leaves with the pane it describes.
+            */}
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                { pane: "Intake", note: "Money-at-risk queue" },
-                { pane: "Diagnostic ledger", note: "Field-level evidence" },
-                { pane: "Action console", note: "Human routing decision" },
+                { pane: "Intake", note: "Money-at-risk queue", from: null },
+                { pane: "Diagnostic ledger", note: "Field-level evidence", from: null },
+                { pane: "Action console", note: "Human routing decision", from: "lg" },
               ].map((item) => (
-                <div key={item.pane} className="border-t border-paper-3/25 pt-3">
+                <div
+                  key={item.pane}
+                  className={cn(
+                    "border-t border-paper-3/25 pt-3",
+                    item.from === "lg" && "hidden lg:block",
+                  )}
+                >
                   <p className="label-eyebrow text-paper-3/55">{item.pane}</p>
                   <p className="mt-1.5 text-[0.9375rem] text-paper-3/85">{item.note}</p>
                 </div>

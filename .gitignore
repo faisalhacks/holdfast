@@ -8,6 +8,11 @@ next-env.d.ts
 !.env.example
 .DS_Store
 
+# The brand source drops in at the repo root; the committed asset is the copy
+# at web/public/brand/holdfast-logo.png. Ignoring the root file keeps one of
+# them authoritative.
+/Logo.png
+
 # Agent worktrees — full repo copies, each runs its own gates against its own root.
 .claude/
 
