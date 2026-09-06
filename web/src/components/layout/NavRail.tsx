@@ -5,12 +5,11 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 
 const NAV = [
-  { href: "/", label: "Overview", glyph: "▤" },
+  { href: "/overview", label: "Overview", glyph: "▤" },
   { href: "/exceptions", label: "Exception queue", glyph: "▦" },
 ] as const;
 
 function isActive(pathname: string, href: string): boolean {
-  if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -27,13 +26,15 @@ export function NavRail() {
       aria-label="Primary"
       className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-line-strong bg-surface py-2"
     >
-      <span
-        aria-hidden
-        className="mb-1 grid size-7 place-items-center rounded-sm border border-line-strong font-mono text-sm font-bold text-ink"
-        title="Holdfast"
+      {/* Back to the public page, and the only way out of the workstation. */}
+      <Link
+        href="/"
+        title="Holdfast — home"
+        className="mb-1 grid size-7 place-items-center rounded-sm border border-line-strong font-mono text-sm font-bold text-ink transition-colors hover:border-focus hover:text-focus-ink"
       >
-        H
-      </span>
+        <span aria-hidden>H</span>
+        <span className="sr-only">Holdfast home</span>
+      </Link>
       {NAV.map((item) => {
         const active = isActive(pathname, item.href);
         return (

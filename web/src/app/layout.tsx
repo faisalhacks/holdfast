@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
-import { WorkbenchShell } from "@/components/layout/WorkbenchShell";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Holdfast — Exception review workstation",
+  title: "Holdfast — Accounts-payable exception review",
   description:
-    "Accounts-payable exception review: typed holds, field-level evidence, and a recorded routing decision.",
+    "Reconciliation exceptions handled with typed payment holds, field-level evidence, and a recorded human routing decision.",
 };
 
+/**
+ * The root layout owns the document and the tokens, and nothing else.
+ *
+ * Two surfaces live under it: the light editorial site at `/`, and the dark
+ * workstation under `(app)`. Each brings its own shell, so neither has to
+ * inherit the other's chrome.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>
-        <WorkbenchShell>{children}</WorkbenchShell>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

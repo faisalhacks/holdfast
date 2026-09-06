@@ -52,6 +52,28 @@
 
   --radius-xs: 2px;
   --radius-sm: 3px;
+
+  /*
+   * The public site palette. Additive: nothing above changes, so the
+   * workstation keeps the exact surfaces it was built and reviewed against.
+   *
+   * Light, because the brand mark is dark-on-white and because the product
+   * screenshot should be the darkest thing on the page.
+   */
+  --color-paper: #fbfbfa;
+  --color-paper-2: #f4f4f2;
+  --color-paper-3: #ecedea;
+  --color-rule: #e0e1dd;
+  --color-rule-strong: #c9cbc5;
+
+  --color-graphite: #1b1f22;
+  --color-graphite-2: #4a5257;
+  --color-graphite-3: #646c72;
+
+  /* Taken from the mark itself, so brand and product agree. */
+  --color-steel: #557390;
+  --color-steel-deep: #3d5872;
+  --color-steel-wash: #eef1f4;
 }
 
 @layer base {
@@ -65,6 +87,33 @@
     font-family: var(--font-sans);
     font-size: 0.8125rem;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+   * The site is light. Scrollbar rendering and overscroll colour come from the
+   * document, which the page itself cannot reach, so the shell announces which
+   * surface is mounted and the document follows. Where :has() is unsupported
+   * the page still renders correctly; only the scrollbar stays dark.
+   */
+  html:has(.site-root) {
+    color-scheme: light;
+  }
+
+  /* In-page links glide rather than jump, unless the reader asked otherwise. */
+  @media (prefers-reduced-motion: no-preference) {
+    html:has(.site-root) {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body:has(.site-root) {
+    background-color: var(--color-paper);
+    color: var(--color-graphite);
+    font-size: 1rem;
+  }
+
+  html:has(.site-root) * {
+    scrollbar-color: var(--color-rule-strong) transparent;
   }
 
   ::selection {
@@ -98,10 +147,53 @@
     color: var(--color-ink-faint);
   }
 
+  /* Site: an eyebrow above a headline. Small, spaced, never shouty. */
+  .label-eyebrow {
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-graphite-3);
+  }
+
+  /* Site: display type. Tight leading, slight negative tracking. */
+  .display {
+    letter-spacing: -0.022em;
+    line-height: 1.06;
+    text-wrap: balance;
+  }
+
   .clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+}
+
+/*
+ * The skip link, written outside every layer.
+ *
+ * Tailwind's `utilities` layer only accepts single-class rules, so a custom
+ * class carrying a `:focus` state and a media query is dropped there without
+ * complaint. Unlayered CSS also outranks the utility classes on the element,
+ * which set nothing this touches.
+ */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 60;
+  transform: translateY(-300%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .skip-link {
+    transition: transform 150ms ease-out;
   }
 }
