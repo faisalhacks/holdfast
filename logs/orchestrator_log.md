@@ -999,3 +999,37 @@ That is narrower than what this project has been saying all day. It is what we s
 - Both adverse findings above go in the submission under their own heading. A disclosed
   flaw nobody asked about is the most credible thing we have; and we asked for critics that
   find things, so publishing what they found is the whole point of having run them.
+
+---
+
+## W11 escalated the right blocker, and the fix turned a cost into a proof
+
+W11 could not merge: CI has no holdout, so `eval/report.json` on a runner carries
+`holdout: null` and `audit:claims` correctly rejected every holdout figure in the
+submission. **It opened an issue rather than quoting selection figures as though they were
+the headline** — which is the whole point of the claims gate, working on the one document
+that most wanted to route around it.
+
+The blocker is a direct consequence of a decision made five waves earlier: the holdout is
+not in the repository and not a git object, which is what kept it out of reach of twelve
+sweep agents. A CI runner is in the same position as a sweep agent, by design.
+
+**Fixed by regenerating it in CI rather than checking it out.** The claim we make is that
+anyone can rebuild the holdout byte-identically from the committed generator and the seed
+frozen into `data/MANIFEST` before any search agent existed. CI now performs exactly that
+reproduction on a clean machine on every PR, and `tools/verify-manifest.mjs` compares the
+rebuilt digests against the frozen ones:
+
+```
+manifest: holdout REPRODUCED — 5 file(s) at b410dcf1ea53,
+          regenerated from seed 20260907 and byte-identical to the frozen digests
+```
+
+**The cost became the evidence.** Before this, "the holdout is reproducible from a frozen
+seed" was a sentence in a manifest. Now it is a check that runs on every pull request, and
+if the generator ever stops being deterministic the build says so. A judge does not have to
+believe us; they can run the generator and compare five hashes.
+
+This is the third time in the run that the honest arrangement was also the one that
+produced better evidence — after keeping the holdout out of git in the first place, and
+after publishing the sweep's losing strategies.
