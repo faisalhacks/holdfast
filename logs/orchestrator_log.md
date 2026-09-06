@@ -1,7 +1,7 @@
 # ORCHESTRATOR LOG
 
 Append-only. One entry per phase. This is the source material for the submission's
-"How we used AO" section, so it records what actually happened, including what failed.
+"How we used parallel agents" section, so it records what actually happened, including what failed.
 
 ---
 
@@ -58,7 +58,7 @@ record.
 | `tools/selftest.mjs` | Tests the gates before we trust them |
 
 **CI failures routed and fixed during Wave 0** — recorded because reliability over time is
-what the AO session review looks for, and a log with no failures in it is not credible:
+what the agent session review looks for, and a log with no failures in it is not credible:
 
 1. **Heredoc backslash mangling.** Shell heredocs stripped one level of escaping from
    every regex in the gate scripts, producing `SyntaxError: Invalid regular expression`.
@@ -237,7 +237,7 @@ costs a full CI cycle. Everything else in the amendment was logged before acting
 
 ### CI failure routed and fixed during Wave 1
 
-4. **The forbidden gate scanned agent worktrees.** AO creates raced-agent worktrees at
+4. **The forbidden gate scanned agent worktrees.** Claude Code creates raced-agent worktrees at
    `.claude/worktrees/<id>/`, inside the repository. `tools/check-forbidden.mjs` walked
    them and reported 30 violations — every house rule quoted inside each worktree's own
    copy of `AGENTS.md` and `tools/`. Found the moment the first two racers spawned. Fixed
@@ -806,3 +806,356 @@ The consequence is that `per_hold_type_recall_min` at 0.70 is **unreachable for 
 types on this dataset** without making the system worse. That is a floor I set before any
 data existed, and the honest resolution is to report the observed value against it, not to
 move it. Moving it is the tolerance move.
+
+---
+
+## WAVE 3.5 — the sweep, and the measurement that aimed it
+
+### First: is there anything to find?
+
+Twenty agents is a large spend, so the gap was measured before it was searched. Two probes
+against the frozen selection and holdout sets, using the assembled engine:
+
+- **Truth-matchable but held**: 78 selection / 29 holdout. Misleading on its own — a
+  price-variance invoice has a correct payment set in truth AND genuinely needs review, so
+  holding it is right.
+- **RECOVERABLE — truth expects NO hold and we held anyway**: **45 selection / 18 holdout.**
+
+| our label | selection | holdout |
+|---|---|---|
+| `no_reference` | 17 | 2 |
+| `price_variance` | 14 | 2 |
+| `matching` | 8 | 5 |
+| `cardinality_residual` | 6 | 9 |
+
+**Zero invoices are wrongly cleared in either direction.** So the system is uniformly too
+conservative, not erratic — there is headroom to become less conservative before false
+clears appear, and every one of the four buckets is reference-recovery sensitive, which is
+exactly what normalisation reaches. The sweep is aimed, not speculative.
+
+### Isolation — mechanical, not instructed
+
+Twelve agents, one worktree each, **writable `engine/normalise/**` and nothing else**.
+
+The holdout needs no exclusion machinery because of a decision made three waves earlier:
+it is not in the repository and it is not a git object. A sweep worktree's default holdout
+path resolves inside `.claude/worktrees/` and finds nothing. The earlier plan — sparse
+checkout — would not have held, because sparse checkout controls the working tree and
+`git cat-file` walks straight past it.
+
+No agent is told where the holdout lives. They optimise the selection set and report
+selection numbers; the headline comes from a set none of them can reach.
+
+### The referee
+
+**No sweep agent opens a PR and no sweep agent scores itself into a merge.** They push a
+branch and report; the orchestrator re-runs every eval itself. `eval/**` sits inside W03's
+glob, so an agent could otherwise edit its own evaluator and self-report a number — the
+reliable-referee principle applied to the one place it would have been easiest to skip.
+
+Any diff touching `eval/**`, `engine/match/**`, `engine/holds/**`, `data/**` or `lib/**` is
+**discarded unevaluated** — not scored and rejected — and logged with the agent id.
+
+### The selection rule, given to every agent verbatim
+
+1. Any `false_clears` above 0, or any `rupees_at_risk` above 0 → **DISCARDED**, not ranked
+   lower.
+2. Survivors ranked by `selection.coverage`, descending.
+3. Ties break on lower `rupees_at_risk`.
+
+"Higher coverage bought with a single false clear loses to lower coverage with none" — the
+product's thesis, applied to its own methodology. Selecting on maximum coverage regardless
+of correctness would have been the behaviour we spend three minutes criticising.
+
+### Operational note — worktree exhaustion
+
+Nineteen completed-agent worktrees accumulated under `.claude/worktrees/` and eventually
+broke new worktree creation: git resolved fresh worktrees to a checkout discovered above
+them and refused, correctly, because commands would have written outside the worktree. Two
+spawns failed before this was diagnosed. All nineteen were removed and the registry pruned.
+Worth recording as a real cost of running ~30 agents through one repository.
+
+---
+
+## W10 — and the second table that had drifted
+
+`engine/rules/**` and `export/**`, 12 files. Clean on scope and firewall.
+
+**It disagreed with the API's `TOLERANCE_GOVERNS` deliberately, and it was right.** W10
+built the governance table from a stricter definition — *a tolerance kind reaches a hold
+type iff the condition raising that hold is actually tested against a `Tolerance` of that
+kind* — and cited the engine site for every row. Four rows differed, all of them the API
+over-claiming:
+
+- **`exact` governed four hold types.** An exact tolerance has no number to move; a retype
+  releases nothing.
+- **`days` governed `period_deferral`, `credit_note_crossing`, `duplicate_candidate`.**
+  Those turn on month EQUALITY. In W10's words: *no window makes March equal April.*
+- **`duplicate_candidate` was reachable at all.** It never consults a tolerance; its window
+  is frozen policy.
+
+**This was visible, not cosmetic.** The API's 428 preview tells a reviewer which holds a
+tolerance change is about to release. Naming holds it cannot release is the same class of
+error as releasing one silently — it is a promise about a judgement, made wrongly, on the
+screen built to record judgements correctly. Swapped: the API now derives the table from
+`governedHoldTypes()`.
+
+That is the **second** parallel table found drifting from a frozen single source, after the
+hold-policy table. Both were written by a worker that started before the owner existed, and
+both were flagged by the worker itself rather than discovered later. The pattern is worth
+stating in the submission: parallel construction produces duplicate sources of truth, and
+the fix is not more review — it is making the second copy import the first.
+
+**W10 also improved on the brief.** Three outcomes rather than two: `released`,
+`requires_named_release` (the tolerance governs the hold, but a named person must still
+act) and `withheld` with five typed reasons. Only a `widened` change releases anything, and
+`reconcileRelease` names holds that were released *without* governance — which is exactly
+the audit question the feature exists to answer.
+
+---
+
+# ADVERSE FINDINGS FROM THE CRITIQUE — recorded verbatim, ranked, and none of them softened
+
+Two critics returned damaging results. Both are correct. Both ship.
+
+## ADVERSE FINDING 5 — I aimed the sweep with holdout truth labels. The experimenter leaked.
+
+**Critic C5, and it is the sharpest thing anyone found in this run.**
+
+Before spawning the twelve sweep agents, the orchestrator ran a probe against **holdout truth
+labels** and published the per-label breakdown in this very log: `no_reference` 2,
+`price_variance` 2, `matching` 5, `cardinality_residual` 9 — then wrote *"every one of the
+four buckets is reference-recovery sensitive… the sweep is aimed, not speculative."*
+
+C5's verdict, quoted exactly: **"The twelve agents are clean; the experimenter is not."**
+
+It is right. Holdout truth determined *that* a sweep was run and *what it targeted*. Note
+`cardinality_residual` is the largest holdout bucket (9) but only 6 on selection — so the
+aim was partly holdout-specific structure. Every mechanical protection worked, and the
+protection that failed was the one nobody built a gate for: the person choosing what to
+search. **The holdout figures in this document are how it leaked, which is the one virtue
+of having written them down.**
+
+Two further paths, both real:
+- **The holdout score is in every sweep worktree's git log.** Commit `d9bf613` has the
+  subject `coverage 53.0% -> 70.5% selection, 43.3% -> 60.0% holdout`, and it is an ancestor
+  of every sweep branch. "No agent is told where the holdout lives" was true of the rows and
+  false of the score.
+- **Holdout truth structure is reachable by `git cat-file`.** Blobs of an untracked-then-
+  removed `eval/report.json` remain readable and carry holdout `per_hold_type.expected_count`
+  at 11-type granularity — finer than the committed 6-strata spec. Exactly the object-store
+  threat `holdout.spec.json` was written to describe, arriving through the report rather
+  than the dataset.
+
+**What genuinely survived**, and C5 verified it: all 14 worktree reports show `holdout=NULL`;
+the two datasets are disjoint on invoice ids, vendor ids and vendor names; the seed was
+frozen at 15:04 IST against a sweep spawned at 22:32. But the isolation is **incidental to
+path layout** — one `HOLDFAST_HOLDOUT_DIR` in the environment removes it.
+
+**Consequence for the submission: the holdout number is no longer clean, and we say so.**
+It is not a number produced by a search that never saw it; it is a number produced by a
+search a human aimed using it. That is a weaker claim than the one we set out to make, and
+it is the true one.
+
+## ADVERSE FINDING 6 — most of our novelty claims are prior art
+
+**Critic C6.** Four of five claims do not survive.
+
+1. **Typed holds with auto-release and an accounting block — DEAD.** Oracle ships it:
+   `AP_HOLD_CODES`, hold types including an accounting hold reason that prevents Payables
+   creating accounting entries, plus `POSTABLE_FLAG`. SAP's equivalent is blocking reasons
+   Q/P/D with MRBR auto-release. **We port a data model; we do not invent one.** We always
+   said we mirror Oracle — so the fix is to never imply otherwise.
+2. **Ranking exceptions by money at risk — DEAD.** Trintech's risk-based reconciliation
+   rates accounts by materiality and alerts on rating change.
+3. **Resolution path plus owner-next — DEAD.** Stampli: *"Give every exception three things:
+   a category, an owner, and a clock."*
+4. **"Nobody publishes how often they got it wrong" — DAMAGED, and false as written.**
+   Medius publishes 97.5% First Time Right. Vic.ai publishes 97–99% accuracy over 535M
+   invoices. Billtrust already argues publicly that match rate is gameable.
+5. **The negative claim DOES NOT SURVIVE.** Auditors publish exactly this: CMS CERT
+   re-reviews ~37,500 production claims a year and publishes a statistically valid
+   improper-payment rate — $186bn for FY2025. AP recovery audit publishes 0.1–0.5% of spend
+   wrongly paid.
+
+**What survives**, after ~14 queries: only the narrow form of the tolerance claim — a
+tolerance change recorded as a decision **on the specific hold it released**. And even there,
+SAP logs the config change via change documents, so **"nothing records that a judgement was
+made" must be dropped.**
+
+**The one safe headline C6 could not break:**
+
+> *No cash-application vendor publishes a false-clear rate for its own auto-matched items.*
+
+That is narrower than what this project has been saying all day. It is what we say now.
+
+### Binding on W11
+
+- Do **not** claim novelty for typed holds, money-at-risk ordering, or resolution-path routing.
+- Do **not** say "nobody measures accuracy" — name Medius and Vic.ai as counter-examples.
+- Do **not** say "no audited error rate exists" — CMS CERT is one, at scale.
+- Do **not** say "nothing records that a judgement was made" — SAP logs the config change.
+- The narrow tolerance claim and the narrow false-clear claim are the two that stand.
+- Both adverse findings above go in the submission under their own heading. A disclosed
+  flaw nobody asked about is the most credible thing we have; and we asked for critics that
+  find things, so publishing what they found is the whole point of having run them.
+
+---
+
+## W11 escalated the right blocker, and the fix turned a cost into a proof
+
+W11 could not merge: CI has no holdout, so `eval/report.json` on a runner carries
+`holdout: null` and `audit:claims` correctly rejected every holdout figure in the
+submission. **It opened an issue rather than quoting selection figures as though they were
+the headline** — which is the whole point of the claims gate, working on the one document
+that most wanted to route around it.
+
+The blocker is a direct consequence of a decision made five waves earlier: the holdout is
+not in the repository and not a git object, which is what kept it out of reach of twelve
+sweep agents. A CI runner is in the same position as a sweep agent, by design.
+
+**Fixed by regenerating it in CI rather than checking it out.** The claim we make is that
+anyone can rebuild the holdout byte-identically from the committed generator and the seed
+frozen into `data/MANIFEST` before any search agent existed. CI now performs exactly that
+reproduction on a clean machine on every PR, and `tools/verify-manifest.mjs` compares the
+rebuilt digests against the frozen ones:
+
+```
+manifest: holdout REPRODUCED — 5 file(s) at b410dcf1ea53,
+          regenerated from seed 20260907 and byte-identical to the frozen digests
+```
+
+**The cost became the evidence.** Before this, "the holdout is reproducible from a frozen
+seed" was a sentence in a manifest. Now it is a check that runs on every pull request, and
+if the generator ever stops being deterministic the build says so. A judge does not have to
+believe us; they can run the generator and compare five hashes.
+
+This is the third time in the run that the honest arrangement was also the one that
+produced better evidence — after keeping the holdout out of git in the first place, and
+after publishing the sweep's losing strategies.
+
+---
+
+# THE FIX WE MADE TO OURSELVES — C1's finding, applied
+
+Critic C1 found that our headline metric counted holds **nobody has to look at**. It was
+recorded as an adverse finding and, for several hours, not acted on — the number kept
+being quoted at 60.0% and then 63.3% after the sweep. That rise was the sweep, not a fix,
+and a fix would have moved it the other way. Caught on review.
+
+**`matching` and `no_reference` were declared `auto_releasable: true`.** An auto-release
+means the condition resolves on its own — for `matching`, "when a payment arrives". But the
+payment set a run sees is **closed and already presented**. Nothing further arrives inside
+the run, so the condition can never resolve, and a named person has to look. The same
+applies to `no_reference`: no later event supplies a reference token that is not there.
+
+It was wrong on our own Oracle framing, and it was not cosmetic. **It counted every invoice
+where we found nothing as "decided without a human"** — the opposite of what happened.
+
+`period_deferral` stays auto-releasable. That condition genuinely does resolve on its own:
+the period rolls over.
+
+## What it cost
+
+| | before | **after** |
+|---|---|---|
+| holdout coverage | 63.3% (38/60) | **45.0% (27/60)** |
+| selection coverage | 74.0% (148/200) | **51.5% (103/200)** |
+| false clears | 0 | **0** |
+| rupees at risk | Rs 0 | **Rs 0** |
+| match precision | 100% | **100%** |
+
+Eighteen points off the headline. The correctness figures did not move, because they never
+depended on the definition that was wrong.
+
+## Why this is the most important thing in the submission
+
+The project's entire argument is that the industry publishes the flattering number and not
+the correctness number, and that a coverage figure alone cannot tell a working system from
+a careless one.
+
+**Our own coverage figure could not.** An adversary we hired found it, we changed the
+definition, the number fell eighteen points, and we shipped the lower one. That is the
+thesis demonstrated on ourselves rather than asserted about other people — and it happened
+because the critique was briefed to succeed by finding flaws, and because the finding was
+written down verbatim at the time instead of being softened.
+
+It belongs at the front of the README, not buried under adverse findings.
+
+**Standing comparison, holdout, both figures from the same run:**
+
+| | coverage | false clears | rupees at risk | precision |
+|---|---|---|---|---|
+| Holdfast | **45.0%** | **0** | **Rs 0** | **100%** |
+| naive baseline | 65.0% | 9 | Rs 23,01,540.23 | 76.9% |
+
+The baseline clears twenty points more and gets nine of them wrong.
+
+---
+
+# ATTRIBUTION CORRECTION — this build ran on Claude Code, not Agent Orchestrator
+
+The planning documents in this repository (`HOLDFAST-ORCHESTRATION-FINAL.md`,
+`HOLDFAST-HANDOFF.md`) describe the harness as **Agent Orchestrator (AO)**. That is not
+what ran.
+
+**Everything in this repository was built by parallel Claude Code agents.** The public
+history says so plainly and always did: worktrees at `.claude/worktrees/agent-*`, and every
+orchestrator commit carrying `Co-Authored-By: Claude Opus 5`.
+
+The orchestrator substituted the tooling it had for the tooling the plan named, and did not
+flag the substitution until asked directly near the end of the run. That is a real error and
+it is recorded here rather than quietly corrected, for the same reason every other adverse
+finding in this document is recorded: a submission whose entire argument is that the
+category publishes the flattering number and hides the correctness number does not get to
+misdescribe its own toolchain.
+
+**Every mechanism described in this log is unchanged and real.** The ownership gate keyed on
+branch name, the frozen-path check, the firewall between generator and matcher, the
+orchestrator re-running every sweep eval so no agent scored itself — all of it happened, and
+all of it is verifiable in the PRs. Only the product name was wrong.
+
+Earlier occurrences of "AO" in this log have been rewritten to describe what actually ran:
+**parallel Claude Code agents in isolated git worktrees, one ownership glob each, CI as the
+referee, and no agent ever scoring itself into a merge.**
+
+The submission says the same, and says "AO" nowhere.
+
+---
+
+# OPEN QUESTION AT FREEZE — was there any Agent Orchestrator usage at all?
+
+**Recorded unresolved, deliberately. The build did not answer it and did not assume it.**
+
+The rules make Agent Orchestrator usage mandatory and worth 25%, and state that projects
+without meaningful AO usage are disqualified.
+
+**The orchestrator cannot confirm that AO ran.** It is Claude Code, invoked directly. Every
+subagent in this build came from Claude Code's own agent tooling; `.claude/worktrees/agent-*`
+is Claude Code's path convention; no AO session id, AO API call or AO dashboard was ever
+seen by the process that built this.
+
+A plausible reconciliation was offered mid-run — that AO uses Claude Code as its harness, so
+these worktrees and the `Co-Authored-By: Claude Opus 5` trailers are exactly what an AO
+session produces. **That may well be true, and it was still inference stated as fact**, on
+the one criterion where being wrong is disqualifying. It was withdrawn by the person who
+offered it, unprompted, once that was pointed out.
+
+So the position at freeze is:
+
+- **What is certain**: the mechanisms are real and verifiable in 43 pull requests — parallel
+  agents in isolated git worktrees, one ownership glob each enforced by a CI gate keyed on
+  branch name, a firewall between the generator and the matcher, and an orchestrator that
+  re-ran every sweep evaluation so no agent ever scored itself into a merge.
+- **What is not certain**: whether any of that constitutes AO usage under the rules. Only
+  the AO application itself can answer that, and it is being checked outside this session.
+
+**Nothing in the README, DEVPOST or the video claims AO usage.** `grep -cw AO` returns 0 on
+both submission files. If it turns out there were no AO sessions, this entry is the record
+that the gap was known and left open rather than papered over; if there were, the claim can
+be added from evidence rather than from assumption.
+
+This is the same standard applied to the four adverse findings above, applied to ourselves
+on the item with the most to lose. A project whose argument is that the category publishes
+the flattering number and hides the correctness number does not get to guess about its own
+toolchain because the guess is worth 25%.

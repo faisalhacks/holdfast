@@ -35,6 +35,7 @@ import {
   findDisplacedTokens,
   identifierCandidateTokens,
   referenceCandidateTokens,
+  separatorBonds,
   vendorResidueTokens,
 } from './tokens';
 import type {
@@ -191,9 +192,21 @@ export function extractFromNarration(
   const residue = vendorResidueTokens(classified).join(' ');
   const vendor = normaliseField('vendor', residue, side, config);
 
-  const references = referenceCandidateTokens(classified, tables, { minReferenceLength }).map((t) =>
-    normaliseField('reference', t, side, config),
-  );
+  // The bonds come from the RAW line, not from the scan: `punctuation_strip` is what
+  // destroys the difference between the `/` inside `RCT/2026/01/472` and the space between
+  // two references on a bulk line, so the structure has to be read before it is flattened.
+  //
+  // The length floor is applied to the CANONICAL form, not to the raw token. `minReference-
+  // Length` says a number too short to name a document is not a reference; the raw token is
+  // the wrong place to test that, because `BILL0005` is eight characters that canonicalise
+  // to `5` once the prefix and the zero padding are gone. Testing before canonicalisation
+  // admits it, and a one-character token is contained in the token set of half the ledger.
+  const references = referenceCandidateTokens(classified, tables, {
+    minReferenceLength,
+    bonds: separatorBonds(raw),
+  })
+    .map((t) => normaliseField('reference', t, side, config))
+    .filter((f) => f.result.tokens.some((token) => token.length >= minReferenceLength));
   const identifiers = identifierCandidateTokens(classified).map((t) =>
     normaliseField('identifier', t, side, config),
   );

@@ -8,6 +8,7 @@
 // Ordering matters. A case usually carries more than one hold and the routing must be
 // deterministic, so hold types are ranked and the highest-ranked one on the case decides.
 
+import { governedHoldTypes } from '@/engine/rules';
 import type {
   HoldType,
   OwnerRole,
@@ -146,16 +147,37 @@ export function suggestRouting(holdTypes: readonly HoldType[]): RoutingSuggestio
  * TABLES — the hold rows in scope — and never by asking the engine to re-run, which is
  * what keeps the API independent of engine work and keeps the released set auditable.
  */
-export const TOLERANCE_GOVERNS: Readonly<Record<ToleranceKind, readonly HoldType[]>> = {
-  exact: ['matching', 'price_variance', 'quantity_variance', 'dist_variance'],
-  absolute_paise: [
-    'price_variance',
-    'quantity_variance',
-    'tax_amount_range',
-    'dist_variance',
-    'cardinality_residual',
-  ],
-  percentage: ['price_variance', 'quantity_variance', 'tax_variance', 'dist_variance'],
-  days: ['period_deferral', 'credit_note_crossing', 'duplicate_candidate'],
-  similarity: ['matching', 'no_reference', 'duplicate_candidate'],
-};
+/**
+ * Derived from `engine/rules`, which is the single source.
+ *
+ * This table was originally the API's own, written before `engine/rules` existed. W10
+ * built the engine-side rules from a stricter definition — a tolerance kind reaches a hold
+ * type iff the condition raising that hold is actually tested against a `Tolerance` of
+ * that kind — and the two disagreed on four rows. The API's version over-claimed:
+ *
+ *   - `exact` was listed as governing four hold types. An exact tolerance has no number to
+ *     move, so a retype releases nothing.
+ *   - `days` was listed as governing `period_deferral`, `credit_note_crossing` and
+ *     `duplicate_candidate`. Those turn on month EQUALITY, and no window makes March equal
+ *     April.
+ *   - `duplicate_candidate` was reachable at all. It never consults a tolerance; its
+ *     window is frozen policy.
+ *
+ * That over-claim was visible: the 428 preview would have told a reviewer which holds a
+ * tolerance change was about to release, and named holds it could not release. Promising a
+ * release that does not happen is the same class of error as releasing one silently.
+ */
+const KINDS: readonly ToleranceKind[] = [
+  'exact',
+  'absolute_paise',
+  'percentage',
+  'days',
+  'similarity',
+];
+
+export const TOLERANCE_GOVERNS: Readonly<Record<ToleranceKind, readonly HoldType[]>> =
+  Object.freeze(
+    Object.fromEntries(
+      KINDS.map((kind) => [kind, governedHoldTypes(kind)]),
+    ) as Record<ToleranceKind, readonly HoldType[]>,
+  );

@@ -1,0 +1,3 @@
+# The durable half of the content cache, when a caller asks for one. Responses keyed by a
+# hash of the request; regenerable by definition, and never part of the record.
+.cache/
