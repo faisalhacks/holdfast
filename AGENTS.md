@@ -90,3 +90,5 @@ done. Fix it; never disable the check. Nothing about test suites.
 
 Three attempts on a failing check, then the orchestrator quarantines the branch. A
 quarantine note is better submission material than a fourth flailing diff.
+
+<!-- deliberate frozen-file violation: Wave 0 protection test -->
