@@ -1,0 +1,362 @@
+[
+  {
+    "id": "VEN-S-001",
+    "name": "Kavarti Consultancy Private Limited",
+    "normalised_name": "Kavarti Consultancy Private Limited",
+    "tax_identifier": "99ZZKAV1463H6ZG"
+  },
+  {
+    "id": "VEN-S-002",
+    "name": "Ombresa Chemicals LLP",
+    "normalised_name": "Ombresa Chemicals LLP",
+    "tax_identifier": "97ZZOMB9292Y9ZB"
+  },
+  {
+    "id": "VEN-S-003",
+    "name": "Nirvath Polymers and Sons",
+    "normalised_name": "Nirvath Polymers and Sons",
+    "tax_identifier": "99ZZNIR0451Z6ZF"
+  },
+  {
+    "id": "VEN-S-004",
+    "name": "Zephrik Metalcraft Private Limited",
+    "normalised_name": "Zephrik Metalcraft Private Limited",
+    "tax_identifier": null
+  },
+  {
+    "id": "VEN-S-005",
+    "name": "Talpani Toolroom LLP",
+    "normalised_name": "Talpani Toolroom LLP",
+    "tax_identifier": "99ZZTAL5721K8ZP"
+  },
+  {
+    "id": "VEN-S-006",
+    "name": "Durvaska Marine Services Solutions Pvt Ltd",
+    "normalised_name": "Durvaska Marine Services Solutions Pvt Ltd",
+    "tax_identifier": "99ZZDUR1921U2ZA"
+  },
+  {
+    "id": "VEN-S-007",
+    "name": "Ekthara Metalcraft Ltd",
+    "normalised_name": "Ekthara Metalcraft Ltd",
+    "tax_identifier": "99ZZEKT8940P5ZW"
+  },
+  {
+    "id": "VEN-S-008",
+    "name": "Movindra Consultancy Enterprises",
+    "normalised_name": "Movindra Consultancy Enterprises",
+    "tax_identifier": "97ZZMOV5035T7ZU"
+  },
+  {
+    "id": "VEN-S-009",
+    "name": "Palcheru Packaging Industries Pvt Ltd",
+    "normalised_name": "Palcheru Packaging Industries Pvt Ltd",
+    "tax_identifier": "97ZZPAL1134M6ZU"
+  },
+  {
+    "id": "VEN-S-010",
+    "name": "Rathovin Instruments Ltd",
+    "normalised_name": "Rathovin Instruments Ltd",
+    "tax_identifier": "97ZZRAT7109N8ZL"
+  },
+  {
+    "id": "VEN-S-011",
+    "name": "Sundabri Engineering Solutions Pvt Ltd",
+    "normalised_name": "Sundabri Engineering Solutions Pvt Ltd",
+    "tax_identifier": "99ZZSUN6912V9ZG"
+  },
+  {
+    "id": "VEN-S-012",
+    "name": "Tejmoura Cold Chain Industries Pvt Ltd",
+    "normalised_name": "Tejmoura Cold Chain Industries Pvt Ltd",
+    "tax_identifier": null
+  },
+  {
+    "id": "VEN-S-013",
+    "name": "Ulvanti Textiles Ltd",
+    "normalised_name": "Ulvanti Textiles Ltd",
+    "tax_identifier": "99ZZULV7600V4ZS"
+  },
+  {
+    "id": "VEN-S-014",
+    "name": "Varkhede Printworks Solutions Pvt Ltd",
+    "normalised_name": "Varkhede Printworks Solutions Pvt Ltd",
+    "tax_identifier": "99ZZVAR0880X3ZB"
+  },
+  {
+    "id": "VEN-S-015",
+    "name": "Wistala Textiles and Sons",
+    "normalised_name": "Wistala Textiles and Sons",
+    "tax_identifier": "99ZZWIS3116Z1ZA"
+  },
+  {
+    "id": "VEN-S-016",
+    "name": "Yamneth Packaging LLP",
+    "normalised_name": "Yamneth Packaging LLP",
+    "tax_identifier": "97ZZYAM0991A1ZE"
+  },
+  {
+    "id": "VEN-S-017",
+    "name": "Zarkolin Techworks Industries Pvt Ltd",
+    "normalised_name": "Zarkolin Techworks Industries Pvt Ltd",
+    "tax_identifier": "97ZZZAR3041E4ZR"
+  },
+  {
+    "id": "VEN-S-018",
+    "name": "Ashvarne Marine Services Solutions Pvt Ltd",
+    "normalised_name": "Ashvarne Marine Services Solutions Pvt Ltd",
+    "tax_identifier": "99ZZASH7057K6ZA"
+  },
+  {
+    "id": "VEN-S-019",
+    "name": "Bhorunda Logistics LLP",
+    "normalised_name": "Bhorunda Logistics LLP",
+    "tax_identifier": "99ZZBHO2979R3ZB"
+  },
+  {
+    "id": "VEN-S-020",
+    "name": "Chandreth Infra Projects Industries Pvt Ltd",
+    "normalised_name": "Chandreth Infra Projects Industries Pvt Ltd",
+    "tax_identifier": null
+  },
+  {
+    "id": "VEN-S-021",
+    "name": "Dhaviska Facilities Pvt Ltd",
+    "normalised_name": "Dhaviska Facilities Pvt Ltd",
+    "tax_identifier": "99ZZDHA9976C7ZG"
+  },
+  {
+    "id": "VEN-S-022",
+    "name": "Elmoreth Cold Chain Solutions Pvt Ltd",
+    "normalised_name": "Elmoreth Cold Chain Solutions Pvt Ltd",
+    "tax_identifier": "97ZZELM4904C3ZP"
+  },
+  {
+    "id": "VEN-S-023",
+    "name": "Fenvarti Engineering Pvt Ltd",
+    "normalised_name": "Fenvarti Engineering Pvt Ltd",
+    "tax_identifier": "99ZZFEN9235G9ZU"
+  },
+  {
+    "id": "VEN-S-024",
+    "name": "Girnaska Marine Services Industries Pvt Ltd",
+    "normalised_name": "Girnaska Marine Services Industries Pvt Ltd",
+    "tax_identifier": "99ZZGIR4049M4ZL"
+  },
+  {
+    "id": "VEN-S-025",
+    "name": "Hastavel Analytics and Sons",
+    "normalised_name": "Hastavel Analytics and Sons",
+    "tax_identifier": "97ZZHAS2704N1ZP"
+  },
+  {
+    "id": "VEN-S-026",
+    "name": "Ilvantha Consultancy Pvt Ltd",
+    "normalised_name": "Ilvantha Consultancy Pvt Ltd",
+    "tax_identifier": "99ZZILV8150W4ZF"
+  },
+  {
+    "id": "VEN-S-027",
+    "name": "Jorbheda Instruments Industries Pvt Ltd",
+    "normalised_name": "Jorbheda Instruments Industries Pvt Ltd",
+    "tax_identifier": "99ZZJOR9912V5ZX"
+  },
+  {
+    "id": "VEN-S-028",
+    "name": "Kesmarti Metalcraft and Sons",
+    "normalised_name": "Kesmarti Metalcraft and Sons",
+    "tax_identifier": "99ZZKES0857D6ZI"
+  },
+  {
+    "id": "VEN-S-029",
+    "name": "Lohvaneth Engineering Pvt Ltd",
+    "normalised_name": "Lohvaneth Engineering Pvt Ltd",
+    "tax_identifier": "97ZZLOH2271Z1ZU"
+  },
+  {
+    "id": "VEN-S-030",
+    "name": "Mirthala Electricals Enterprises",
+    "normalised_name": "Mirthala Electricals Enterprises",
+    "tax_identifier": null
+  },
+  {
+    "id": "VEN-S-031",
+    "name": "Nandvira Software Pvt Ltd",
+    "normalised_name": "Nandvira Software Pvt Ltd",
+    "tax_identifier": "97ZZNAN8911G6ZT"
+  },
+  {
+    "id": "VEN-S-032",
+    "name": "Orvaskar Cold Chain Pvt Ltd",
+    "normalised_name": "Orvaskar Cold Chain Pvt Ltd",
+    "tax_identifier": "97ZZORV1776G8ZH"
+  },
+  {
+    "id": "VEN-S-033",
+    "name": "Pratheven Instruments Private Limited",
+    "normalised_name": "Pratheven Instruments Private Limited",
+    "tax_identifier": "99ZZPRA3398H2ZU"
+  },
+  {
+    "id": "VEN-S-034",
+    "name": "Quivandra Engineering Industries Pvt Ltd",
+    "normalised_name": "Quivandra Engineering Industries Pvt Ltd",
+    "tax_identifier": "97ZZQUI7170Y6ZL"
+  },
+  {
+    "id": "VEN-S-035",
+    "name": "Roshtala Cold Chain Enterprises",
+    "normalised_name": "Roshtala Cold Chain Enterprises",
+    "tax_identifier": "99ZZROS5419C4ZY"
+  },
+  {
+    "id": "VEN-S-036",
+    "name": "Savrindh Packaging Private Limited",
+    "normalised_name": "Savrindh Packaging Private Limited",
+    "tax_identifier": "99ZZSAV1522D8ZM"
+  },
+  {
+    "id": "VEN-S-037",
+    "name": "Thalveka Chemicals Enterprises",
+    "normalised_name": "Thalveka Chemicals Enterprises",
+    "tax_identifier": "97ZZTHA8922U3ZX"
+  },
+  {
+    "id": "VEN-S-038",
+    "name": "Ujwarith Instruments Solutions Pvt Ltd",
+    "normalised_name": "Ujwarith Instruments Solutions Pvt Ltd",
+    "tax_identifier": "97ZZUJW8348I9ZI"
+  },
+  {
+    "id": "VEN-S-039",
+    "name": "Vandhrolo Textiles Private Limited",
+    "normalised_name": "Vandhrolo Textiles Private Limited",
+    "tax_identifier": "99ZZVAN0742V2ZZ"
+  },
+  {
+    "id": "VEN-S-040",
+    "name": "Wexmiran Agro Products Private Limited",
+    "normalised_name": "Wexmiran Agro Products Private Limited",
+    "tax_identifier": "99ZZWEX6326G8ZS"
+  },
+  {
+    "id": "VEN-S-041",
+    "name": "Xanthavi Chemicals Enterprises",
+    "normalised_name": "Xanthavi Chemicals Enterprises",
+    "tax_identifier": "97ZZXAN9779W4ZR"
+  },
+  {
+    "id": "VEN-S-042",
+    "name": "Yolbresh Consultancy Private Limited",
+    "normalised_name": "Yolbresh Consultancy Private Limited",
+    "tax_identifier": "99ZZYOL9096N6ZQ"
+  },
+  {
+    "id": "VEN-S-043",
+    "name": "Zumretha Instruments Pvt Ltd",
+    "normalised_name": "Zumretha Instruments Pvt Ltd",
+    "tax_identifier": "99ZZZUM8051H3ZE"
+  },
+  {
+    "id": "VEN-S-044",
+    "name": "Amberkot Techworks Solutions Pvt Ltd",
+    "normalised_name": "Amberkot Techworks Solutions Pvt Ltd",
+    "tax_identifier": "99ZZAMB8550F3ZL"
+  },
+  {
+    "id": "VEN-S-045",
+    "name": "Bhelvana Toolroom Industries Pvt Ltd",
+    "normalised_name": "Bhelvana Toolroom Industries Pvt Ltd",
+    "tax_identifier": "97ZZBHE3372R3ZU"
+  },
+  {
+    "id": "VEN-S-046",
+    "name": "Cindraka Textiles Solutions Pvt Ltd",
+    "normalised_name": "Cindraka Textiles Solutions Pvt Ltd",
+    "tax_identifier": "99ZZCIN8070J9ZX"
+  },
+  {
+    "id": "VEN-S-047",
+    "name": "Dorvanth Packaging Private Limited",
+    "normalised_name": "Dorvanth Packaging Private Limited",
+    "tax_identifier": "99ZZDOR4486A6ZM"
+  },
+  {
+    "id": "VEN-S-048",
+    "name": "Estrivan Toolroom and Sons",
+    "normalised_name": "Estrivan Toolroom and Sons",
+    "tax_identifier": "97ZZEST7504U1ZV"
+  },
+  {
+    "id": "VEN-S-049",
+    "name": "Fyrandel Facilities Enterprises",
+    "normalised_name": "Fyrandel Facilities Enterprises",
+    "tax_identifier": "97ZZFYR8484I7ZV"
+  },
+  {
+    "id": "VEN-S-050",
+    "name": "Gholapse Infra Projects Solutions Pvt Ltd",
+    "normalised_name": "Gholapse Infra Projects Solutions Pvt Ltd",
+    "tax_identifier": "97ZZGHO2085P6ZF"
+  },
+  {
+    "id": "VEN-S-051",
+    "name": "Hurvanti Polymers Solutions Pvt Ltd",
+    "normalised_name": "Hurvanti Polymers Solutions Pvt Ltd",
+    "tax_identifier": "99ZZHUR3438E8ZH"
+  },
+  {
+    "id": "VEN-S-052",
+    "name": "Iskarmel Analytics Pvt Ltd",
+    "normalised_name": "Iskarmel Analytics Pvt Ltd",
+    "tax_identifier": "99ZZISK1383K8ZG"
+  },
+  {
+    "id": "VEN-S-053",
+    "name": "Jhalvenu Adhesives Private Limited",
+    "normalised_name": "Jhalvenu Adhesives Private Limited",
+    "tax_identifier": "97ZZJHA8066I7ZQ"
+  },
+  {
+    "id": "VEN-S-054",
+    "name": "Kruthana Electricals LLP",
+    "normalised_name": "Kruthana Electricals LLP",
+    "tax_identifier": null
+  },
+  {
+    "id": "VEN-S-055",
+    "name": "Lomvarti Instruments Industries Pvt Ltd",
+    "normalised_name": "Lomvarti Instruments Industries Pvt Ltd",
+    "tax_identifier": "99ZZLOM8277Y6ZW"
+  },
+  {
+    "id": "VEN-S-056",
+    "name": "Mestrali Cold Chain LLP",
+    "normalised_name": "Mestrali Cold Chain LLP",
+    "tax_identifier": "97ZZMES3979H6ZK"
+  },
+  {
+    "id": "VEN-S-057",
+    "name": "Kavarti Engineering Enterprises",
+    "normalised_name": "Kavarti Engineering Enterprises",
+    "tax_identifier": "99ZZKAV6740Y8ZE"
+  },
+  {
+    "id": "VEN-S-058",
+    "name": "Ombresa Polymers Solutions Pvt Ltd",
+    "normalised_name": "Ombresa Polymers Solutions Pvt Ltd",
+    "tax_identifier": "99ZZOMB0074D9ZN"
+  },
+  {
+    "id": "VEN-S-059",
+    "name": "Nirvath Auto Components Ltd",
+    "normalised_name": "Nirvath Auto Components Ltd",
+    "tax_identifier": "99ZZNIR0650F9ZG"
+  },
+  {
+    "id": "VEN-S-060",
+    "name": "Zephrik Software and Sons",
+    "normalised_name": "Zephrik Software and Sons",
+    "tax_identifier": "97ZZZEP9031R8ZU"
+  }
+]

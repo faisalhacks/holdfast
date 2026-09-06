@@ -1,0 +1,1955 @@
+[
+  {
+    "invoice_id": "INV-S-0001",
+    "payment_ids": [
+      "PAY-S-0007"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 1 of 4"
+  },
+  {
+    "invoice_id": "INV-S-0002",
+    "payment_ids": [
+      "PAY-S-0065"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 2 of 4; posted in the same batch as its neighbour so vendor+amount+received date collide"
+  },
+  {
+    "invoice_id": "INV-S-0003",
+    "payment_ids": [
+      "PAY-S-0066"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 3 of 4; posted in the same batch as its neighbour so vendor+amount+received date collide"
+  },
+  {
+    "invoice_id": "INV-S-0004",
+    "payment_ids": [
+      "PAY-S-0102"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 4 of 4"
+  },
+  {
+    "invoice_id": "INV-S-0005",
+    "payment_ids": [
+      "PAY-S-0012"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 1 of 4"
+  },
+  {
+    "invoice_id": "INV-S-0006",
+    "payment_ids": [
+      "PAY-S-0049"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 2 of 4"
+  },
+  {
+    "invoice_id": "INV-S-0007",
+    "payment_ids": [
+      "PAY-S-0082"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 3 of 4"
+  },
+  {
+    "invoice_id": "INV-S-0008",
+    "payment_ids": [
+      "PAY-S-0104"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 4 of 4"
+  },
+  {
+    "invoice_id": "INV-S-0009",
+    "payment_ids": [
+      "PAY-S-0001"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 1 of 4"
+  },
+  {
+    "invoice_id": "INV-S-0010",
+    "payment_ids": [
+      "PAY-S-0039"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 2 of 4"
+  },
+  {
+    "invoice_id": "INV-S-0011",
+    "payment_ids": [
+      "PAY-S-0053"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 3 of 4"
+  },
+  {
+    "invoice_id": "INV-S-0012",
+    "payment_ids": [
+      "PAY-S-0087"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "recurring_monthly: legitimate recurring monthly charge, instalment 4 of 4"
+  },
+  {
+    "invoice_id": "INV-S-0013",
+    "payment_ids": [
+      "PAY-S-0169"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0014",
+    "payment_ids": [
+      "PAY-S-0030"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0015",
+    "payment_ids": [
+      "PAY-S-0110"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0016",
+    "payment_ids": [
+      "PAY-S-0057"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0017",
+    "payment_ids": [
+      "PAY-S-0050"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0018",
+    "payment_ids": [
+      "PAY-S-0120"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0019",
+    "payment_ids": [
+      "PAY-S-0032"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0020",
+    "payment_ids": [
+      "PAY-S-0090"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0021",
+    "payment_ids": [
+      "PAY-S-0171"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0022",
+    "payment_ids": [
+      "PAY-S-0101"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0023",
+    "payment_ids": [
+      "PAY-S-0164"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0024",
+    "payment_ids": [
+      "PAY-S-0084"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0025",
+    "payment_ids": [
+      "PAY-S-0024"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0026",
+    "payment_ids": [
+      "PAY-S-0074"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0027",
+    "payment_ids": [
+      "PAY-S-0166"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0028",
+    "payment_ids": [
+      "PAY-S-0058"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0029",
+    "payment_ids": [
+      "PAY-S-0023"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0030",
+    "payment_ids": [
+      "PAY-S-0136"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0031",
+    "payment_ids": [
+      "PAY-S-0157"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0032",
+    "payment_ids": [
+      "PAY-S-0043"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0033",
+    "payment_ids": [
+      "PAY-S-0146"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0034",
+    "payment_ids": [
+      "PAY-S-0172"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0035",
+    "payment_ids": [
+      "PAY-S-0133"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0036",
+    "payment_ids": [
+      "PAY-S-0072"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0037",
+    "payment_ids": [
+      "PAY-S-0106"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0038",
+    "payment_ids": [
+      "PAY-S-0142"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0039",
+    "payment_ids": [
+      "PAY-S-0154"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0040",
+    "payment_ids": [
+      "PAY-S-0078"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0041",
+    "payment_ids": [
+      "PAY-S-0085"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0042",
+    "payment_ids": [
+      "PAY-S-0009"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0043",
+    "payment_ids": [
+      "PAY-S-0054"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0044",
+    "payment_ids": [
+      "PAY-S-0048"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0045",
+    "payment_ids": [
+      "PAY-S-0097"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0046",
+    "payment_ids": [
+      "PAY-S-0046"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0047",
+    "payment_ids": [
+      "PAY-S-0034"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0048",
+    "payment_ids": [
+      "PAY-S-0155"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0049",
+    "payment_ids": [
+      "PAY-S-0134"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0050",
+    "payment_ids": [
+      "PAY-S-0055"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0051",
+    "payment_ids": [
+      "PAY-S-0161"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0052",
+    "payment_ids": [
+      "PAY-S-0035"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0053",
+    "payment_ids": [
+      "PAY-S-0081"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0054",
+    "payment_ids": [
+      "PAY-S-0138"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0055",
+    "payment_ids": [
+      "PAY-S-0117"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0056",
+    "payment_ids": [
+      "PAY-S-0126"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0057",
+    "payment_ids": [
+      "PAY-S-0045"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0058",
+    "payment_ids": [
+      "PAY-S-0162"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0059",
+    "payment_ids": [
+      "PAY-S-0121"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0060",
+    "payment_ids": [
+      "PAY-S-0075"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0061",
+    "payment_ids": [
+      "PAY-S-0003"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0062",
+    "payment_ids": [
+      "PAY-S-0016"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0063",
+    "payment_ids": [
+      "PAY-S-0017"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0064",
+    "payment_ids": [
+      "PAY-S-0069"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0065",
+    "payment_ids": [
+      "PAY-S-0130"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0066",
+    "payment_ids": [
+      "PAY-S-0115"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0067",
+    "payment_ids": [
+      "PAY-S-0167"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0068",
+    "payment_ids": [
+      "PAY-S-0140"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0069",
+    "payment_ids": [
+      "PAY-S-0137"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0070",
+    "payment_ids": [
+      "PAY-S-0067"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0071",
+    "payment_ids": [
+      "PAY-S-0086"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0072",
+    "payment_ids": [
+      "PAY-S-0107"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0073",
+    "payment_ids": [
+      "PAY-S-0159"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0074",
+    "payment_ids": [
+      "PAY-S-0083"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0075",
+    "payment_ids": [
+      "PAY-S-0033"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0076",
+    "payment_ids": [
+      "PAY-S-0168"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0077",
+    "payment_ids": [
+      "PAY-S-0047"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0078",
+    "payment_ids": [
+      "PAY-S-0156"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0079",
+    "payment_ids": [
+      "PAY-S-0076"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0080",
+    "payment_ids": [
+      "PAY-S-0070"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0081",
+    "payment_ids": [
+      "PAY-S-0037"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0082",
+    "payment_ids": [
+      "PAY-S-0056"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0083",
+    "payment_ids": [
+      "PAY-S-0071"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0084",
+    "payment_ids": [
+      "PAY-S-0170"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0085",
+    "payment_ids": [
+      "PAY-S-0013"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0086",
+    "payment_ids": [
+      "PAY-S-0061"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0087",
+    "payment_ids": [
+      "PAY-S-0077"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0088",
+    "payment_ids": [
+      "PAY-S-0127"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0089",
+    "payment_ids": [
+      "PAY-S-0031"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0090",
+    "payment_ids": [
+      "PAY-S-0103"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0091",
+    "payment_ids": [
+      "PAY-S-0022"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0092",
+    "payment_ids": [
+      "PAY-S-0108"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0093",
+    "payment_ids": [
+      "PAY-S-0124"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0094",
+    "payment_ids": [
+      "PAY-S-0122"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0095",
+    "payment_ids": [
+      "PAY-S-0051"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0096",
+    "payment_ids": [
+      "PAY-S-0015"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0097",
+    "payment_ids": [
+      "PAY-S-0173"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0098",
+    "payment_ids": [
+      "PAY-S-0052"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0099",
+    "payment_ids": [
+      "PAY-S-0116"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0100",
+    "payment_ids": [
+      "PAY-S-0151"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0101",
+    "payment_ids": [
+      "PAY-S-0147"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0102",
+    "payment_ids": [
+      "PAY-S-0044"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0103",
+    "payment_ids": [
+      "PAY-S-0006"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0104",
+    "payment_ids": [
+      "PAY-S-0111"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0105",
+    "payment_ids": [
+      "PAY-S-0145"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0106",
+    "payment_ids": [
+      "PAY-S-0059"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0107",
+    "payment_ids": [
+      "PAY-S-0040"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0108",
+    "payment_ids": [
+      "PAY-S-0139"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0109",
+    "payment_ids": [
+      "PAY-S-0100"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0110",
+    "payment_ids": [
+      "PAY-S-0158"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0111",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0112",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0113",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0114",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0115",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0116",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean_displaced: clean 1:1; bank narration carries the reference token in the payer position"
+  },
+  {
+    "invoice_id": "INV-S-0117",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0118",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0119",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0120",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "clean",
+    "dataset": "selection",
+    "note": "clean: clean 1:1; bank narration truncated, case-mangled and delimiter-drifted"
+  },
+  {
+    "invoice_id": "INV-S-0121",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_reference: re-entry of INV-S-0013 under the identical reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0122",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_reference: re-entry of INV-S-0018 under the identical reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0123",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_reference: re-entry of INV-S-0023 under the identical reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0124",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_reference: re-entry of INV-S-0029 under the identical reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0125",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_reference: re-entry of INV-S-0034 under the identical reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0126",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_reference: re-entry of INV-S-0040 under the identical reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0127",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_reference: re-entry of INV-S-0045 under the identical reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0128",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_reference: re-entry of INV-S-0050 under the identical reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0129",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_reference: re-entry of INV-S-0056 under the identical reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0130",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_reference: re-entry of INV-S-0061 under the identical reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0131",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_vendor_amount_date: same vendor, amount and invoice date as INV-S-0067 under a different reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0132",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_vendor_amount_date: same vendor, amount and invoice date as INV-S-0072 under a different reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0133",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_vendor_amount_date: same vendor, amount and invoice date as INV-S-0077 under a different reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0134",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_vendor_amount_date: same vendor, amount and invoice date as INV-S-0083 under a different reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0135",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_vendor_amount_date: same vendor, amount and invoice date as INV-S-0088 under a different reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0136",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_vendor_amount_date: same vendor, amount and invoice date as INV-S-0094 under a different reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0137",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_vendor_amount_date: same vendor, amount and invoice date as INV-S-0099 under a different reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0138",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_vendor_amount_date: same vendor, amount and invoice date as INV-S-0104 under a different reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0139",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_vendor_amount_date: same vendor, amount and invoice date as INV-S-0110 under a different reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0140",
+    "payment_ids": null,
+    "expected_hold_type": "duplicate_candidate",
+    "stratum": "duplicate",
+    "dataset": "selection",
+    "note": "same_vendor_amount_date: same vendor, amount and invoice date as INV-S-0115 under a different reference; never settled"
+  },
+  {
+    "invoice_id": "INV-S-0141",
+    "payment_ids": [
+      "PAY-S-0020"
+    ],
+    "expected_hold_type": null,
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "rounding: settled 80 paise short; rounding to the rupee, inside any sane tolerance"
+  },
+  {
+    "invoice_id": "INV-S-0142",
+    "payment_ids": [
+      "PAY-S-0008"
+    ],
+    "expected_hold_type": null,
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "rounding: settled 56 paise short; rounding to the rupee, inside any sane tolerance"
+  },
+  {
+    "invoice_id": "INV-S-0143",
+    "payment_ids": [
+      "PAY-S-0131"
+    ],
+    "expected_hold_type": null,
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "rounding: settled 54 paise short; rounding to the rupee, inside any sane tolerance"
+  },
+  {
+    "invoice_id": "INV-S-0144",
+    "payment_ids": [
+      "PAY-S-0073"
+    ],
+    "expected_hold_type": "price_variance",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "bank_charge: bank charge of 23600 paise deducted at source; net credit is short of the invoice gross"
+  },
+  {
+    "invoice_id": "INV-S-0145",
+    "payment_ids": [
+      "PAY-S-0038"
+    ],
+    "expected_hold_type": "price_variance",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "bank_charge: bank charge of 59000 paise deducted at source; net credit is short of the invoice gross"
+  },
+  {
+    "invoice_id": "INV-S-0146",
+    "payment_ids": [
+      "PAY-S-0041"
+    ],
+    "expected_hold_type": "price_variance",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "bank_charge: bank charge of 23600 paise deducted at source; net credit is short of the invoice gross"
+  },
+  {
+    "invoice_id": "INV-S-0147",
+    "payment_ids": [
+      "PAY-S-0068"
+    ],
+    "expected_hold_type": "price_variance",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "tds_withholding: tax withheld at 10 percent of the taxable value; remittance is net of withholding"
+  },
+  {
+    "invoice_id": "INV-S-0148",
+    "payment_ids": [
+      "PAY-S-0062"
+    ],
+    "expected_hold_type": "price_variance",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "tds_withholding: tax withheld at 10 percent of the taxable value; remittance is net of withholding"
+  },
+  {
+    "invoice_id": "INV-S-0149",
+    "payment_ids": [
+      "PAY-S-0093"
+    ],
+    "expected_hold_type": "price_variance",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "tds_withholding: tax withheld at 2 percent of the taxable value; remittance is net of withholding"
+  },
+  {
+    "invoice_id": "INV-S-0150",
+    "payment_ids": [
+      "PAY-S-0148"
+    ],
+    "expected_hold_type": "price_variance",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "early_payment_discount: early payment discount of 2 percent taken by the payer without a credit note"
+  },
+  {
+    "invoice_id": "INV-S-0151",
+    "payment_ids": [
+      "PAY-S-0091"
+    ],
+    "expected_hold_type": "price_variance",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "early_payment_discount: early payment discount of 2 percent taken by the payer without a credit note"
+  },
+  {
+    "invoice_id": "INV-S-0152",
+    "payment_ids": [
+      "PAY-S-0025"
+    ],
+    "expected_hold_type": "tax_variance",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "tax_split: intra-state supply booked entirely as IGST; the total is right and the allocation is not"
+  },
+  {
+    "invoice_id": "INV-S-0153",
+    "payment_ids": [
+      "PAY-S-0135"
+    ],
+    "expected_hold_type": "tax_variance",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "tax_split: intra-state supply booked entirely as IGST; the total is right and the allocation is not"
+  },
+  {
+    "invoice_id": "INV-S-0154",
+    "payment_ids": [
+      "PAY-S-0060"
+    ],
+    "expected_hold_type": "tax_amount_range",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "tax_total: tax charged is outside the range implied by the taxable value; the parts still sum to the total"
+  },
+  {
+    "invoice_id": "INV-S-0155",
+    "payment_ids": [
+      "PAY-S-0165"
+    ],
+    "expected_hold_type": "dist_variance",
+    "stratum": "tolerance",
+    "dataset": "selection",
+    "note": "dist_variance: gross does not equal taxable value plus tax; the distribution does not add up"
+  },
+  {
+    "invoice_id": "INV-S-0156",
+    "payment_ids": [
+      "PAY-S-0079",
+      "PAY-S-0094",
+      "PAY-S-0109",
+      "PAY-S-0119"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "one_to_many_full: settled by four instalment remittances that sum exactly to the gross"
+  },
+  {
+    "invoice_id": "INV-S-0157",
+    "payment_ids": [
+      "PAY-S-0095",
+      "PAY-S-0114"
+    ],
+    "expected_hold_type": "cardinality_residual",
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "partial_settlement: two part remittances leave 12908250 paise unsettled against this invoice"
+  },
+  {
+    "invoice_id": "INV-S-0158",
+    "payment_ids": [
+      "PAY-S-0042",
+      "PAY-S-0063"
+    ],
+    "expected_hold_type": "cardinality_residual",
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "partial_settlement: two part remittances leave 622118 paise unsettled against this invoice"
+  },
+  {
+    "invoice_id": "INV-S-0159",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0160",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0161",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0162",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0163",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0164",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0165",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0166",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0167",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0168",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0169",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0170",
+    "payment_ids": [
+      "PAY-S-0163"
+    ],
+    "expected_hold_type": null,
+    "stratum": "cardinality",
+    "dataset": "selection",
+    "note": "many_to_one_bulk: settled inside one bulk remittance covering many invoices; its reference may not have survived the narration limit"
+  },
+  {
+    "invoice_id": "INV-S-0171",
+    "payment_ids": [
+      "PAY-S-0160"
+    ],
+    "expected_hold_type": "no_reference",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "no_reference: settled by a credit whose narration carries no recoverable reference of any kind"
+  },
+  {
+    "invoice_id": "INV-S-0172",
+    "payment_ids": [
+      "PAY-S-0125"
+    ],
+    "expected_hold_type": "no_reference",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "no_reference: settled by a credit whose narration carries no recoverable reference of any kind"
+  },
+  {
+    "invoice_id": "INV-S-0173",
+    "payment_ids": [
+      "PAY-S-0141"
+    ],
+    "expected_hold_type": "no_reference",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "no_reference: settled by a credit whose narration carries no recoverable reference of any kind"
+  },
+  {
+    "invoice_id": "INV-S-0174",
+    "payment_ids": [
+      "PAY-S-0026"
+    ],
+    "expected_hold_type": "no_reference",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "no_reference: settled by a credit whose narration carries no recoverable reference of any kind"
+  },
+  {
+    "invoice_id": "INV-S-0175",
+    "payment_ids": [
+      "PAY-S-0112"
+    ],
+    "expected_hold_type": "no_reference",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "no_reference: settled by a credit whose narration carries no recoverable reference of any kind"
+  },
+  {
+    "invoice_id": "INV-S-0176",
+    "payment_ids": [
+      "PAY-S-0036"
+    ],
+    "expected_hold_type": "no_reference",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "displaced_reference: field displacement: the reference sits in the payer position and the payer shorthand sits in the reference position"
+  },
+  {
+    "invoice_id": "INV-S-0177",
+    "payment_ids": [
+      "PAY-S-0143"
+    ],
+    "expected_hold_type": "no_reference",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "displaced_reference: field displacement: the reference sits in the payer position and the payer shorthand sits in the reference position"
+  },
+  {
+    "invoice_id": "INV-S-0178",
+    "payment_ids": [
+      "PAY-S-0089"
+    ],
+    "expected_hold_type": "no_reference",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "displaced_reference: field displacement: the reference sits in the payer position and the payer shorthand sits in the reference position"
+  },
+  {
+    "invoice_id": "INV-S-0179",
+    "payment_ids": [
+      "PAY-S-0098"
+    ],
+    "expected_hold_type": "no_reference",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "displaced_reference: field displacement: the reference sits in the payer position and the payer shorthand sits in the reference position"
+  },
+  {
+    "invoice_id": "INV-S-0180",
+    "payment_ids": [
+      "PAY-S-0027"
+    ],
+    "expected_hold_type": "matching",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "foreign_reference: the narration quotes a reference belonging to a different invoice; only the amount and the payer point here"
+  },
+  {
+    "invoice_id": "INV-S-0181",
+    "payment_ids": [
+      "PAY-S-0105"
+    ],
+    "expected_hold_type": "matching",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "foreign_reference: the narration quotes a reference belonging to a different invoice; only the amount and the payer point here"
+  },
+  {
+    "invoice_id": "INV-S-0182",
+    "payment_ids": [
+      "PAY-S-0010"
+    ],
+    "expected_hold_type": "matching",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "foreign_reference: the narration quotes a reference belonging to a different invoice; only the amount and the payer point here"
+  },
+  {
+    "invoice_id": "INV-S-0183",
+    "payment_ids": null,
+    "expected_hold_type": "matching",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "assignment_field_drift: amount ties to the paise with INV-S-0016 from the same vendor and the references differ by one digit; this invoice was raised after that credit landed and was never settled"
+  },
+  {
+    "invoice_id": "INV-S-0184",
+    "payment_ids": null,
+    "expected_hold_type": "matching",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "assignment_field_drift: amount ties to the paise with INV-S-0023 from the same vendor and the references differ by one digit; this invoice was raised after that credit landed and was never settled"
+  },
+  {
+    "invoice_id": "INV-S-0185",
+    "payment_ids": null,
+    "expected_hold_type": "matching",
+    "stratum": "reference",
+    "dataset": "selection",
+    "note": "assignment_field_drift: amount ties to the paise with INV-S-0030 from the same vendor and the references differ by one digit; this invoice was raised after that credit landed and was never settled"
+  },
+  {
+    "invoice_id": "INV-S-0186",
+    "payment_ids": [
+      "PAY-S-0152"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "received_next_period: dated in 2026-05 and booked to 2026-06 because it arrived after the cut-off"
+  },
+  {
+    "invoice_id": "INV-S-0187",
+    "payment_ids": [
+      "PAY-S-0092"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "received_next_period: dated in 2026-03 and booked to 2026-04 because it arrived after the cut-off"
+  },
+  {
+    "invoice_id": "INV-S-0188",
+    "payment_ids": [
+      "PAY-S-0064"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "received_next_period: dated in 2026-02 and booked to 2026-03 because it arrived after the cut-off"
+  },
+  {
+    "invoice_id": "INV-S-0189",
+    "payment_ids": [
+      "PAY-S-0118"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "received_next_period: dated in 2026-04 and booked to 2026-05 because it arrived after the cut-off"
+  },
+  {
+    "invoice_id": "INV-S-0190",
+    "payment_ids": [
+      "PAY-S-0028"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "received_next_period: dated in 2026-01 and booked to 2026-01 because it arrived after the cut-off"
+  },
+  {
+    "invoice_id": "INV-S-0191",
+    "payment_ids": [
+      "PAY-S-0129"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "received_next_period: dated in 2026-05 and booked to 2026-06 because it arrived after the cut-off"
+  },
+  {
+    "invoice_id": "INV-S-0192",
+    "payment_ids": [
+      "PAY-S-0150"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "received_next_period: dated in 2026-05 and booked to 2026-05 because it arrived after the cut-off"
+  },
+  {
+    "invoice_id": "INV-S-0193",
+    "payment_ids": [
+      "PAY-S-0132"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "received_next_period: dated in 2026-05 and booked to 2026-06 because it arrived after the cut-off"
+  },
+  {
+    "invoice_id": "INV-S-0194",
+    "payment_ids": [
+      "PAY-S-0099"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "posted_to_prior_period: dated in 2026-04 and posted back into 2026-03"
+  },
+  {
+    "invoice_id": "INV-S-0195",
+    "payment_ids": [
+      "PAY-S-0088"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "posted_to_prior_period: dated in 2026-04 and posted back into 2026-03"
+  },
+  {
+    "invoice_id": "INV-S-0196",
+    "payment_ids": [
+      "PAY-S-0080"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "posted_to_prior_period: dated in 2026-04 and posted back into 2026-03"
+  },
+  {
+    "invoice_id": "INV-S-0197",
+    "payment_ids": [
+      "PAY-S-0149"
+    ],
+    "expected_hold_type": "period_deferral",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "posted_to_prior_period: dated in 2026-06 and posted back into 2026-05"
+  },
+  {
+    "invoice_id": "INV-S-0198",
+    "payment_ids": null,
+    "expected_hold_type": "credit_note_crossing",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "credit_note_crossing: credit note raised in 2026-04 and applied in 2026-05; offset against future billing, never banked"
+  },
+  {
+    "invoice_id": "INV-S-0199",
+    "payment_ids": null,
+    "expected_hold_type": "credit_note_crossing",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "credit_note_crossing: credit note raised in 2026-02 and applied in 2026-03; offset against future billing, never banked"
+  },
+  {
+    "invoice_id": "INV-S-0200",
+    "payment_ids": null,
+    "expected_hold_type": "credit_note_crossing",
+    "stratum": "period",
+    "dataset": "selection",
+    "note": "credit_note_crossing: credit note raised in 2026-05 and applied in 2026-06; offset against future billing, never banked"
+  }
+]

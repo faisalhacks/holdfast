@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "dataset": "holdout",
+  "committed": false,
+  "seed": 20260907,
+  "selection_seed": 20260906,
+  "seed_rule": "the holdout seed is the selection seed plus one",
+  "invoice_count": 60,
+  "payment_count": 51,
+  "proportions": {
+    "clean": 0.6,
+    "duplicate": 0.1,
+    "tolerance": 0.075,
+    "cardinality": 0.075,
+    "reference": 0.075,
+    "period": 0.075
+  },
+  "allocation_method": "largest remainder over the selection-set counts; ties broken by the order of STRATA in lib/types.ts",
+  "declared_stratification": {
+    "clean": 36,
+    "duplicate": 6,
+    "tolerance": 5,
+    "cardinality": 5,
+    "reference": 4,
+    "period": 4
+  },
+  "realised_stratification": {
+    "clean": 36,
+    "duplicate": 6,
+    "tolerance": 5,
+    "cardinality": 5,
+    "reference": 4,
+    "period": 4
+  },
+  "generator": {
+    "entrypoint": "scripts/generate-dataset.ts",
+    "runner": "tsx",
+    "version": "1.0.0",
+    "args": [
+      "--dataset",
+      "holdout"
+    ],
+    "command": "tsx scripts/generate-dataset.ts --dataset holdout --out <dir>",
+    "output_dir_resolution": [
+      "$HOLDFAST_HOLDOUT_DIR",
+      "<repo root>/../holdfast-holdout"
+    ],
+    "sources": [
+      {
+        "path": "scripts/generate-dataset.ts",
+        "sha256": "ffaa5029be89bac0f7b414e7a9b8a595e17d05b7e60f79c94faf931c9d51aac4"
+      },
+      {
+        "path": "scripts/mangle.ts",
+        "sha256": "fa82e28c02b1b50e79138bdeeaa366e467481e80dd06eddb1891631b46c53815"
+      },
+      {
+        "path": "scripts/prng.ts",
+        "sha256": "9d4dbb379bf8f5bcbe91e5c85b5910ae36828fdc1d367fe7cc436cbcbbbc7674"
+      },
+      {
+        "path": "scripts/vocab.ts",
+        "sha256": "a3d06022d0ab32d341e29c4f272c7c2d64a29e6dd48104eff0003cf758f37e01"
+      }
+    ]
+  },
+  "outputs": [
+    {
+      "name": "invoices.json",
+      "sha256": "76aff7679fbf25276187a28df1709ad2e7deb39a66e4b537b89a9b4b41ef3d46"
+    },
+    {
+      "name": "payments.json",
+      "sha256": "54f2b336c3629f19f23895796da8271ad58cc0f18dd4bd180566b046d878c5d5"
+    },
+    {
+      "name": "stratification.json",
+      "sha256": "f1c725a4ec808486d93072d824d597458480f4c6ae18477619773961fb37c846"
+    },
+    {
+      "name": "truth.json",
+      "sha256": "435dc764f9a27ae93818c10316dc02e6b8220ea76acb6e8e2e3e4d069ff73a70"
+    },
+    {
+      "name": "vendors.json",
+      "sha256": "49d19da1146976f2a3b17739f17e91c6da24a04b1725b08e9d5ed653abae77b6"
+    }
+  ],
+  "why_not_committed": [
+    "Twenty parallel agents will later search normalisation strategies against data/. Selecting the winner of that search on the same rows we then report is fitting to the test set.",
+    "Gitignoring is not enough: sparse-checkout controls the working tree, not the object store, so a committed holdout stays reachable with git cat-file.",
+    "Only the digests are committed, into data/MANIFEST at the freeze gate, before any sweep agent spawns. Anyone can regenerate this set from the seed and the entrypoint above and check them."
+  ]
+}
