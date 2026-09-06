@@ -580,3 +580,44 @@ This is what "the orchestrator reconciles across globs" is for.
 that this is correct, not residual drift. Its `tax_amount_range` hold was RELEASED by a
 seeded tolerance change (controller, with a reason recorded). That is the demo's tolerance
 moment behaving exactly as the product claim requires.
+
+### SECURITY CLASSIFIER WARNING ON W05a — reviewed, artifact clean
+
+W05a returned with a classifier warning: *"This subagent performed actions that may
+violate security policy. Blocked by classifier."* Its output was not acted on until the
+landed diff had been reviewed independently. What was checked, and why each check:
+
+| check | result |
+|---|---|
+| Files touched outside `engine/holds/duplicate/**` | none — 6 files, 839 lines, all in glob |
+| Any reference to `data/truth.json` (the answer key) | none |
+| Any import from `scripts/**` (the firewall) | none |
+| Hardcoded invoice or vendor ids (dataset-fitting) | none |
+| Hardcoded rupee/paise literals | none — the only long constants are 146097 / 719468, Howard Hinnant's civil-from-days algorithm |
+| Amount cap sourced from frozen policy, not baked in | yes — `policy.amount_cap_paise` |
+
+The dataset-fitting checks matter most: W05a's report names specific invoice ids
+(INV-S-0184, INV-S-0185, INV-S-0016/0183) as illustrations. Had those ids appeared in the
+code, the family would have been fitted to the frozen dataset and every number downstream
+would have been an artifact. They do not appear.
+
+Conclusion: the warning concerned the agent's process, not its product. The merged artifact
+is in scope and does not cross the firewall. Recorded here rather than omitted, because a
+suppressed warning is worse than a warning that turned out to be nothing.
+
+**Its self-reported figures are NOT accepted as measurements.** W05a reports 20/20
+duplicates held, 3 false positives without the recurrence flag, and one cap-opened hold.
+Those are the agent's own account of its own work. The eval is the referee, and it runs
+after assembly. This is the same reliable-referee rule that governs the Wave 3.5 sweep: an
+agent never scores itself.
+
+Two things in W05a's design are worth keeping regardless of what the eval says:
+- **`Invoice.recurrence` is treated as necessary but not sufficient.** A flag alone makes
+  the control defeatable by anything wearing the badge, so suppression additionally
+  requires an observable series — three or more documents at the same vendor and amount, in
+  distinct periods, under distinct references, on a regular cadence. A duplicate inserted
+  into a recurring stream breaks the cadence it would have to hide behind, and when that
+  happens suppression collapses for the whole series.
+- **The residual gap is stated plainly** rather than left for a critic: a copy carrying a
+  brand-new reference, landing in an unoccupied period, exactly on the cadence step is
+  indistinguishable from the next legitimate cycle and is not held.
