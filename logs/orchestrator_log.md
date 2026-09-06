@@ -806,3 +806,71 @@ The consequence is that `per_hold_type_recall_min` at 0.70 is **unreachable for 
 types on this dataset** without making the system worse. That is a floor I set before any
 data existed, and the honest resolution is to report the observed value against it, not to
 move it. Moving it is the tolerance move.
+
+---
+
+## WAVE 3.5 — the sweep, and the measurement that aimed it
+
+### First: is there anything to find?
+
+Twenty agents is a large spend, so the gap was measured before it was searched. Two probes
+against the frozen selection and holdout sets, using the assembled engine:
+
+- **Truth-matchable but held**: 78 selection / 29 holdout. Misleading on its own — a
+  price-variance invoice has a correct payment set in truth AND genuinely needs review, so
+  holding it is right.
+- **RECOVERABLE — truth expects NO hold and we held anyway**: **45 selection / 18 holdout.**
+
+| our label | selection | holdout |
+|---|---|---|
+| `no_reference` | 17 | 2 |
+| `price_variance` | 14 | 2 |
+| `matching` | 8 | 5 |
+| `cardinality_residual` | 6 | 9 |
+
+**Zero invoices are wrongly cleared in either direction.** So the system is uniformly too
+conservative, not erratic — there is headroom to become less conservative before false
+clears appear, and every one of the four buckets is reference-recovery sensitive, which is
+exactly what normalisation reaches. The sweep is aimed, not speculative.
+
+### Isolation — mechanical, not instructed
+
+Twelve agents, one worktree each, **writable `engine/normalise/**` and nothing else**.
+
+The holdout needs no exclusion machinery because of a decision made three waves earlier:
+it is not in the repository and it is not a git object. A sweep worktree's default holdout
+path resolves inside `.claude/worktrees/` and finds nothing. The earlier plan — sparse
+checkout — would not have held, because sparse checkout controls the working tree and
+`git cat-file` walks straight past it.
+
+No agent is told where the holdout lives. They optimise the selection set and report
+selection numbers; the headline comes from a set none of them can reach.
+
+### The referee
+
+**No sweep agent opens a PR and no sweep agent scores itself into a merge.** They push a
+branch and report; the orchestrator re-runs every eval itself. `eval/**` sits inside W03's
+glob, so an agent could otherwise edit its own evaluator and self-report a number — the
+reliable-referee principle applied to the one place it would have been easiest to skip.
+
+Any diff touching `eval/**`, `engine/match/**`, `engine/holds/**`, `data/**` or `lib/**` is
+**discarded unevaluated** — not scored and rejected — and logged with the agent id.
+
+### The selection rule, given to every agent verbatim
+
+1. Any `false_clears` above 0, or any `rupees_at_risk` above 0 → **DISCARDED**, not ranked
+   lower.
+2. Survivors ranked by `selection.coverage`, descending.
+3. Ties break on lower `rupees_at_risk`.
+
+"Higher coverage bought with a single false clear loses to lower coverage with none" — the
+product's thesis, applied to its own methodology. Selecting on maximum coverage regardless
+of correctness would have been the behaviour we spend three minutes criticising.
+
+### Operational note — worktree exhaustion
+
+Nineteen completed-agent worktrees accumulated under `.claude/worktrees/` and eventually
+broke new worktree creation: git resolved fresh worktrees to a checkout discovered above
+them and refused, correctly, because commands would have written outside the worktree. Two
+spawns failed before this was diagnosed. All nineteen were removed and the registry pruned.
+Worth recording as a real cost of running ~30 agents through one repository.
