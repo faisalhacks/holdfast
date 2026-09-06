@@ -113,7 +113,10 @@ function walk(dir, out = []) {
   let entries;
   try { entries = readdirSync(dir); } catch { return out; }
   for (const e of entries) {
-    if (e === 'node_modules' || e === '.git' || e === '.next' || e === 'out') continue;
+    // `.claude` holds agent worktrees, which are full copies of the repo. Scanning them
+    // double-counts every violation and flags the house rules quoted inside each copy.
+    // Each worktree runs its own gate against its own root anyway.
+    if (e === 'node_modules' || e === '.git' || e === '.next' || e === 'out' || e === '.claude') continue;
     const full = join(dir, e);
     let st;
     try { st = statSync(full); } catch { continue; }
