@@ -1,0 +1,4 @@
+# The LLM baseline's on-disk response cache. Local, regenerable, and potentially large.
+# The report itself is NOT ignored: eval/report.json is what every published number is read
+# from, and it is committed once there is a dataset to produce one against.
+.cache/

@@ -102,11 +102,26 @@ findings, and both get published rather than smoothed over.
 ### Run 1 — harness landed, no dataset
 
 At the time this harness was committed, `data/` did not exist: W02 had not yet landed the
-generator output. The harness runs to completion, writes `eval/report.json` with
-`row_count` 0 and every figure zeroed, records `holdout: null`, states the absence in
-`notes`, and exits 0. Both baselines ran against an empty ledger and are reported with the
-same zeros, which is the honest answer and not a score.
+generator output, and `engine/` did not exist either. `pnpm eval` runs to completion,
+writes `eval/report.json` with `row_count` 0 and every figure zeroed, records
+`holdout: null`, states both absences in `notes`, and exits 0.
 
-**No prediction above is confirmed or falsified by this run.** Nothing was measured. The
-next entry in this section is written after the dataset is frozen, and it must address
+**No prediction above is confirmed or falsified by this run.** Nothing was measured.
+
+What *was* established, because a judge that has never been observed to judge is not
+evidence of anything: the harness was run against a seven-row synthetic fixture held
+outside the repository (never committed, never in `data/`) with a hand-computed answer key,
+and every figure it produced matched the hand calculation — set equality on a two-payment
+bulk settlement, a false clear where truth says no match exists, a false clear where a
+system named a payment id that is not in the ledger, per-stratum coverage, per-hold-type
+recall and precision, and the declared-versus-realised mix disagreeing when the declaration
+disagrees. The deliberately poor baseline scored 57.1% coverage with 1 false clear and
+Rs 3,000.00 at risk against that fixture, and the harness said so in those words.
+
+The strong LLM baseline was exercised only on its no-credentials path in this session: no
+`ANTHROPIC_API_KEY` was available, so it correctly did not run, reported itself ABSENT
+rather than as a row of zeros, and the run still exited 0. Its live behaviour is unmeasured
+and that is stated here rather than implied away.
+
+The next entry in this section is written after the dataset is frozen, and it must address
 each of P1-P5 by name, including the ones that turn out wrong.
