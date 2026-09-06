@@ -22,7 +22,7 @@ A1 — typed holds, coverage >= 70%. Not started. Gates built and green.
   imports from `scripts/**`, `engine/` never reads `truth.json`.
 
 ## Settled by AMENDMENT 01 (supersedes the original doc)
-- **Frontend is ceded** to a human collaborator outside AO. W07, W08 cancelled; W10's UI
+- **Frontend is ceded** to a human collaborator outside Claude Code. W07, W08 cancelled; W10's UI
   portion cancelled. `app/(ui)/**` is NOT in the ownership map. The `ui-metric-literal`
   forbidden rule still applies to their commits.
 - **Twelve workers**: W01, W02, W03, W04a, W04b, W05a, W05b, W05c, W06, W09, W10, W11.
