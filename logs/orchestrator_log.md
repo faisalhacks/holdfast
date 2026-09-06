@@ -114,3 +114,64 @@ Applied in full. Changes to Wave 0 output:
 11. **Scope cuts applied:** feedback rules, rerun-diff, and W09's ingestion-normalisation
     call site are out. W09 keeps residual proposals and the re-verify gate. W10 keeps
     tolerance-change recording and the evidence-of-review export.
+
+---
+
+## WAVE 0 — push, branch protection, and two adverse findings
+
+**Pushed.** Remote `https://github.com/faisalhacks/holdfast.git`. First CI run on GitHub
+was green on all five jobs, which is the first evidence that the Postgres service
+container, the pnpm pin and the glob matcher work anywhere but the orchestrator's machine.
+
+**Branch protection enabled on main:** 5 required status checks (typecheck, migrations,
+eval, ownership, forbidden), strict (branch must be up to date), `enforce_admins: true`,
+force pushes and deletions blocked, squash-only, auto-merge and delete-on-merge on.
+
+### ADVERSE FINDING 1 — CODEOWNERS does not block. Recorded verbatim.
+
+The plan assumed CODEOWNERS would protect the frozen files. It does not, and we proved it
+rather than assuming it.
+
+- **PR #1** — worker branch `W05a-holds-duplicate` editing `AGENTS.md`. The `ownership`
+  job failed with `QUARANTINE Q1 ... modified frozen file(s): AGENTS.md`, and the merge
+  was refused: "the base branch policy prohibits the merge." Blocked, as designed.
+- **PR #1 blocked for two reasons at once**, so it did not isolate CODEOWNERS.
+- **PR #2** — non-worker branch `orchestrator/codeowners-probe` editing the same frozen,
+  code-owned `AGENTS.md`. All five checks passed and **the PR merged**. With
+  `required_approving_review_count: 0`, `require_code_owner_reviews: true` has no effect.
+
+**Decision.** Leave the count at 0. Raising it to 1 would demand a human approval on all
+twelve worker PRs, and since the author cannot self-approve, every frozen-file PR would
+deadlock permanently. The real enforcement is the `ownership` required status check: it is
+identity-independent, keyed on branch name, cannot be bypassed with `enforce_admins: true`,
+and was observed to fire. CODEOWNERS is advisory. The submission must not claim otherwise.
+
+Direct push to main by the repo admin was separately attempted and rejected:
+`GH006: Protected branch update failed ... Changes must be made through a pull request.`
+
+### ADVERSE FINDING 2 — the eval gate was circular, twice.
+
+Amendment 01 §6 keyed the eval gate to `eval/thresholds.json`, a file the same amendment
+required be authored at Wave 0 — so the gate went live before a harness existed. Re-keyed
+to `data/MANIFEST`. That was still wrong one wave later: at the Wave 2 freeze there is a
+dataset and a harness but no engine, so hard floors would fail every Wave 3 PR for not yet
+having built the thing that makes the floors reachable.
+
+**Resolved as a two-stage gate.** Stage 1 (trigger `data/MANIFEST`): the harness must run
+and write `eval/report.json`; floors recorded, not enforced — this is what gives Q4' trend
+data at every Wave 3 merge instead of nothing until Wave 4. Stage 2 (trigger
+`eval/floors.live`, orchestrator-written after the Wave 3 merges): floors enforced from
+that commit on. The commit where floors go live gets recorded here and stated in the
+submission.
+
+### Ownership precedence, made explicit and tested
+
+`data/MANIFEST` is frozen but also matches W02's `data/**` glob. The frozen check runs
+before the scope check, so W02 is denied it — the eval trigger does not sit inside the
+glob of the one worker with a motive to regenerate the dataset. `data/truth.json` is
+deliberately NOT frozen: W02 must create it, and freezing it would stop its own author
+writing it. It is protected instead by being hashed into `data/MANIFEST` at the freeze,
+and by the `firewall-truth` rule banning any reference to it under `engine/`, `llm/`,
+`app/` or `components/`. Seven assertions in `tools/selftest.mjs` cover this.
+
+Gate self-tests now stand at **69 assertions**.

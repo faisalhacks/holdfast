@@ -19,10 +19,29 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+// TWO-STAGE GATE.
+//
+// Stage 1 (trigger: data/MANIFEST, live from the Wave 2 freeze) — the harness must run to
+// completion and write a readable report. Floors are NOT enforced. At the freeze there is
+// a dataset and a harness but no engine; the engine is what Wave 3 builds. Enforcing
+// floors here would fail every Wave 3 PR for not yet having built the thing that makes the
+// floors reachable. Stage 1 still records coverage and false_clears at every merge, which
+// is what gives Q4' its trend data — without it there is no trend until Wave 4, far too
+// late to catch the regression Q4' exists for.
+//
+// Stage 2 (trigger: eval/floors.live, written by the orchestrator when the Wave 3 merges
+// complete) — floors are enforced from that commit on. One-way, frozen, outside every
+// worker's glob. The orchestrator owns this trigger and is also the party optimising for
+// green, which is acceptable only because termination is already quality-gated on the
+// floors passing: delaying floors.live delays termination, it cannot let a bad build ship.
+// The commit where floors went live is recorded in logs/orchestrator_log.md and stated in
+// the submission.
+
 const ROOT = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 const REPORT = join(ROOT, 'eval', 'report.json');
 const PREV = join(ROOT, 'eval', 'report.prev.json');
 const THRESHOLDS = join(ROOT, 'eval', 'thresholds.json');
+const FLOORS_LIVE = join(ROOT, 'eval', 'floors.live');
 
 // The shape eval/report.json must expose for this gate to function. W03 builds to this.
 // A missing key is a contract failure, not a reason to skip the check.
@@ -55,8 +74,20 @@ if (missing.length) {
   process.exit(1);
 }
 
+const floorsLive = existsSync(FLOORS_LIVE);
 const failures = [];
+const deferred = [];
 const notes = [];
+
+// Stage 1 records; stage 2 enforces. Same computation either way, so the numbers a merge
+// reports are identical before and after floors go live — only the consequence changes.
+const floorBreach = (msg) => (floorsLive ? failures : deferred).push(msg);
+
+notes.push(
+  floorsLive
+    ? 'stage 2 — eval/floors.live present, floors ENFORCED'
+    : 'stage 1 — eval/floors.live absent, floors recorded but NOT enforced (pre-Wave-3-complete)'
+);
 
 const c = {
   decided: dig(cur, 'totals.decided_count'),
@@ -66,15 +97,15 @@ const c = {
 };
 c.rate = c.decided > 0 ? c.falseClears / c.decided : 0;
 
-// ── absolute floors, always checked ─────────────────────────────────────────────
+// ── absolute floors — always computed, enforced only at stage 2 ─────────────────
 if (c.coverage < floors.coverage_min.value) {
-  failures.push(`coverage ${c.coverage} is below the floor ${floors.coverage_min.value}`);
+  floorBreach(`coverage ${c.coverage} is below the floor ${floors.coverage_min.value}`);
 }
 if (c.falseClears > floors.false_clears_max.value) {
-  failures.push(`false_clears ${c.falseClears} exceeds the ceiling ${floors.false_clears_max.value}`);
+  floorBreach(`false_clears ${c.falseClears} exceeds the ceiling ${floors.false_clears_max.value}`);
 }
 if (c.rupeesAtRisk > floors.rupees_at_risk_max_paise.value) {
-  failures.push(
+  floorBreach(
     `rupees_at_risk ${c.rupeesAtRisk} paise exceeds the ceiling ` +
     `${floors.rupees_at_risk_max_paise.value} paise — the amount cap is not being enforced`
   );
@@ -119,11 +150,22 @@ if (!existsSync(PREV)) {
 
 for (const n of notes) console.log(`regression: ${n}`);
 
+// Recorded at every merge from stage 1 onward, so the trend is visible in CI logs long
+// before the floors bite. This is the Q4' trend data.
+console.log(
+  `regression: coverage ${c.coverage}, false_clears ${c.falseClears}, ` +
+  `decided ${c.decided}, rupees_at_risk ${c.rupeesAtRisk} paise, rate ${c.rate.toFixed(4)}`
+);
+
+if (deferred.length) {
+  console.log(`\nregression: ${deferred.length} floor(s) not yet met — recorded, not enforced:`);
+  for (const d of deferred) console.log(`  ${d}`);
+  console.log('These become hard failures when eval/floors.live lands. Whatever the number');
+  console.log('is at the end, it ships — the floors decide termination, not what we publish.');
+}
+
 if (failures.length === 0) {
-  console.log(
-    `regression: ok — coverage ${c.coverage}, false_clears ${c.falseClears}, ` +
-    `rupees_at_risk ${c.rupeesAtRisk} paise, rate ${c.rate.toFixed(4)}`
-  );
+  console.log('\nregression: ok');
   process.exit(0);
 }
 
