@@ -48,6 +48,20 @@ A1 — typed holds, coverage >= 70%. Not started. Gates built and green.
 `tools/**` · `BLOCKED.md` · `CURRENT_AIM.md` · `memory.md` · `logs/**` · `critique/**` ·
 `quarantine/**`
 
+## GATE-DEBT (fix forward, do not block on these)
+- **CODEOWNERS does not block.** Proven by experiment: PR #2, a non-worker branch editing
+  AGENTS.md (a frozen, code-owned path), passed all five checks and MERGED. With
+  `required_approving_review_count: 0`, `require_code_owner_reviews: true` has no effect.
+  Raising the count to 1 would require a human approval on all twelve worker PRs and kill
+  the autonomous build; the author also cannot self-approve, so frozen-file PRs would
+  deadlock. DECISION: leave the count at 0 and treat the `ownership` required status check
+  as the real enforcement — it is identity-independent, keyed on branch name, and was
+  observed to block PR #1 with QUARANTINE Q1. CODEOWNERS is advisory only. Say this
+  plainly in the submission; do not claim CODEOWNERS protects anything.
+- **Stage 2 eval trigger not yet exercised.** `eval/floors.live` does not exist and cannot
+  until Wave 3 completes. The code path is written and the stage-1 path is live from the
+  Wave 2 freeze. Verify stage 2 the moment floors.live lands.
+
 ## Built and verified
 - Wave 0 complete: repo scaffolded, 5 CI checks, 9 gate scripts, gate self-tests (57
   assertions), all dependencies installed, `pnpm verify` green.
@@ -58,6 +72,14 @@ A1 — typed holds, coverage >= 70%. Not started. Gates built and green.
 
 ## Blocked on contract gap
 (none)
+
+## Eval gate — two stages
+- **Stage 1** (trigger `data/MANIFEST`, live from the Wave 2 freeze): the harness must run
+  to completion and write `eval/report.json`. Floors recorded, NOT enforced. This is what
+  gives Q4' trend data at every Wave 3 merge.
+- **Stage 2** (trigger `eval/floors.live`, orchestrator-written when Wave 3 merges
+  complete): floors enforced from that commit on. Frozen, one-way, in CODEOWNERS.
+  Record the commit where floors went live in logs/orchestrator_log.md — W11 states it.
 
 ## Last eval
 (none — eval/report.json does not exist)

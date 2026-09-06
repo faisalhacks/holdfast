@@ -7,7 +7,7 @@
 //
 // Run: node tools/selftest.mjs
 
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -108,6 +108,22 @@ for (const [id, fx] of Object.entries(FIXTURES)) {
   for (const line of fx.good) eq(rule.pattern.test(line), false, `[${id}] should NOT fire: ${line}`);
 }
 
+// ── ownership precedence: a frozen path is denied even inside the worker's own glob ──
+console.log('\nownership precedence (frozen beats scope)');
+{
+  const cfg = JSON.parse(readFileSync(new URL('../.github/ownership.json', import.meta.url), 'utf8'));
+  // data/MANIFEST sits inside W02's data/** glob. It must still be denied to W02.
+  eq(matchesAny('data/MANIFEST', cfg.frozen), true, 'data/MANIFEST is frozen');
+  eq(matchesAny('data/MANIFEST', cfg.workers['W02-data-generator']), true, 'data/MANIFEST is inside W02 scope');
+  eq((cfg.frozen_exceptions['W02-data-generator'] || []).length, 0, 'W02 has no frozen exception');
+  // truth.json is W02's to write and must NOT be frozen, or its author cannot create it.
+  eq(matchesAny('data/truth.json', cfg.frozen), false, 'data/truth.json is not frozen');
+  eq(matchesAny('data/truth.json', cfg.workers['W02-data-generator']), true, 'data/truth.json is W02 writable');
+  // The eval trigger must sit outside every worker glob it could be deleted from.
+  eq(matchesAny('eval/floors.live', cfg.frozen), true, 'eval/floors.live is frozen');
+  eq(matchesAny('eval/thresholds.json', cfg.frozen), true, 'eval/thresholds.json is frozen');
+}
+
 // ── rule scoping: llm/** may evict from an in-memory cache; db/** may not ────────
 console.log('\nrule scoping');
 const ormDelete = byId.get('append-only-orm-delete');
@@ -157,7 +173,8 @@ eq(clean.code, 0, 'a clean engine/ file must pass the gate');
 const total = globCases.length
   + Object.values(FIXTURES).reduce((n, f) => n + f.bad.length + f.good.length, 0)
   + 3
-  + 5;
+  + 5
+  + 7;
 console.log(failed === 0
   ? `\nselftest: all ${total} assertions passed`
   : `\nselftest: ${failed} FAILURE(S) of ${total}`);

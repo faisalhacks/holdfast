@@ -102,6 +102,13 @@ jobs:
           fi
           if [ -f eval/run.ts ]; then
             pnpm eval
+            # Stage 1: the harness must run to completion AND leave a readable report.
+            # Floors are not enforced here — that is stage 2, gated on eval/floors.live.
+            if [ ! -f eval/report.json ]; then
+              echo "pnpm eval exited 0 but wrote no eval/report.json."
+              echo "A harness that reports nothing is a harness nobody can audit."
+              exit 1
+            fi
           else
             echo "dataset not frozen yet (pre-Wave-2 gate) — no harness to run"
           fi
