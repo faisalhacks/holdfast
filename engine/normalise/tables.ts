@@ -119,6 +119,7 @@ export const DEFAULT_NOISE_TOKENS: ReadonlySet<string> = new Set([
   'rrn',
   'utr',
   'inv',
+  'invno',
   'invoice',
   'bill',
   'bills',
@@ -126,6 +127,27 @@ export const DEFAULT_NOISE_TOKENS: ReadonlySet<string> = new Set([
   'nos',
   'num',
   'number',
+  // Document-series heads. `TX/01021`, `SI-4207` and `RCT/2026/03/929` are the ledger's own
+  // numbering conventions, and the bank reproduces the head as often as it drops it. Each
+  // one also appears in `DEFAULT_REFERENCE_PREFIXES`, which is what keeps a FUSED form
+  // (`tx01021`) admissible as a reference candidate while a fused RAIL form (`utr9798`)
+  // stays excluded — see `referenceCandidateTokens`.
+  'tx',
+  'si',
+  'rct',
+  // The accounts-payable run marker a payment file adds and an invoice never carries:
+  // `AP-TX/01035`, `AP-INV20268157`, `AP-GST-INV-07807`. One-sided furniture by definition.
+  'ap',
+  // Registration furniture. `TRF SUNDABRI LTD GSTIN 99-ZZSUN6912V-9` names a PARTY; without
+  // these the words land in the vendor residue and the number pretends to be a reference.
+  'gstin',
+  'gstno',
+  'na',
+  // A masked account number: `XXXX9484`, `A/C XXXX6195`. Present in noise but ABSENT from
+  // the prefix table, which is exactly the combination that stops `xxxx6195` being offered
+  // as a document number.
+  'xxxx',
+  'xxxxx',
   // settlement words
   'payment',
   'payments',
@@ -266,6 +288,16 @@ export const DEFAULT_ABBREVIATIONS: ReadonlyMap<string, string> = new Map([
  * Document-number prefixes. Stripped both as a standalone token (`INV 0042`) and as the
  * alphabetic head of a mixed token (`INV0042`), which is the whole of invoice-number
  * convention drift on the prefix axis.
+ *
+ * A head belongs here when it is FURNITURE — when its presence or absence does not change
+ * which document is meant. `INV/2026/01640` and `2026/01640` are one invoice; so are
+ * `TX/01021` and `01021`, because the series head is a property of the ledger that raised
+ * the number and not of the document. What must never come here is a head that DISTINGUISHES
+ * — a vendor code, a branch code, a cost centre — because stripping one of those is the
+ * over-merge this table exists to avoid rather than to cause.
+ *
+ * The test each entry passed: it occurs on one side of the reconciliation and not the other
+ * in the same document number, in the frozen selection set, with the digits identical.
  */
 export const DEFAULT_REFERENCE_PREFIXES: ReadonlySet<string> = new Set([
   'inv',
@@ -293,6 +325,59 @@ export const DEFAULT_REFERENCE_PREFIXES: ReadonlySet<string> = new Set([
   'pono',
   'gst',
   'tax',
+  // The AP-run marker, one-sided by construction: `AP-TX/01035` is `TX/01035` paid by an
+  // accounts-payable run. It is never part of a document number the vendor issued, so it is
+  // furniture wherever it appears and it is stripped.
+  'ap',
+]);
+
+/**
+ * DOCUMENT-SERIES HEADS — a token is a reference BECAUSE of these, and they are NOT removed.
+ *
+ * `TX/01021`, `SI-7532` and `RCT/2026/01/472` are three numbering series. The head does two
+ * jobs at once and the two must not be confused, which is why this table exists beside
+ * `DEFAULT_REFERENCE_PREFIXES` rather than inside it:
+ *
+ *   IT ADMITS.    `tx01021` is a document number and `utr853455805` is a bank tracking
+ *                 number, and the only thing that says so is the alphabetic head. A series
+ *                 head has to be recognised or the fused form is thrown away with the rail
+ *                 numbers.
+ *   IT SEPARATES. `SI-7532` and `BILL007539` are different documents from different vendors.
+ *                 Reduce both to bare digits and a token-set ratio scores them 0.75 — close
+ *                 enough to clear the similarity floor and contribute to a pairing that
+ *                 should have contributed nothing. Keep the head and they share not one
+ *                 token and score zero, which is the truth.
+ *
+ * That is the whole distinction between this table and the prefix table: `inv`, `bill` and
+ * `ap` say only THAT a number follows, so deleting them loses nothing; `tx`, `si` and `rct`
+ * say WHICH SERIES the number belongs to, and deleting them merges series that a one-digit
+ * difference already makes dangerously similar. Measured on the frozen selection set,
+ * stripping them was worth nothing the digit view did not already recover, and cost exactly
+ * the cross-series separation described above.
+ */
+export const DEFAULT_REFERENCE_SERIES: ReadonlySet<string> = new Set(['tx', 'si', 'rct']);
+
+/**
+ * Calendar years admissible as a REFERENCE SEGMENT, so the strip is data and not a guess at
+ * what a four-digit number means.
+ *
+ * A year is a period, not a document number: every invoice raised in a year carries the same
+ * one. It is deliberately a closed list rather than `/^(19|20)\d\d$/`, because the numbering
+ * in this domain is full of four-digit tokens that merely LOOK like years — `2602-5876` and
+ * `2603-2119` are YYMM-and-serial, `2074/26-27` is a serial, and a pattern generous enough
+ * to be convenient would eat all three.
+ */
+export const DEFAULT_REFERENCE_YEARS: ReadonlySet<string> = new Set([
+  '2019',
+  '2020',
+  '2021',
+  '2022',
+  '2023',
+  '2024',
+  '2025',
+  '2026',
+  '2027',
+  '2028',
 ]);
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -381,6 +466,8 @@ export const DEFAULT_TABLES: NormalisationTables = {
   noiseTokens: DEFAULT_NOISE_TOKENS,
   abbreviations: DEFAULT_ABBREVIATIONS,
   referencePrefixes: DEFAULT_REFERENCE_PREFIXES,
+  referenceSeries: DEFAULT_REFERENCE_SERIES,
+  referenceYears: DEFAULT_REFERENCE_YEARS,
   aliases: EMPTY_ALIAS_TABLE,
 };
 

@@ -278,6 +278,106 @@ export function referencePrefixStripStep(): NormalisationStep {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// reference_period_strip
+// ─────────────────────────────────────────────────────────────────────────────
+
+const TWO_DIGITS = /^\d{2}$/;
+const PADDING = /^0+(?=\d)/;
+
+/**
+ * Removes the PERIOD segments of a document number — the calendar year one system writes
+ * into its numbering and the other leaves out, and the Indian fiscal-year tail that a bank
+ * line truncates away.
+ *
+ *     INV/2026/01640   ->  01640          the year is on one side only
+ *     1342/26-27       ->  1342           the bank line says `1342`
+ *
+ * WHY THIS IS THE OPPOSITE OF OVER-MERGING, WHICH IS THE OBVIOUS OBJECTION.
+ *
+ * A period segment is shared by every document of that period, so it carries no evidence
+ * about WHICH document is meant while looking exactly like evidence that does. The
+ * comparator downstream is a token-set ratio, and a token-set ratio reaches 1 whenever one
+ * side's tokens are a subset of the other's — so a bank line offering the bare token `2026`
+ * scored a perfect reference agreement against every invoice numbered in 2026, on the
+ * strength of a fact true of all of them. Deleting the segment does not merge two documents;
+ * it stops one token pretending to distinguish them. Every case this changed on the frozen
+ * selection set moved a WRONG payment off the top of the ranking.
+ *
+ * The two rules are narrow on purpose:
+ *
+ *   YEAR   a whole token listed in `tables.referenceYears`. A closed list, because
+ *          `2602-5876` and `2603-2119` are YYMM-and-serial and a `/^20\d\d$/` pattern would
+ *          eat the second half of this ledger's numbering.
+ *   FISCAL two adjacent two-digit tokens, the second one greater than the first, AT THE END
+ *          of the number. `1342/26-27` qualifies; `2603-2119` does not (four digits each),
+ *          and a leading `26 27` would not (it is not the tail).
+ *
+ * A segment is never removed when nothing would be left. A reference that is only a period
+ * is a reference we have no better reading of, and returning it untouched is more honest
+ * than returning nothing and letting the pipeline's non-destructive guard put it back.
+ */
+export function referencePeriodStripStep(): NormalisationStep {
+  return {
+    id: 'reference_period_strip',
+    clause: 'calendar-year and fiscal-year segments removed from the document number',
+    apply(value: string, ctx: StepContext): StepResult {
+      const tokens = tokensOf(value);
+      if (tokens.length < 2) return noChange(value);
+
+      const drop = new Array<boolean>(tokens.length).fill(false);
+      const changes: StepChange[] = [];
+
+      // FISCAL: the trailing `26 27`. Tested before the year rule so the tail is judged on
+      // the number as written, not on what the year rule left behind.
+      // Zero padding is convention drift in its own right — the same fiscal year arrives as
+      // `26-27` and as `026/027` — so the shape is judged on the unpadded segment. The step
+      // runs before `leading_zero_strip`, which is what makes this its problem and not that
+      // step's.
+      const last = tokens[tokens.length - 1]?.replace(PADDING, '');
+      const penultimate = tokens[tokens.length - 2]?.replace(PADDING, '');
+      if (
+        tokens.length >= 3 &&
+        last !== undefined &&
+        penultimate !== undefined &&
+        TWO_DIGITS.test(last) &&
+        TWO_DIGITS.test(penultimate) &&
+        Number(last) === Number(penultimate) + 1
+      ) {
+        drop[tokens.length - 1] = true;
+        drop[tokens.length - 2] = true;
+        changes.push(
+          change('reference_period_removed', `${penultimate} ${last}`, '', 'fiscal_year'),
+        );
+      }
+
+      // YEAR: a whole token the table names.
+      for (let i = 0; i < tokens.length; i += 1) {
+        const token = tokens[i];
+        if (token === undefined || drop[i] === true) continue;
+        const bare = token.replace(PADDING, '');
+        if (!ctx.tables.referenceYears.has(bare)) continue;
+        drop[i] = true;
+        changes.push(change('reference_period_removed', token, '', bare));
+      }
+
+      if (changes.length === 0) return noChange(value);
+
+      const kept: string[] = [];
+      for (let i = 0; i < tokens.length; i += 1) {
+        const token = tokens[i];
+        if (token === undefined || drop[i] === true) continue;
+        kept.push(token);
+      }
+      // Nothing identifying would survive: the period WAS the number we were given, and a
+      // rule that empties a field has stopped normalising and started deleting.
+      if (kept.length === 0) return noChange(value);
+
+      return withChanges(kept.join(' '), changes);
+    },
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // leading_zero_strip
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -458,6 +558,7 @@ export const DEFAULT_STEPS: StepRegistry = new Map<StepId, NormalisationStep>([
   ['legal_suffix_strip', legalSuffixStripStep()],
   ['abbreviation_expand', abbreviationExpandStep()],
   ['reference_prefix_strip', referencePrefixStripStep()],
+  ['reference_period_strip', referencePeriodStripStep()],
   ['leading_zero_strip', leadingZeroStripStep()],
   ['identifier_repair', identifierRepairStep()],
   ['alias_map', aliasMapStep()],

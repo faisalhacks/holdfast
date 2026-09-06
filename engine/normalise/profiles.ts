@@ -58,6 +58,17 @@ export const VENDOR_PROFILE_V1: NormalisationProfile = {
 /**
  * Invoice references and the reference tokens recovered from a narration. No suffix or
  * abbreviation work: a reference is a code, and expanding fragments of a code invents one.
+ *
+ * `reference_period_strip` sits between the prefix strip and the zero strip, and each side
+ * of that sandwich is forced:
+ *
+ *   * AFTER `reference_prefix_strip`, because the fiscal-year rule reads the TAIL of the
+ *     number and a surviving head shifts nothing about where the tail is, while a fused
+ *     head (`inv2026`) has to be split into `2026` before the year rule can see a year at
+ *     all.
+ *   * BEFORE `leading_zero_strip`, because the fiscal rule tests two-digit tokens and the
+ *     zero strip would have turned `26 07` into `26 7` first. A fiscal year is written with
+ *     its zeros and must be judged with them.
  */
 export const REFERENCE_PROFILE_V1: NormalisationProfile = {
   id: 'reference.v1',
@@ -68,6 +79,7 @@ export const REFERENCE_PROFILE_V1: NormalisationProfile = {
     'punctuation_strip',
     'whitespace_collapse',
     'reference_prefix_strip',
+    'reference_period_strip',
     'leading_zero_strip',
     'alias_map',
     'token_sort',

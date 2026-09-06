@@ -51,6 +51,7 @@ export const STEP_IDS = [
   'legal_suffix_strip',
   'abbreviation_expand',
   'reference_prefix_strip',
+  'reference_period_strip',
   'leading_zero_strip',
   'identifier_repair',
   'alias_map',
@@ -72,6 +73,7 @@ export const CHANGE_KINDS = [
   'legal_suffix_removed',
   'abbreviation_expanded',
   'reference_prefix_removed',
+  'reference_period_removed',
   'leading_zeros_removed',
   'identifier_character_repaired',
   'alias_applied',
@@ -148,6 +150,17 @@ export interface NormalisationTables {
   readonly abbreviations: ReadonlyMap<string, string>;
   /** Document-number prefixes stripped from a reference token: `inv`, `bill`, `no`. */
   readonly referencePrefixes: ReadonlySet<string>;
+  /**
+   * Document-SERIES heads: `tx`, `si`, `rct`. These mark a token as a document number and
+   * are deliberately NOT stripped — see `DEFAULT_REFERENCE_SERIES` for why admitting and
+   * deleting are two different decisions.
+   */
+  readonly referenceSeries: ReadonlySet<string>;
+  /**
+   * Calendar years admissible as a reference PERIOD segment: `2026`. A closed list, not a
+   * pattern — see `DEFAULT_REFERENCE_YEARS` for why a pattern over-reaches here.
+   */
+  readonly referenceYears: ReadonlySet<string>;
   readonly aliases: AliasTable;
 }
 

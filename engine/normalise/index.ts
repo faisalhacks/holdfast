@@ -16,6 +16,22 @@
 // field it belongs to? Bank feeds put references in vendor names and vendor fragments in
 // references, and canonicalising a field cannot fix a field that holds the wrong thing.
 //
+// ─── Invoice-number convention drift ─────────────────────────────────────────────────
+//
+// The two sides of a reconciliation disagree about how to write the same number, and three
+// rules in this module are about nothing else:
+//
+//   PREFIXES    `reference_prefix_strip` removes furniture (`INV`, `BILL`, `AP-`) that says
+//               only THAT a number follows. `tables.referenceSeries` holds the heads that
+//               say WHICH SERIES it is (`TX`, `SI`, `RCT`); those admit a token and are
+//               kept, because deleting them merges series a single digit already separates.
+//   PERIODS     `reference_period_strip` removes the calendar year and the fiscal-year tail
+//               that appear on one side only. A period is true of every document in it, and
+//               a token-set ratio scores a shared period as a perfect reference agreement.
+//   SEGMENTS    `referenceCandidateTokens` offers the maximal ADJACENCY RUN of a narration's
+//               reference-shaped tokens as well as its members, so `RCT-2026-01-472` — which
+//               punctuation stripping shattered into four — can meet the invoice whole.
+//
 // ─── What this module is NOT ─────────────────────────────────────────────────────────
 //
 // No candidate generation, no similarity, no scoring, no comparison between an invoice and
@@ -76,6 +92,8 @@ export {
   DEFAULT_LEGAL_SUFFIXES,
   DEFAULT_NOISE_TOKENS,
   DEFAULT_REFERENCE_PREFIXES,
+  DEFAULT_REFERENCE_SERIES,
+  DEFAULT_REFERENCE_YEARS,
   DEFAULT_TABLES,
   EMPTY_ALIAS_TABLE,
   aliasTableFromFeedbackRules,
@@ -98,6 +116,7 @@ export {
   legalSuffixStripStep,
   noiseTokenStripStep,
   punctuationStripStep,
+  referencePeriodStripStep,
   referencePrefixStripStep,
   tokenSortStep,
   tokensOf,
