@@ -267,7 +267,15 @@ export function loadDataset(
   const mixPath = join(root, 'stratification.json');
   if (existsSync(mixPath)) {
     const mixRaw = readJson(mixPath);
-    const parsed = declaredMixSchema.safeParse(mixRaw.value);
+    // Two shapes are accepted, because the harness and the generator were built by workers
+    // who could not read each other. Flat `{clean: 120, ...}`, or a wrapper carrying
+    // `declared` and `realised` side by side. The wrapper is the more useful of the two —
+    // it is what lets declared and realised disagree — so it is read, not rejected.
+    // The dataset is frozen; the reader adapts to it and never the other way round.
+    const wrapped = mixRaw.value as { declared?: unknown } | null;
+    const candidate =
+      wrapped && typeof wrapped === 'object' && 'declared' in wrapped ? wrapped.declared : mixRaw.value;
+    const parsed = declaredMixSchema.safeParse(candidate);
     if (parsed.success) {
       const filled = {} as Record<Stratum, number>;
       for (const s of STRATA) filled[s] = parsed.data[s] ?? 0;

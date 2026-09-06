@@ -473,3 +473,64 @@ Nothing was cherry-picked from D. Its branch is retained as race evidence.
    base worker's globs and the same frozen list. Twenty-three assertions cover it,
    including the dangerous inverse: every declared worker name must survive stripping
    untouched, or a real branch gets scored against globs that are not its own.
+
+---
+
+## WAVE 2 FREEZE GATE — dataset frozen, eval gate live
+
+**W02 winner: racer A**, taken whole. Racers B and C stopped; both were mid-correction at
+the time (B: "a tie group of one isn't a tie"; C: "the holdout's small buckets were
+systematically picking the adversarial variant") — recorded because those are real defects
+found by losing racers, and the race is only honest if the losses are described.
+
+**A was taken for three things beyond correctness:**
+- **It normalises nothing.** `normalised_reference`, `narration_normalised` and
+  `normalised_name` are emitted byte-identical to their raw counterparts, and every
+  extraction field on a statement row is `null` with `application_status: "unidentified"`.
+  Filling them would hand the matcher the answer on both sides at once. W04a independently
+  refused to *read* those columns. Two workers, opposite sides of the firewall, closing the
+  same hole without being told to.
+- **It flagged a house-rule violation in a competing racer's output**: a holdout carrying
+  `29AAKPM4471H1Z5` — real state code, real PAN shape. A's own identifiers use state codes
+  97/99 with a `ZZ`-prefixed PAN block, so they cannot collide with an issued registration
+  while keeping the 15-character shape a normaliser must handle.
+- **It found a fairness bug in its own first cut**: two of twenty duplicates arrived
+  *before* their originals, "which inverts the only evidence a reviewer has and makes the
+  row unfair rather than hard."
+
+### The holdout was regenerated from main, not trusted from a worktree
+
+Racer A reported that all three race worktrees resolved the default holdout path to the
+same directory and overwrote each other — it watched a rival's dataset replace its own.
+So the holdout was **regenerated from the merged generator on `main`** into the canonical
+location and its digests compared against the committed spec. All five matched:
+
+```
+3f2a9171cd00b23d  invoices.json      54f2b336c3629f19  payments.json
+f1c725a4ec808486  stratification.json 435dc764f9a27ae9  truth.json
+49d19da1146976f2  vendors.json
+```
+
+That is the check a judge would run, run by us first.
+
+**Frozen.** `data/MANIFEST`: selection root `457aeafbd8633387...` over 7 files; holdout root
+`b410dcf1ea5388b4...` over 5 files, seed 20260907, **digests committed, bytes not**.
+
+The eval gate went live (stage 1) and passes. It reports honestly: *"no engine entrypoint
+found. The system under test decided nothing: coverage 0, and the figures below are the
+state of the build, not a measurement of a matcher."* Floors are computed and recorded as
+NOT met, without being enforced — which is exactly what stage 1 is for.
+
+### CI failure routed and fixed
+
+8. **`stratification.json` was present but unreadable.** W03 built the harness before any
+   dataset existed and specified a flat `{stratum: count}` map; W02 emitted a wrapper
+   carrying `declared` and `realised` side by side. Filenames matched exactly —
+   `invoices.json`, `payments.json`, `truth.json` — but the content shape did not, so the
+   declared/realised disclosure silently fell back to realised, which by construction can
+   never disagree with the rows and therefore proves nothing.
+
+   Fixed in the READER, not the data: the dataset is frozen, so `eval/dataset.ts` now
+   accepts both shapes and prefers the wrapper, which is the more useful of the two because
+   it is what lets declared and realised disagree at all. Declared now reads
+   120/20/15/15/15/15 against realised, as the disclosure claim requires.
