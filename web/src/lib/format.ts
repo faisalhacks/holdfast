@@ -1,27 +1,66 @@
 /** Presentation helpers. Pure functions, no domain knowledge beyond shapes. */
 
-import type { EvidenceValue } from "@/lib/api";
+import type { Money, Tolerance } from "@/lib/api";
 
-export function formatMoney(amount_paise: number | null | undefined, currency: string): string {
-  if (amount_paise === null || amount_paise === undefined) return "—";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-    minimumFractionDigits: amount_paise % 100 === 0 ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(amount_paise / 100);
+const GROUPS = new Intl.NumberFormat("en-IN");
+
+/**
+ * Formats an exact paise count as rupees.
+ *
+ * The arithmetic is BigInt on the exact digits the backend sent, so a monetary value is
+ * never converted to a float on its way to the screen — including the wide values the
+ * contract carries as a decimal string.
+ */
+export function formatMoney(money: Money | null | undefined): string {
+  if (!money) return "—";
+  let paise: bigint;
+  try {
+    paise = BigInt(money.digits);
+  } catch {
+    return "—";
+  }
+  const negative = paise < 0n;
+  const absolute = negative ? -paise : paise;
+  const rupees = absolute / 100n;
+  const remainder = absolute % 100n;
+  const body =
+    remainder === 0n
+      ? GROUPS.format(rupees)
+      : `${GROUPS.format(rupees)}.${remainder.toString().padStart(2, "0")}`;
+  return `${negative ? "−" : ""}₹${body}`;
 }
 
-export function formatEvidenceValue(value: EvidenceValue | null): string {
-  if (!value) return "No reference supplied";
-  if (value.kind === "money") return formatMoney(value.amount_paise, value.currency);
-  if (value.kind === "integer") return `${value.value}${value.unit ?? ""}`;
-  if (value.kind === "date") return value.value;
-  return value.value;
+/** Signed form, for a delta where the direction is the point. */
+export function formatMoneyDelta(money: Money | null | undefined): string {
+  if (!money) return "—";
+  const formatted = formatMoney(money);
+  return money.digits.startsWith("-") ? formatted : `+${formatted}`;
 }
 
 export function formatPercent(value: number, digits = 0): string {
   return `${(value * 100).toFixed(digits)}%`;
+}
+
+/** A tolerance in its own units, named by kind so nothing reads as a bare number. */
+export function formatTolerance(tolerance: Tolerance): string {
+  switch (tolerance.kind) {
+    case "exact":
+      return "exact match";
+    case "absolute_paise":
+      return formatMoney(tolerance.value);
+    case "percentage":
+      return formatPercent(tolerance.value, 2);
+    case "days":
+      return `${tolerance.value} day${tolerance.value === 1 ? "" : "s"}`;
+    case "similarity":
+      return `${formatPercent(tolerance.value, 0)} similarity`;
+  }
+}
+
+export function formatDays(days: number): string {
+  const rounded = Math.round(days);
+  const magnitude = Math.abs(rounded);
+  return `${rounded > 0 ? "+" : ""}${rounded} day${magnitude === 1 ? "" : "s"}`;
 }
 
 const DATE_TIME = new Intl.DateTimeFormat("en-GB", {
@@ -50,40 +89,18 @@ export function formatRelative(iso: string, from: number = Date.now()): string {
   const hour = 60 * minute;
   const day = 24 * hour;
 
-  if (abs < minute) return `just now`;
+  if (abs < minute) return "just now";
   if (abs < hour) return `${Math.round(abs / minute)}m ${suffix}`;
   if (abs < day) return `${Math.round(abs / hour)}h ${suffix}`;
   return `${Math.round(abs / day)}d ${suffix}`;
 }
 
-export interface SlaState {
-  label: string;
-  breached: boolean;
-  urgent: boolean;
-}
-
-/** Time remaining against an SLA target, with breach/urgency flags. */
-export function describeSla(slaDueAt: string, from: number = Date.now()): SlaState {
-  const due = new Date(slaDueAt).getTime();
-  if (Number.isNaN(due)) return { label: "—", breached: false, urgent: false };
-
-  const remaining = due - from;
-  const hours = remaining / 3_600_000;
-
-  if (remaining < 0) {
-    return { label: `Breached ${formatRelative(slaDueAt, from)}`, breached: true, urgent: true };
-  }
-  if (hours < 1) {
-    return { label: `${Math.max(1, Math.round(remaining / 60_000))}m left`, breached: false, urgent: true };
-  }
-  if (hours < 24) {
-    return { label: `${Math.round(hours)}h left`, breached: false, urgent: hours < 4 };
-  }
-  return { label: `${Math.round(hours / 24)}d left`, breached: false, urgent: false };
+/** How long a case has been held. The backend supplies the day count; this only words it. */
+export function formatAge(ageDays: number): string {
+  if (ageDays <= 0) return "held today";
+  return `held ${ageDays} day${ageDays === 1 ? "" : "s"}`;
 }
 
 export function titleCase(value: string): string {
-  return value
-    .replace(/[_-]+/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return value.replace(/[_-]+/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }

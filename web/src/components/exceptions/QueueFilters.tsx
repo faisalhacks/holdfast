@@ -1,12 +1,8 @@
 "use client";
 
 import type { ChangeEvent } from "react";
-import type { ExceptionQuery } from "@/lib/api";
-import {
-  CATEGORY_OPTIONS,
-  SEVERITY_OPTIONS,
-  STATUS_OPTIONS,
-} from "@/lib/labels";
+import type { QueueQuery } from "@/lib/api";
+import { ACCOUNTING_OPTIONS, DECIDED_OPTIONS, HOLD_TYPE_OPTIONS } from "@/lib/labels";
 
 const SELECT_CLASS =
   "h-8 rounded-md border border-line-strong bg-surface-2 px-2 text-xs text-ink " +
@@ -30,9 +26,7 @@ function Select<T extends string>({
         aria-label={label}
         className={SELECT_CLASS}
         value={value}
-        onChange={(event: ChangeEvent<HTMLSelectElement>) =>
-          onChange(event.target.value as T)
-        }
+        onChange={(event: ChangeEvent<HTMLSelectElement>) => onChange(event.target.value as T)}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -44,20 +38,36 @@ function Select<T extends string>({
   );
 }
 
+/**
+ * Queue filters.
+ *
+ * Every control here maps to a query parameter `GET /api/runs/{runId}/queue` supports, so
+ * the count beside them describes the whole matching set rather than the page in hand.
+ * There is no free-text search control, because the route has no search parameter and
+ * filtering one page in the browser would silently mislead about what is in the queue.
+ */
 export function QueueFilters({
   query,
   onChange,
   resultCount,
   onClear,
 }: {
-  query: ExceptionQuery;
-  onChange: (patch: Partial<ExceptionQuery>) => void;
+  query: QueueQuery;
+  onChange: (patch: Partial<QueueQuery>) => void;
   resultCount: number | null;
   onClear: () => void;
 }) {
-  const activeCount = [query.status, query.severity, query.category].filter(
-    (value) => value && value !== "all",
-  ).length + (query.search?.trim() ? 1 : 0);
+  const accounting: "all" | "true" | "false" =
+    query.blocks_accounting === true
+      ? "true"
+      : query.blocks_accounting === false
+        ? "false"
+        : "all";
+
+  const activeCount =
+    (query.hold_type && query.hold_type !== "all" ? 1 : 0) +
+    (accounting !== "all" ? 1 : 0) +
+    (query.undecided_only ? 1 : 0);
 
   return (
     <div className="border-b border-line px-4 py-3">
@@ -76,44 +86,43 @@ export function QueueFilters({
         ) : null}
       </div>
       <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-      <input
-        type="search"
-        value={query.search ?? ""}
-        onChange={(event) => onChange({ search: event.target.value, page: 1 })}
-        placeholder="Search reference, entity, agent…"
-        aria-label="Search exceptions"
-        className="h-9 w-full rounded-md border border-line-strong bg-surface-2 px-2.5 text-xs text-ink placeholder:text-ink-faint focus:border-brand focus:outline-none sm:w-64"
-      />
+        <Select
+          label="Hold type"
+          value={query.hold_type ?? "all"}
+          options={HOLD_TYPE_OPTIONS}
+          onChange={(value) => onChange({ hold_type: value, offset: 0 })}
+        />
+        <Select
+          label="Accounting"
+          value={accounting}
+          options={ACCOUNTING_OPTIONS}
+          onChange={(value) =>
+            onChange({
+              blocks_accounting: value === "all" ? null : value === "true",
+              offset: 0,
+            })
+          }
+        />
+        <Select
+          label="Decided"
+          value={query.undecided_only ? "undecided" : "all"}
+          options={DECIDED_OPTIONS}
+          onChange={(value) => onChange({ undecided_only: value === "undecided", offset: 0 })}
+        />
 
-      <Select
-        label="Status"
-        value={query.status ?? "all"}
-        options={STATUS_OPTIONS}
-        onChange={(value) => onChange({ status: value, page: 1 })}
-      />
-      <Select
-        label="Severity"
-        value={query.severity ?? "all"}
-        options={SEVERITY_OPTIONS}
-        onChange={(value) => onChange({ severity: value, page: 1 })}
-      />
-      <Select
-        label="Category"
-        value={query.category ?? "all"}
-        options={CATEGORY_OPTIONS}
-        onChange={(value) => onChange({ category: value, page: 1 })}
-      />
-
-      <div className="flex items-center justify-between gap-3 sm:ml-auto sm:justify-start">
-        {resultCount !== null ? (
-          <span className="font-mono text-xs text-ink-faint tabular-nums">
-            {resultCount} {resultCount === 1 ? "exception" : "exceptions"}
+        <div className="flex items-center justify-between gap-3 sm:ml-auto sm:justify-start">
+          {resultCount !== null ? (
+            <span className="font-mono text-xs text-ink-faint tabular-nums">
+              {resultCount} {resultCount === 1 ? "case" : "cases"}
+            </span>
+          ) : null}
+          <span
+            className="rounded-md border border-line-strong bg-surface-2 px-2 py-1.5 text-xs text-ink-muted"
+            aria-label="Ordered by money at risk descending, by the API"
+          >
+            Money at risk ↓
           </span>
-        ) : null}
-        <span className="rounded-md border border-line-strong bg-surface-2 px-2 py-1.5 text-xs text-ink-muted" aria-label="Sorted by money at risk descending">
-          Money at risk ↓
-        </span>
-      </div>
+        </div>
       </div>
     </div>
   );

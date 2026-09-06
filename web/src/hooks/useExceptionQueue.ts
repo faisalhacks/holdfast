@@ -1,32 +1,32 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import {
-  api,
-  type ExceptionQuery,
-  type ExceptionSummary,
-  type Page,
-  type RunSummary,
-} from "@/lib/api";
+import { api, type QueuePage, type QueueQuery, type RunOverview } from "@/lib/api";
 import { config } from "@/lib/config";
 import { toErrorMessage } from "@/lib/errors";
 
 interface QueueState {
-  page: Page<ExceptionSummary> | null;
-  stats: RunSummary | null;
+  page: QueuePage | null;
+  run: RunOverview | null;
   loading: boolean;
   error: string | null;
 }
 
-const INITIAL: QueueState = { page: null, stats: null, loading: true, error: null };
+const INITIAL: QueueState = { page: null, run: null, loading: true, error: null };
 
-/** Loads the exception queue and its headline counters for a given filter set. */
-export function useExceptionQueue(query: ExceptionQuery) {
+/**
+ * Loads the exception queue and the run it belongs to.
+ *
+ * Every filter in `query` is a parameter the backend route supports, so filtering and
+ * paging happen server-side and the counters describe the whole result set rather than the
+ * page in hand. Nothing is filtered in the browser.
+ */
+export function useExceptionQueue(query: QueueQuery) {
   const [state, setState] = useState<QueueState>(INITIAL);
   const [reloadToken, setReloadToken] = useState(0);
 
-  // Queries are plain data, so serialising is a cheap way to get a stable dep
-  // without pushing memoisation onto every caller.
+  // Queries are plain data, so serialising is a cheap way to get a stable dep without
+  // pushing memoisation onto every caller.
   const queryKey = JSON.stringify(query);
 
   useEffect(() => {
@@ -35,15 +35,15 @@ export function useExceptionQueue(query: ExceptionQuery) {
 
     (async () => {
       try {
-        const parsed = JSON.parse(queryKey) as ExceptionQuery;
-        const [page, stats] = await Promise.all([
-          api.listRunExceptions(config.currentRunId, parsed),
-          api.getRunSummary(config.currentRunId),
+        const parsed = JSON.parse(queryKey) as QueueQuery;
+        const [page, run] = await Promise.all([
+          api.getQueue(config.currentRunId, parsed),
+          api.getRun(config.currentRunId),
         ]);
-        if (!cancelled) setState({ page, stats, loading: false, error: null });
+        if (!cancelled) setState({ page, run, loading: false, error: null });
       } catch (error) {
         if (!cancelled) {
-          setState({ page: null, stats: null, loading: false, error: toErrorMessage(error) });
+          setState({ page: null, run: null, loading: false, error: toErrorMessage(error) });
         }
       }
     })();

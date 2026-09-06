@@ -2,18 +2,23 @@ import { cn } from "@/lib/cn";
 import { formatPercent } from "@/lib/format";
 
 /**
- * Compact normalized meter for structured evidence scores.
+ * A normalised score in [0, 1], drawn as a bar.
+ *
+ * What this shows is always a DETERMINISTIC quantity the backend computed and published:
+ * a scorer component, a composite, or a token-set similarity ratio. It is never a model's
+ * own stated certainty — the backend has no such field, and nothing in this console
+ * synthesises one. `label` must name the measured quantity, which is why it has no default.
  */
-export function ConfidenceMeter({
+export function ScoreBar({
   value,
+  label,
   className,
-  showLabel = true,
-  label = "Score",
+  showValue = true,
 }: {
   value: number;
+  label: string;
   className?: string;
-  showLabel?: boolean;
-  label?: string;
+  showValue?: boolean;
 }) {
   const clamped = Math.min(1, Math.max(0, value));
   const tone =
@@ -31,7 +36,7 @@ export function ConfidenceMeter({
       >
         <div className={cn("h-full rounded-full", tone)} style={{ width: `${clamped * 100}%` }} />
       </div>
-      {showLabel ? (
+      {showValue ? (
         <span className="font-mono text-xs text-ink-muted tabular-nums">
           {formatPercent(clamped)}
         </span>

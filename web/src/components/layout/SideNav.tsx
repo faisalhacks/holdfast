@@ -15,7 +15,7 @@ const NAV: NavItem[] = [
   { href: "/", label: "Overview", hint: "Fleet health", ready: false },
   { href: "/exceptions", label: "Exception queue", hint: "Human review", ready: true },
   { href: "/runs", label: "Run replay", hint: "Step-by-step", ready: false },
-  { href: "/audit", label: "Audit log", hint: "Decision trail", ready: false },
+  { href: "/audit", label: "Audit log", hint: "Decision trail", ready: true },
 ];
 
 function isActive(pathname: string, href: string): boolean {

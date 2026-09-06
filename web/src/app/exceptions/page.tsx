@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { ExceptionQuery } from "@/lib/api";
+import type { QueueQuery } from "@/lib/api";
 import { useExceptionQueue } from "@/hooks/useExceptionQueue";
 import { PageHeader } from "@/components/layout/AppShell";
 import { ExceptionTable } from "@/components/exceptions/ExceptionTable";
@@ -11,36 +11,36 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Pagination } from "@/components/ui/Pagination";
 import { EmptyState, ErrorState, LoadingRows } from "@/components/ui/States";
+import { offsetToPage, pageToOffset } from "@/lib/paging";
 
-const DEFAULT_QUERY: ExceptionQuery = {
-  status: "all",
-  severity: "all",
-  category: "all",
-  search: "",
-  sort: "amount_desc",
-  page: 1,
-  pageSize: 10,
+const PAGE_SIZE = 10;
+
+const DEFAULT_QUERY: QueueQuery = {
+  hold_type: "all",
+  blocks_accounting: null,
+  undecided_only: false,
+  limit: PAGE_SIZE,
+  offset: 0,
 };
 
 export default function ExceptionQueuePage() {
-  const [query, setQuery] = useState<ExceptionQuery>(DEFAULT_QUERY);
-  const { page, stats, loading, error, refresh } = useExceptionQueue(query);
+  const [query, setQuery] = useState<QueueQuery>(DEFAULT_QUERY);
+  const { page, run, loading, error, refresh } = useExceptionQueue(query);
 
-  const patchQuery = useCallback((patch: Partial<ExceptionQuery>) => {
+  const patchQuery = useCallback((patch: Partial<QueueQuery>) => {
     setQuery((previous) => ({ ...previous, ...patch }));
   }, []);
 
   const isFiltered =
-    query.status !== "all" ||
-    query.severity !== "all" ||
-    query.category !== "all" ||
-    Boolean(query.search?.trim());
+    (query.hold_type ?? "all") !== "all" ||
+    query.blocks_accounting !== null ||
+    Boolean(query.undecided_only);
 
   return (
     <>
       <PageHeader
         title="Exception queue"
-        description="Exceptions that need an operational next step, ordered by money at risk."
+        description="Cases the engine could not clear, ordered by money at risk — the ordering the API returns them in."
         action={
           <Button size="sm" variant="outline" onClick={refresh} loading={loading}>
             Refresh
@@ -48,13 +48,13 @@ export default function ExceptionQueuePage() {
         }
       />
 
-      <QueueStatsBar stats={stats} loading={loading} />
+      <QueueStatsBar run={run} page={page} loading={loading} />
 
       <Card className="mx-4 mb-6 sm:mx-6">
         <QueueFilters
           query={query}
           onChange={patchQuery}
-          resultCount={page?.total ?? null}
+          resultCount={page?.total_matching ?? null}
           onClear={() => setQuery(DEFAULT_QUERY)}
         />
 
@@ -69,23 +69,23 @@ export default function ExceptionQueuePage() {
           />
         ) : loading && !page ? (
           <LoadingRows rows={8} />
-        ) : page && page.items.length > 0 ? (
+        ) : page && page.cases.length > 0 ? (
           <>
-            <ExceptionTable items={page.items} />
+            <ExceptionTable items={page.cases} />
             <Pagination
-              page={page.page}
-              pageSize={page.pageSize}
-              total={page.total}
-              onPageChange={(next) => patchQuery({ page: next })}
+              page={offsetToPage(page.offset, page.limit)}
+              pageSize={page.limit}
+              total={page.total_matching}
+              onPageChange={(next) => patchQuery({ offset: pageToOffset(next, page.limit) })}
             />
           </>
         ) : (
           <EmptyState
-            title={isFiltered ? "No matching exceptions" : "No exceptions in this run"}
+            title={isFiltered ? "No case matches these filters" : "No open case in this run"}
             description={
               isFiltered
-                ? "Adjust or clear the filters to see the rest of the review queue."
-                : "The API returned no exceptions for the selected run."
+                ? "Adjust or clear the filters to see the rest of the queue."
+                : "The API returned no exception case for the selected run."
             }
             action={
               isFiltered ? (

@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 import { cn } from "@/lib/cn";
 
 type Variant = "primary" | "ghost" | "outline";
@@ -22,6 +22,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
   loading?: boolean;
   children: ReactNode;
+  /** React 19 passes `ref` as an ordinary prop; declared so callers can focus a button. */
+  ref?: Ref<HTMLButtonElement>;
 }
 
 export function Button({
