@@ -244,3 +244,87 @@ costs a full CI cycle. Everything else in the amendment was logged before acting
    by skipping `.claude` in the tree walk (each worktree runs its own gate against its own
    root) and gitignoring the directory. A gate that fires on its own reflection is a gate
    about to be disabled by the next person who trips it.
+
+---
+
+## WAVE 1 — partial gate, an orchestration error, and an infrastructure outage
+
+**Racer B won the contract** at `a02a1d5` — 1005 lines, 116 exports, green on
+`tsc --noEmit`. Racer C produced a competing 744-line contract at `75cd95f`. B taken
+WHOLE per AMENDMENT 02 §2; nothing cherry-picked across racers. C's branch is retained
+unmerged as evidence of a real race and will be deleted at Wave 5.
+
+The winning contract already carries `EvalDatasetReport`, `BaselineReport` and
+`EVAL_DATASETS`, so the selection/holdout split and the strong LLM baseline both have a
+home in `eval/report.json` without a later contract change.
+
+### ORCHESTRATION ERROR — racer A was spawned into the shared working directory
+
+Racers B and C were given isolated git worktrees. Racer A was not: it ran in the primary
+working directory, the same one the orchestrator uses for its own gate commits. The
+orchestrator then created and switched branches underneath it while it worked, making its
+state unreliable through no fault of its own. It was stopped and its work discarded.
+
+Not a race loss — a supervision failure, recorded as one. The lesson generalises to Wave
+3.5: **every sweep agent gets a worktree, and the orchestrator never runs git operations
+in a directory an agent is using.** Amendment 02 required per-agent worktrees to isolate
+*reads*; this shows they are equally required to isolate *branch state*.
+
+### INFRASTRUCTURE OUTAGE — both surviving racers lost mid-flight
+
+Racers B and C both terminated with `API Error: Can't reach the API server (ENOTFOUND)`
+within seconds of each other, while the orchestrator's own tooling simultaneously failed.
+B was at "Docker is starting, writing the schema now"; C was at "types green, committing".
+
+Both had already pushed `lib/types.ts`, so the critical path survived the outage — which
+is the case for the partial gate, not merely a lucky break. Had W01 been instructed to
+land types and schema in one push, the outage would have cost the entire wave.
+
+`db/**` was not reached by any racer and is respawned as its own task.
+
+### Two corrections applied to the gates
+
+5. **The forbidden gate tripped its own house rules.** Root `AGENTS.md` contains the
+   literal string "SOC 2" in the sentence prohibiting it, and the whole-file exemption
+   hiding this was itself the bug: excluding a file exempts everything a worker later
+   writes into it. Worse, `docs/**` and W11's README were never exempt, so the gate would
+   have punished the submission for *disclaiming* an overclaim — a credibility move we
+   want to make.
+
+   Fixed with `tools/vocab-allow.txt`: exact full lines permitted to contain prohibited
+   vocabulary, frozen and under CODEOWNERS. A line is exempt only when it matches an entry
+   in full, so appending marketing copy to an allowlisted line changes the line and fails.
+   Wholesale exemptions now cover only the gate definitions and orchestrator working state.
+   Four assertions prove the anti-smuggling property.
+
+6. **Sparse-checkout cannot hide the holdout.** The planned mechanism was wrong: sparse
+   checkout controls the working tree, not the object store. Any sweep agent could reach a
+   committed holdout with `git cat-file` or `git show HEAD:...`, or just run
+   `git sparse-checkout disable`. Treating that as unreachable would repeat today's
+   CODEOWNERS mistake.
+
+   **The holdout is now never committed.** W02 writes it outside the repository. Committed
+   at the freeze: the generator, `data/holdout.spec.json` (seed + 1 and stratification),
+   and the holdout's per-file sha256 in `data/MANIFEST`. Stronger than committing it — the
+   seed is frozen before any sweep agent spawns, so the holdout is fully determined before
+   a single strategy is selected, and anyone can regenerate it byte-identically and check
+   our hashes. Nobody has to trust that twenty agents did not peek.
+
+### Three corrections recorded for Wave 3.5 and termination
+
+7. **Twenty sweep agents would have collided in Postgres.** Twenty concurrent `pnpm eval`
+   runs against one instance means interleaved writes to `runs` and `audit_journal`, agents
+   reading each other's rows, and a `report.json` reflecting somebody else's work — failing
+   quietly, with numbers that are simply wrong. Each sweep worktree gets its own database
+   `holdfast_sweep_<agent_id>`, created from the same migrations and torn down after.
+   Verified before round 1 by running two agents with deliberately different normalisation
+   and confirming their reports differ as predicted. This also makes the twenty evals
+   genuinely parallel rather than serial-ish.
+8. **The strong LLM baseline is a termination-checklist item, not a side effect.**
+   Default-off for sweep evals so those stay fast and deterministic, but it must run once,
+   deliberately, for the final `eval/report.json`. It is the whole defence against "did you
+   handicap the comparison", and a handicapped baseline dies under one question.
+9. **The sweep runs unconditionally.** The original precondition — skip if stage-1 coverage
+   is already >= 0.70 — misreads what the sweep buys. Selection ranks on coverage only
+   *after* filtering on false clears and rupees at risk, so it finds the best
+   correctness-per-coverage trade, and those are the numbers on camera at 2:10.

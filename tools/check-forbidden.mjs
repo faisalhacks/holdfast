@@ -19,21 +19,48 @@ const ROOT = rootFlag !== -1 && process.argv[rootFlag + 1]
 
 // Files that quote the banned strings in order to ban them.
 const SELF_EXEMPT = [
+  // These two ARE the gate definitions — they contain every pattern by construction.
   'tools/**',
   '.github/**',
-  'AGENTS.md',
-  'CODEOWNERS',
-  'HOLDFAST-ORCHESTRATION-FINAL.md',
-  'HOLDFAST-HANDOFF.md',
-  'CURRENT_AIM.md',
-  'memory.md',
+  // Orchestrator working state. Never shipped, never read by a judge, and it records
+  // violations verbatim by design (quarantine notes quote the offending line).
   'logs/**',
   'critique/**',
   'quarantine/**',
+  'memory.md',
+  'CURRENT_AIM.md',
   'pnpm-lock.yaml',
 ];
 
+// Everything else — AGENTS.md, the planning documents, docs/**, README.md, DEVPOST.md —
+// gets NO wholesale exemption. A file that documents a prohibition necessarily contains
+// the prohibited token, and W11's README SHOULD say we make no SOC 2 claim, because
+// disclaiming is a credibility move and the gate must not punish it.
+//
+// So the exemption is per-LINE and exact. tools/vocab-allow.txt holds complete lines that
+// are permitted to contain prohibited vocabulary; a line is exempt only when it matches an
+// entry in full. Appending marketing copy to an allowlisted line changes the line and
+// fails. A new occurrence anywhere fails. A documented prohibition passes.
+
 const SCANNABLE = /\.(ts|tsx|js|jsx|mjs|cjs|sql|json|md|css|ya?ml)$/;
+
+// Exact full lines permitted to contain prohibited vocabulary. Loaded from the real tools
+// directory, not from --root, so fixture trees are held to the same allowlist.
+// A line is exempt only if it matches an entry in full: appending to an allowlisted line
+// changes the line and fails, so nobody smuggles marketing copy through by extension.
+function loadVocabAllow() {
+  try {
+    const text = readFileSync(new URL('vocab-allow.txt', import.meta.url), 'utf8');
+    return new Set(
+      text.split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter((l) => l && !l.startsWith('#'))
+    );
+  } catch {
+    return new Set();
+  }
+}
+const VOCAB_ALLOW = loadVocabAllow();
 
 export const RULES = [
   {
@@ -144,6 +171,7 @@ function main() {
       if (exempt) continue;
       if (!matchesAny(rel, rule.include)) continue;
       lines.forEach((line, i) => {
+        if (VOCAB_ALLOW.has(line.trim())) return;
         if (rule.pattern.test(line)) {
           violations.push({ rule, file: rel, line: i + 1, text: line.trim().slice(0, 120) });
         }

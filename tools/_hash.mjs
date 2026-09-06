@@ -53,6 +53,35 @@ export function renderManifest({ files, root }, meta) {
     ...files.map((f) => `${f.sha256}  ${f.path}`),
     '',
   ];
+
+  // The HOLDOUT set is never committed. Only its hashes live here.
+  //
+  // Sweep agents optimise against data/. If the holdout were a git object, any agent could
+  // reach it with `git cat-file` or `git show HEAD:...` regardless of sparse-checkout,
+  // because sparse-checkout controls the working tree and not the object store. Twenty
+  // agents optimising a number will find that. So the files live outside the repository
+  // and only these digests are committed.
+  //
+  // This is stronger than committing it, not weaker: the seed is frozen here BEFORE any
+  // sweep agent spawns, so the holdout is fully determined before a single strategy is
+  // selected. Anyone can regenerate it byte-identically from the committed generator, the
+  // seed and the stratification spec, and check these hashes. Nobody has to trust that
+  // twenty agents did not peek.
+  if (meta.holdout) {
+    const h = meta.holdout;
+    lines.push(
+      '# ── HOLDOUT (not committed; hashes only) ───────────────────────────────────',
+      `# holdout_seed:           ${h.seed}`,
+      `# holdout_spec:           ${h.specPath}`,
+      `# holdout_files:          ${h.files.length}`,
+      `# holdout_root:           ${h.root}`,
+      '# Regenerate with the committed generator at the seed above and verify these:',
+      '',
+      ...h.files.map((f) => `${f.sha256}  holdout/${f.path}`),
+      ''
+    );
+  }
+
   return lines.join('\n');
 }
 
@@ -60,15 +89,27 @@ export function parseManifest(text) {
   const root = /^# root:\s*([0-9a-f]{64})$/m.exec(text);
   const frozenAt = /^# frozen_at:\s*(.+)$/m.exec(text);
   const commit = /^# commit:\s*(.+)$/m.exec(text);
+  const holdoutRoot = /^# holdout_root:\s*([0-9a-f]{64})$/m.exec(text);
+  const holdoutSeed = /^# holdout_seed:\s*(.+)$/m.exec(text);
+
+  // `holdout/` entries describe files that live outside the repository. Keep the two
+  // sets apart so the committed tree is never checked against holdout digests.
   const files = [];
+  const holdoutFiles = [];
   for (const line of text.split(/\r?\n/)) {
     const m = /^([0-9a-f]{64})\s\s(.+)$/.exec(line);
-    if (m) files.push({ sha256: m[1], path: m[2] });
+    if (!m) continue;
+    if (m[2].startsWith('holdout/')) holdoutFiles.push({ sha256: m[1], path: m[2].slice('holdout/'.length) });
+    else files.push({ sha256: m[1], path: m[2] });
   }
+
   return {
     root: root ? root[1] : null,
     frozenAt: frozenAt ? frozenAt[1].trim() : null,
     commit: commit ? commit[1].trim() : null,
     files,
+    holdout: holdoutRoot
+      ? { root: holdoutRoot[1], seed: holdoutSeed ? holdoutSeed[1].trim() : null, files: holdoutFiles }
+      : null,
   };
 }
