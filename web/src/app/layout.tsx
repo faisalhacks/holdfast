@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
-import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Syndicate — Operations console",
+  title: "Holdfast — Accounts-payable exception review",
   description:
-    "Human review surface for autonomous agent runs: exception queue, decisions, and audit trail.",
+    "Reconciliation exceptions handled with typed payment holds, field-level evidence, and a recorded human routing decision.",
 };
 
+/**
+ * The root layout owns the document and the tokens, and nothing else.
+ *
+ * Two surfaces live under it: the light editorial site at `/`, and the dark
+ * workstation under `(app)`. Each brings its own shell, so neither has to
+ * inherit the other's chrome.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>
-        <AppShell>{children}</AppShell>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

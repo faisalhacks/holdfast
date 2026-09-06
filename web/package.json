@@ -1,8 +1,8 @@
 {
-  "name": "@syndicate/web",
+  "name": "@holdfast/web",
   "version": "0.1.0",
   "private": true,
-  "description": "Syndicate operations console (Next.js App Router).",
+  "description": "Holdfast accounts-payable exception review frontend.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

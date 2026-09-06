@@ -1,27 +1,52 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
 import { cn } from "@/lib/cn";
 
-type Variant = "primary" | "ghost" | "outline";
-type Size = "sm" | "md";
+type Variant = "primary" | "ghost" | "outline" | "governed";
+type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
+  /* A disabled primary must stop looking like the thing to press. */
   primary:
-    "bg-brand text-canvas hover:bg-brand-ink disabled:hover:bg-brand font-semibold",
+    "bg-focus font-semibold text-white hover:bg-focus-ink " +
+    "disabled:bg-surface-3 disabled:text-ink-faint disabled:hover:bg-surface-3",
   outline:
-    "border border-line-strong text-ink hover:border-brand hover:text-brand-ink",
-  ghost: "text-ink-muted hover:text-ink hover:bg-surface-2",
+    "border border-line-strong bg-surface text-ink hover:border-focus hover:text-focus-ink",
+  ghost: "text-ink-muted hover:bg-surface-2 hover:text-ink",
+  /*
+   * Releasing a hold is a governed act, not a destructive one. A filled red
+   * button would read as "danger, don't" — the point is that it is allowed,
+   * attributable, and recorded.
+   */
+  governed:
+    "border border-blocking/40 bg-surface text-blocking hover:border-blocking hover:bg-blocking/6",
 };
 
 const SIZES: Record<Size, string> = {
-  sm: "h-8 px-3 text-xs",
-  md: "h-9 px-4 text-sm",
+  sm: "h-8 px-2.5 text-xs",
+  md: "h-9 px-3.5 text-base",
+  /* A step of the same object, for the public page where targets are larger. */
+  lg: "h-11 px-5 text-md",
 };
+
+const BASE =
+  "inline-flex items-center justify-center gap-1.5 rounded-sm transition-colors " +
+  "disabled:cursor-not-allowed disabled:opacity-45";
+
+/*
+ * Exported so the marketing surface can dress an anchor as the very same
+ * control rather than growing a parallel set of buttons. The classes are the
+ * classes, not a copy of them.
+ */
+export const buttonClass = (variant: Variant = "outline", size: Size = "md", className?: string) =>
+  cn(BASE, SIZES[size], VARIANTS[variant], className);
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
   loading?: boolean;
   children: ReactNode;
+  /** React 19 passes `ref` as an ordinary prop; declared so callers can focus a button. */
+  ref?: Ref<HTMLButtonElement>;
 }
 
 export function Button({
@@ -38,18 +63,12 @@ export function Button({
       {...rest}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-md transition-colors",
-        "disabled:cursor-not-allowed disabled:opacity-50",
-        SIZES[size],
-        VARIANTS[variant],
-        className,
-      )}
+      className={buttonClass(variant, size, className)}
     >
       {loading ? (
         <span
           aria-hidden
-          className="size-3 animate-spin rounded-full border-2 border-current border-t-transparent"
+          className="size-3 animate-spin rounded-full border border-current border-t-transparent"
         />
       ) : null}
       {children}

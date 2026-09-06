@@ -1,0 +1,3824 @@
+{
+ "captured_from": "holdfast backend v1.0-submission, HOLDFAST_REPO=memory",
+ "run_id": "run_engine_a",
+ "run": {
+  "run": {
+   "id": "run_engine_a",
+   "kind": "engine",
+   "status": "completed",
+   "started_at": "2026-08-31T02:10:00.000Z",
+   "finished_at": "2026-08-31T02:14:00.000Z",
+   "dataset_hash": "d3cb33716402700af2070efa1b7f601783bca0ee97b1ca0f3314098916caba48",
+   "thresholds_hash": "bd4178b97fbea57e2a1be80b984c3eb59010b6cb3168df1b5d733cd2040da801",
+   "engine_version": "holdfast-engine@0.1.0-seed",
+   "scorer_version": "holdfast-scorer@0.1.0-seed",
+   "idempotency_key": "seed-run-engine-a",
+   "parent_run_id": null,
+   "feedback_rule_ids": [],
+   "totals": {
+    "invoices_total": 22,
+    "payments_total": 22,
+    "decided_count": 14,
+    "coverage": 0.6363636363636364,
+    "auto_cleared_count": 14,
+    "held_count": 8,
+    "human_required_count": 8,
+    "unmatched_count": 0,
+    "holds_by_type": {
+     "matching": 0,
+     "price_variance": 1,
+     "quantity_variance": 0,
+     "tax_variance": 0,
+     "tax_amount_range": 1,
+     "dist_variance": 0,
+     "duplicate_candidate": 2,
+     "no_reference": 1,
+     "cardinality_residual": 1,
+     "period_deferral": 1,
+     "credit_note_crossing": 1
+    },
+    "conflicts_emitted": 11,
+    "held_invoices_without_conflict": 0,
+    "amount_invoiced_paise": 236918200,
+    "amount_auto_cleared_paise": 132207200,
+    "amount_held_paise": 104711000
+   }
+  },
+  "totals": {
+   "invoices_total": 22,
+   "payments_total": 22,
+   "decided_count": 14,
+   "coverage": 0.6363636363636364,
+   "auto_cleared_count": 14,
+   "held_count": 8,
+   "human_required_count": 8,
+   "unmatched_count": 0,
+   "holds_by_type": {
+    "matching": 0,
+    "price_variance": 1,
+    "quantity_variance": 0,
+    "tax_variance": 0,
+    "tax_amount_range": 1,
+    "dist_variance": 0,
+    "duplicate_candidate": 2,
+    "no_reference": 1,
+    "cardinality_residual": 1,
+    "period_deferral": 1,
+    "credit_note_crossing": 1
+   },
+   "conflicts_emitted": 11,
+   "held_invoices_without_conflict": 0,
+   "amount_invoiced_paise": 236918200,
+   "amount_auto_cleared_paise": 132207200,
+   "amount_held_paise": 104711000
+  },
+  "outcome_mix": {
+   "auto_cleared": 14,
+   "held": 8,
+   "unmatched": 0
+  },
+  "holds": {
+   "open_count": 7,
+   "released_count": 1,
+   "released_by_a_named_human": 1,
+   "by_type": [
+    {
+     "hold_type": "duplicate_candidate",
+     "open_count": 2,
+     "released_count": 0,
+     "policy": {
+      "type": "duplicate_candidate",
+      "auto_releasable": false,
+      "blocks_accounting": true,
+      "default_severity": "blocking",
+      "clause": "A prior invoice matches on vendor, amount and date."
+     }
+    },
+    {
+     "hold_type": "price_variance",
+     "open_count": 1,
+     "released_count": 0,
+     "policy": {
+      "type": "price_variance",
+      "auto_releasable": false,
+      "blocks_accounting": false,
+      "default_severity": "material",
+      "clause": "Unit price differs from the purchase order beyond tolerance."
+     }
+    },
+    {
+     "hold_type": "cardinality_residual",
+     "open_count": 1,
+     "released_count": 0,
+     "policy": {
+      "type": "cardinality_residual",
+      "auto_releasable": false,
+      "blocks_accounting": false,
+      "default_severity": "material",
+      "clause": "A residual remains after partial settlement of a bulk payment."
+     }
+    },
+    {
+     "hold_type": "no_reference",
+     "open_count": 1,
+     "released_count": 0,
+     "policy": {
+      "type": "no_reference",
+      "auto_releasable": false,
+      "blocks_accounting": false,
+      "default_severity": "material",
+      "clause": "No usable reference token was found on the payment side."
+     }
+    },
+    {
+     "hold_type": "credit_note_crossing",
+     "open_count": 1,
+     "released_count": 0,
+     "policy": {
+      "type": "credit_note_crossing",
+      "auto_releasable": false,
+      "blocks_accounting": true,
+      "default_severity": "material",
+      "clause": "A credit note crosses the settlement being matched."
+     }
+    },
+    {
+     "hold_type": "period_deferral",
+     "open_count": 1,
+     "released_count": 0,
+     "policy": {
+      "type": "period_deferral",
+      "auto_releasable": true,
+      "blocks_accounting": true,
+      "default_severity": "advisory",
+      "clause": "Invoice date and receipt date fall in different periods."
+     }
+    },
+    {
+     "hold_type": "tax_amount_range",
+     "open_count": 0,
+     "released_count": 1,
+     "policy": {
+      "type": "tax_amount_range",
+      "auto_releasable": false,
+      "blocks_accounting": true,
+      "default_severity": "blocking",
+      "clause": "Tax amount falls outside the permitted absolute range."
+     }
+    }
+   ]
+  },
+  "exceptions": {
+   "open_case_count": 8,
+   "money_at_risk_paise": 72083000,
+   "largest_by_money_at_risk": [
+    {
+     "case_id": "case_a_price",
+     "invoice_id": "inv_x_price",
+     "money_at_risk_paise": 18880000,
+     "age_days": 6,
+     "blocks_accounting": false,
+     "application_status": "unapplied",
+     "hold_types": [
+      "price_variance"
+     ],
+     "decided": false,
+     "suggested_next": {
+      "owner_role": "requisitioner",
+      "resolution_path": "internal_correction",
+      "decided_by_hold_type": "price_variance",
+      "because": "the settled amount differs from the ordered price beyond tolerance",
+      "is_suggestion": true,
+      "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+     }
+    },
+    {
+     "case_id": "case_a_tax",
+     "invoice_id": "inv_x_tax",
+     "money_at_risk_paise": 15621000,
+     "age_days": 6,
+     "blocks_accounting": false,
+     "application_status": "unapplied",
+     "hold_types": [
+      "tax_amount_range"
+     ],
+     "decided": true,
+     "suggested_next": null
+    },
+    {
+     "case_id": "case_a_period",
+     "invoice_id": "inv_x_period",
+     "money_at_risk_paise": 9794000,
+     "age_days": 6,
+     "blocks_accounting": true,
+     "application_status": "unapplied",
+     "hold_types": [
+      "period_deferral"
+     ],
+     "decided": false,
+     "suggested_next": {
+      "owner_role": "controller",
+      "resolution_path": "internal_correction",
+      "decided_by_hold_type": "period_deferral",
+      "because": "the settlement falls outside the invoice accounting period",
+      "is_suggestion": true,
+      "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+     }
+    },
+    {
+     "case_id": "case_a_noref",
+     "invoice_id": "inv_x_noref",
+     "money_at_risk_paise": 8850000,
+     "age_days": 6,
+     "blocks_accounting": false,
+     "application_status": "unidentified",
+     "hold_types": [
+      "no_reference"
+     ],
+     "decided": true,
+     "suggested_next": {
+      "owner_role": "vendor",
+      "resolution_path": "customer_outreach",
+      "decided_by_hold_type": "no_reference",
+      "because": "the bank narration carries no reference token to settle against",
+      "is_suggestion": true,
+      "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+     }
+    },
+    {
+     "case_id": "case_a_dup_a",
+     "invoice_id": "inv_x_dup_a",
+     "money_at_risk_paise": 6726000,
+     "age_days": 6,
+     "blocks_accounting": true,
+     "application_status": "unapplied",
+     "hold_types": [
+      "duplicate_candidate"
+     ],
+     "decided": false,
+     "suggested_next": {
+      "owner_role": "ap_manager",
+      "resolution_path": "internal_correction",
+      "decided_by_hold_type": "duplicate_candidate",
+      "because": "a second document with the same vendor, amount and date is in the run",
+      "is_suggestion": true,
+      "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+     }
+    }
+   ]
+  },
+  "reviewer_activity": {
+   "decision_count": 3,
+   "distinct_reviewers": 3,
+   "tolerance_change_count": 1,
+   "tolerance_changes": [
+    {
+     "id": "tch_tax_band_widened",
+     "direction": "widened",
+     "scope_kind": "hold_type",
+     "reviewer": "rev_m_dsouza",
+     "timestamp": "2026-09-03T09:40:00.000Z",
+     "released_hold_count": 1
+    }
+   ]
+  }
+ },
+ "queue": {
+  "run_id": "run_engine_a",
+  "ordering": "money_at_risk_paise DESC, then case_id",
+  "filter": {
+   "hold_type": null,
+   "blocks_accounting": null,
+   "undecided_only": false,
+   "limit": 200,
+   "offset": 0
+  },
+  "page": {
+   "limit": 200,
+   "offset": 0,
+   "returned": 8,
+   "total_matching": 8,
+   "has_more": false
+  },
+  "money_at_risk_total_paise": 72083000,
+  "cases": [
+   {
+    "case_id": "case_a_price",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_price",
+    "money_at_risk_paise": 18880000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "blocks_accounting": false,
+    "application_status": "unapplied",
+    "payable": false,
+    "holds": [
+     {
+      "id": "hold_a_price",
+      "type": "price_variance",
+      "reason": "Unit price differs from the purchase order beyond tolerance.",
+      "severity": "material",
+      "auto_releasable": false,
+      "blocks_accounting": false,
+      "is_open": true,
+      "released_by": null,
+      "released_at": null,
+      "release_reason": null,
+      "conflict_codes": [
+       "amount_over_tolerance"
+      ],
+      "policy": {
+       "type": "price_variance",
+       "auto_releasable": false,
+       "blocks_accounting": false,
+       "default_severity": "material",
+       "clause": "Unit price differs from the purchase order beyond tolerance."
+      }
+     }
+    ],
+    "top_candidate": {
+     "id": "cand_a_price",
+     "cardinality": "one_to_one",
+     "payment_count": 1,
+     "composite": 0.8450000000000001,
+     "scorer_version": "holdfast-scorer@0.1.0-seed",
+     "residual_paise": 47500,
+     "proposed_by": "deterministic_exact",
+     "reverified": true,
+     "conflict_codes": [
+      "amount_over_tolerance"
+     ]
+    },
+    "decision": null,
+    "suggested_next": {
+     "owner_role": "requisitioner",
+     "resolution_path": "internal_correction",
+     "decided_by_hold_type": "price_variance",
+     "because": "the settled amount differs from the ordered price beyond tolerance",
+     "is_suggestion": true,
+     "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+    }
+   },
+   {
+    "case_id": "case_a_tax",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_tax",
+    "money_at_risk_paise": 15621000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "blocks_accounting": false,
+    "application_status": "unapplied",
+    "payable": true,
+    "holds": [
+     {
+      "id": "hold_a_tax",
+      "type": "tax_amount_range",
+      "reason": "Tax amount falls outside the permitted absolute range.",
+      "severity": "blocking",
+      "auto_releasable": false,
+      "blocks_accounting": true,
+      "is_open": false,
+      "released_by": "rev_m_dsouza",
+      "released_at": "2026-09-03T09:40:00.000Z",
+      "release_reason": "tolerance change tch_tax_band_widened: absolute tax band widened",
+      "conflict_codes": [
+       "tax_total_mismatch"
+      ],
+      "policy": {
+       "type": "tax_amount_range",
+       "auto_releasable": false,
+       "blocks_accounting": true,
+       "default_severity": "blocking",
+       "clause": "Tax amount falls outside the permitted absolute range."
+      }
+     }
+    ],
+    "top_candidate": {
+     "id": "cand_a_tax",
+     "cardinality": "one_to_one",
+     "payment_count": 1,
+     "composite": 1,
+     "scorer_version": "holdfast-scorer@0.1.0-seed",
+     "residual_paise": 0,
+     "proposed_by": "deterministic_exact",
+     "reverified": true,
+     "conflict_codes": [
+      "tax_total_mismatch"
+     ]
+    },
+    "decision": {
+     "id": "dec_tax_band",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_tax",
+     "invoice_id": "inv_x_tax",
+     "action": "change_tolerance",
+     "resolution_path": "internal_correction",
+     "owner_next": {
+      "role": "tax_team",
+      "party": "Indirect tax"
+     },
+     "reviewer": "rev_m_dsouza",
+     "reason": "cess on facilities contracts sits above the band the run was configured with",
+     "timestamp": "2026-09-03T09:40:00.000Z",
+     "hold_ids": [
+      "hold_a_tax"
+     ],
+     "tolerance_change_id": "tch_tax_band_widened"
+    },
+    "suggested_next": null
+   },
+   {
+    "case_id": "case_a_period",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_period",
+    "money_at_risk_paise": 9794000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "blocks_accounting": true,
+    "application_status": "unapplied",
+    "payable": false,
+    "holds": [
+     {
+      "id": "hold_a_period",
+      "type": "period_deferral",
+      "reason": "Invoice date and receipt date fall in different periods.",
+      "severity": "advisory",
+      "auto_releasable": true,
+      "blocks_accounting": true,
+      "is_open": true,
+      "released_by": null,
+      "released_at": null,
+      "release_reason": null,
+      "conflict_codes": [
+       "period_mismatch"
+      ],
+      "policy": {
+       "type": "period_deferral",
+       "auto_releasable": true,
+       "blocks_accounting": true,
+       "default_severity": "advisory",
+       "clause": "Invoice date and receipt date fall in different periods."
+      }
+     }
+    ],
+    "top_candidate": {
+     "id": "cand_a_period",
+     "cardinality": "one_to_one",
+     "payment_count": 1,
+     "composite": 0.958,
+     "scorer_version": "holdfast-scorer@0.1.0-seed",
+     "residual_paise": 0,
+     "proposed_by": "deterministic_exact",
+     "reverified": true,
+     "conflict_codes": [
+      "period_mismatch"
+     ]
+    },
+    "decision": null,
+    "suggested_next": {
+     "owner_role": "controller",
+     "resolution_path": "internal_correction",
+     "decided_by_hold_type": "period_deferral",
+     "because": "the settlement falls outside the invoice accounting period",
+     "is_suggestion": true,
+     "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+    }
+   },
+   {
+    "case_id": "case_a_noref",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_noref",
+    "money_at_risk_paise": 8850000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "blocks_accounting": false,
+    "application_status": "unidentified",
+    "payable": false,
+    "holds": [
+     {
+      "id": "hold_a_noref",
+      "type": "no_reference",
+      "reason": "No usable reference token was found on the payment side.",
+      "severity": "material",
+      "auto_releasable": false,
+      "blocks_accounting": false,
+      "is_open": true,
+      "released_by": null,
+      "released_at": null,
+      "release_reason": null,
+      "conflict_codes": [
+       "reference_absent"
+      ],
+      "policy": {
+       "type": "no_reference",
+       "auto_releasable": false,
+       "blocks_accounting": false,
+       "default_severity": "material",
+       "clause": "No usable reference token was found on the payment side."
+      }
+     }
+    ],
+    "top_candidate": {
+     "id": "cand_a_noref",
+     "cardinality": "one_to_one",
+     "payment_count": 1,
+     "composite": 0.6685000000000001,
+     "scorer_version": "holdfast-scorer@0.1.0-seed",
+     "residual_paise": 0,
+     "proposed_by": "deterministic_fuzzy",
+     "reverified": true,
+     "conflict_codes": [
+      "reference_absent"
+     ]
+    },
+    "decision": {
+     "id": "dec_noref_rule",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_noref",
+     "invoice_id": "inv_x_noref",
+     "action": "create_feedback_rule",
+     "resolution_path": "internal_correction",
+     "owner_next": {
+      "role": "ap_clerk",
+      "party": null
+     },
+     "reviewer": "rev_a_iyer",
+     "reason": "this vendor quotes the reference without separators in the narration tail",
+     "timestamp": "2026-09-03T15:05:00.000Z",
+     "hold_ids": [
+      "hold_a_noref"
+     ],
+     "tolerance_change_id": null
+    },
+    "suggested_next": {
+     "owner_role": "vendor",
+     "resolution_path": "customer_outreach",
+     "decided_by_hold_type": "no_reference",
+     "because": "the bank narration carries no reference token to settle against",
+     "is_suggestion": true,
+     "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+    }
+   },
+   {
+    "case_id": "case_a_dup_a",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_dup_a",
+    "money_at_risk_paise": 6726000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "blocks_accounting": true,
+    "application_status": "unapplied",
+    "payable": false,
+    "holds": [
+     {
+      "id": "hold_a_dup_a",
+      "type": "duplicate_candidate",
+      "reason": "A prior invoice matches on vendor, amount and date.",
+      "severity": "blocking",
+      "auto_releasable": false,
+      "blocks_accounting": true,
+      "is_open": true,
+      "released_by": null,
+      "released_at": null,
+      "release_reason": null,
+      "conflict_codes": [
+       "duplicate_vendor_amount_date",
+       "multiple_candidates_tied"
+      ],
+      "policy": {
+       "type": "duplicate_candidate",
+       "auto_releasable": false,
+       "blocks_accounting": true,
+       "default_severity": "blocking",
+       "clause": "A prior invoice matches on vendor, amount and date."
+      }
+     }
+    ],
+    "top_candidate": {
+     "id": "cand_a_dup_a",
+     "cardinality": "one_to_one",
+     "payment_count": 1,
+     "composite": 1,
+     "scorer_version": "holdfast-scorer@0.1.0-seed",
+     "residual_paise": 0,
+     "proposed_by": "deterministic_exact",
+     "reverified": true,
+     "conflict_codes": [
+      "duplicate_vendor_amount_date",
+      "multiple_candidates_tied"
+     ]
+    },
+    "decision": null,
+    "suggested_next": {
+     "owner_role": "ap_manager",
+     "resolution_path": "internal_correction",
+     "decided_by_hold_type": "duplicate_candidate",
+     "because": "a second document with the same vendor, amount and date is in the run",
+     "is_suggestion": true,
+     "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+    }
+   },
+   {
+    "case_id": "case_a_dup_b",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_dup_b",
+    "money_at_risk_paise": 6726000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "blocks_accounting": true,
+    "application_status": "unapplied",
+    "payable": false,
+    "holds": [
+     {
+      "id": "hold_a_dup_b",
+      "type": "duplicate_candidate",
+      "reason": "A prior invoice matches on vendor, amount and date.",
+      "severity": "blocking",
+      "auto_releasable": false,
+      "blocks_accounting": true,
+      "is_open": true,
+      "released_by": null,
+      "released_at": null,
+      "release_reason": null,
+      "conflict_codes": [
+       "duplicate_vendor_amount_date",
+       "multiple_candidates_tied"
+      ],
+      "policy": {
+       "type": "duplicate_candidate",
+       "auto_releasable": false,
+       "blocks_accounting": true,
+       "default_severity": "blocking",
+       "clause": "A prior invoice matches on vendor, amount and date."
+      }
+     }
+    ],
+    "top_candidate": {
+     "id": "cand_a_dup_b",
+     "cardinality": "one_to_one",
+     "payment_count": 1,
+     "composite": 0.982,
+     "scorer_version": "holdfast-scorer@0.1.0-seed",
+     "residual_paise": 0,
+     "proposed_by": "deterministic_fuzzy",
+     "reverified": true,
+     "conflict_codes": [
+      "duplicate_vendor_amount_date",
+      "multiple_candidates_tied"
+     ]
+    },
+    "decision": null,
+    "suggested_next": {
+     "owner_role": "ap_manager",
+     "resolution_path": "internal_correction",
+     "decided_by_hold_type": "duplicate_candidate",
+     "because": "a second document with the same vendor, amount and date is in the run",
+     "is_suggestion": true,
+     "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+    }
+   },
+   {
+    "case_id": "case_a_credit",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_credit",
+    "money_at_risk_paise": 3186000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "blocks_accounting": true,
+    "application_status": "on_account",
+    "payable": false,
+    "holds": [
+     {
+      "id": "hold_a_credit",
+      "type": "credit_note_crossing",
+      "reason": "A credit note crosses the settlement being matched.",
+      "severity": "material",
+      "auto_releasable": false,
+      "blocks_accounting": true,
+      "is_open": true,
+      "released_by": null,
+      "released_at": null,
+      "release_reason": null,
+      "conflict_codes": [
+       "credit_note_crosses_period",
+       "no_candidate_found"
+      ],
+      "policy": {
+       "type": "credit_note_crossing",
+       "auto_releasable": false,
+       "blocks_accounting": true,
+       "default_severity": "material",
+       "clause": "A credit note crosses the settlement being matched."
+      }
+     }
+    ],
+    "top_candidate": null,
+    "decision": null,
+    "suggested_next": {
+     "owner_role": "controller",
+     "resolution_path": "internal_correction",
+     "decided_by_hold_type": "credit_note_crossing",
+     "because": "a credit note settles against a document in another accounting period",
+     "is_suggestion": true,
+     "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+    }
+   },
+   {
+    "case_id": "case_a_card",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_card",
+    "money_at_risk_paise": 2300000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "blocks_accounting": false,
+    "application_status": "unapplied",
+    "payable": false,
+    "holds": [
+     {
+      "id": "hold_a_card",
+      "type": "cardinality_residual",
+      "reason": "A residual remains after partial settlement of a bulk payment.",
+      "severity": "material",
+      "auto_releasable": false,
+      "blocks_accounting": false,
+      "is_open": true,
+      "released_by": null,
+      "released_at": null,
+      "release_reason": null,
+      "conflict_codes": [
+       "residual_unsettled"
+      ],
+      "policy": {
+       "type": "cardinality_residual",
+       "auto_releasable": false,
+       "blocks_accounting": false,
+       "default_severity": "material",
+       "clause": "A residual remains after partial settlement of a bulk payment."
+      }
+     }
+    ],
+    "top_candidate": {
+     "id": "cand_a_card",
+     "cardinality": "one_to_many",
+     "payment_count": 3,
+     "composite": 0.869,
+     "scorer_version": "holdfast-scorer@0.1.0-seed",
+     "residual_paise": 2300000,
+     "proposed_by": "cardinality_search",
+     "reverified": true,
+     "conflict_codes": [
+      "residual_unsettled"
+     ]
+    },
+    "decision": {
+     "id": "dec_card_route",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_card",
+     "invoice_id": "inv_x_card",
+     "action": "route",
+     "resolution_path": "re_application",
+     "owner_next": {
+      "role": "treasury",
+      "party": "Treasury operations"
+     },
+     "reviewer": "rev_s_bhatt",
+     "reason": "three inward lines settle this document; the residual needs a treasury view",
+     "timestamp": "2026-09-02T10:15:00.000Z",
+     "hold_ids": [
+      "hold_a_card"
+     ],
+     "tolerance_change_id": null
+    },
+    "suggested_next": {
+     "owner_role": "treasury",
+     "resolution_path": "re_application",
+     "decided_by_hold_type": "cardinality_residual",
+     "because": "the settled set leaves an unexplained residual on the document",
+     "is_suggestion": true,
+     "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+    }
+   }
+  ]
+ },
+ "cases": {
+  "case_a_price": {
+   "case": {
+    "case_id": "case_a_price",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_price",
+    "money_at_risk_paise": 18880000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "application_status": "unapplied",
+    "blocks_accounting": false,
+    "payable": false,
+    "open_hold_count": 1,
+    "released_hold_count": 0
+   },
+   "invoice": {
+    "id": "inv_x_price",
+    "reference": "TRV/2026/0412",
+    "normalised_reference": "trv20260412",
+    "vendor_id": "ven_trivarna",
+    "vendor_name_raw": "Trivarna Precision Components Pvt Ltd",
+    "invoice_date": "2026-08-03",
+    "received_date": "2026-08-05",
+    "due_date": "2026-09-02",
+    "period": "2026-08",
+    "gross_paise": 18880000,
+    "net_paise": 16000000,
+    "tax": {
+     "total_paise": 2880000,
+     "igst_paise": 0,
+     "cgst_paise": 1440000,
+     "sgst_paise": 1440000,
+     "cess_paise": 0
+    },
+    "currency": "INR",
+    "is_credit_note": false,
+    "recurrence": null,
+    "purchase_order_reference": "PO-2026-0184",
+    "created_at": "2026-08-03T06:30:00.000Z"
+   },
+   "vendor": {
+    "id": "ven_trivarna",
+    "name": "Trivarna Precision Components Pvt Ltd",
+    "normalised_name": "trivarna precision components",
+    "tax_identifier": "29AAZZT1111A1Z5"
+   },
+   "holds": [
+    {
+     "id": "hold_a_price",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_price",
+     "invoice_id": "inv_x_price",
+     "type": "price_variance",
+     "reason": "Unit price differs from the purchase order beyond tolerance.",
+     "applied_at": "2026-08-31T02:14:00.000Z",
+     "auto_releasable": false,
+     "blocks_accounting": false,
+     "severity": "material",
+     "conflicts": [
+      {
+       "code": "amount_over_tolerance",
+       "field_path": "invoice.gross_paise",
+       "clause": "settled amount is short of the invoice beyond the absolute tolerance",
+       "severity": "material"
+      }
+     ],
+     "released_by": null,
+     "released_at": null,
+     "release_reason": null,
+     "release_requires": "a named human must release it, with a reason",
+     "is_open": true
+    }
+   ],
+   "candidates": [
+    {
+     "id": "cand_a_price",
+     "run_id": "run_engine_a",
+     "invoice_id": "inv_x_price",
+     "payment_ids": [
+      "pay_x_price"
+     ],
+     "cardinality": "one_to_one",
+     "score": {
+      "amount": {
+       "score": 0.62,
+       "weight": 0.4,
+       "contribution": 0.248
+      },
+      "reference": {
+       "score": 1,
+       "weight": 0.3,
+       "contribution": 0.3
+      },
+      "date": {
+       "score": 1,
+       "weight": 0.15,
+       "contribution": 0.15
+      },
+      "vendor": {
+       "score": 0.98,
+       "weight": 0.15,
+       "contribution": 0.147
+      },
+      "weights": {
+       "amount": 0.4,
+       "reference": 0.3,
+       "date": 0.15,
+       "vendor": 0.15
+      },
+      "composite": 0.8450000000000001,
+      "scorer_version": "holdfast-scorer@0.1.0-seed"
+     },
+     "evidence": {
+      "vendor": {
+       "field": "vendor",
+       "path": "invoice.vendor_name_raw",
+       "invoice_value": "Trivarna Precision Components Pvt Ltd",
+       "payment_value": "TRIVARNA PRECISION COMPO",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.85
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 0.98,
+       "invoice_vendor_id": "ven_trivarna",
+       "payment_vendor_id": "ven_trivarna"
+      },
+      "amount": {
+       "field": "amount",
+       "path": "invoice.gross_paise",
+       "tolerance": {
+        "kind": "absolute_paise",
+        "value_paise": 20000
+       },
+       "within_tolerance": false,
+       "normalisation": null,
+       "cause": "bank_charge",
+       "invoice_value_paise": 18880000,
+       "payment_value_paise": 18832500,
+       "delta_paise": -47500
+      },
+      "date": {
+       "field": "date",
+       "path": "invoice.invoice_date",
+       "invoice_value": "2026-08-03",
+       "payment_value": "2026-08-25",
+       "tolerance": {
+        "kind": "days",
+        "value": 30
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 22
+      },
+      "reference": {
+       "field": "reference",
+       "path": "invoice.normalised_reference",
+       "invoice_value": "TRV/2026/0412",
+       "payment_value": "TRV/2026/0412",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.9
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 1,
+       "displaced": false,
+       "displaced_from": null
+      }
+     },
+     "conflicts": [
+      {
+       "code": "amount_over_tolerance",
+       "field_path": "invoice.gross_paise",
+       "clause": "settled amount is short of the invoice beyond the absolute tolerance",
+       "severity": "material"
+      }
+     ],
+     "residual_paise": 47500,
+     "proposed_by": "deterministic_exact",
+     "reverified": true,
+     "rank": 1,
+     "created_at": "2026-08-31T02:14:00.000Z",
+     "payments": [
+      {
+       "id": "pay_x_price",
+       "value_date": "2026-08-25",
+       "amount_paise": 18832500,
+       "currency": "INR",
+       "narration_raw": "NEFT-INW-448120 TRIVARNA PRECISION COMPO TRV/2026/0412 LESS BANK CHG",
+       "narration_normalised": "neft-inw-448120 trivarna precision compo trv/2026/0412 less bank chg",
+       "reference_extracted": "TRV/2026/0412",
+       "vendor_name_extracted": "TRIVARNA PRECISION COMPO",
+       "vendor_id": "ven_trivarna",
+       "application_status": "unapplied",
+       "bank_transaction_id": "BTX-2026-0448120",
+       "created_at": "2026-08-25T07:05:00.000Z"
+      }
+     ],
+     "settled_paise": 18832500,
+     "payment_count": 1
+    }
+   ],
+   "money": {
+    "invoice_gross_paise": 18880000,
+    "invoice_net_paise": 16000000,
+    "tax_total_paise": 2880000,
+    "settled_on_top_candidate_paise": 18832500,
+    "residual_on_top_candidate_paise": 47500
+   },
+   "duplicate_context": {
+    "same_vendor_invoice_count": 5,
+    "same_amount_invoices": [],
+    "vendor_exposure_paise": 32072400
+   },
+   "decisions": [],
+   "tolerance_changes": [],
+   "feedback_rules": [],
+   "why_held": [
+    {
+     "hold_id": "hold_a_price",
+     "hold_type": "price_variance",
+     "clause": "Unit price differs from the purchase order beyond tolerance.",
+     "severity": "material",
+     "blocks_accounting": false,
+     "conflicts": [
+      {
+       "code": "amount_over_tolerance",
+       "field_path": "invoice.gross_paise",
+       "clause": "settled amount is short of the invoice beyond the absolute tolerance",
+       "severity": "material"
+      }
+     ]
+    }
+   ],
+   "suggested_next": {
+    "owner_role": "requisitioner",
+    "resolution_path": "internal_correction",
+    "decided_by_hold_type": "price_variance",
+    "because": "the settled amount differs from the ordered price beyond tolerance",
+    "is_suggestion": true,
+    "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+   },
+   "audit": {
+    "entries": [
+     {
+      "id": "aud_2750267d3ee941ef98281f6939b24c8e",
+      "sequence": 2,
+      "occurred_at": "2026-08-31T02:14:00.000Z",
+      "recorded_at": "2026-08-31T02:14:00.000Z",
+      "actor": {
+       "kind": "system",
+       "component": "holdfast-engine"
+      },
+      "event": "hold_applied",
+      "entity": {
+       "entity": "hold",
+       "id": "hold_a_price"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_price",
+      "detail": {
+       "hold_type": "price_variance",
+       "invoice_id": "inv_x_price",
+       "severity": "material",
+       "blocks_accounting": false,
+       "conflict_count": 1
+      },
+      "payload_hash": "8b7ebe47f3640b051f70951a658fe633a2a3df0c1224176103d9580ba99b17a1",
+      "prev_hash": "10feaa606457b84647dcfdc1af3fb3bb3d0cefa567027ddaaa7e6301328ad1f3"
+     }
+    ],
+    "chain": {
+     "first_sequence": 2,
+     "last_sequence": 2,
+     "entries_examined": 1,
+     "missing_sequences": [],
+     "unverifiable_entries": [],
+     "broken_links": [],
+     "intact": true,
+     "contiguous": true,
+     "note": "Hashes recomputed and links re-walked over the entries this query returned. `intact` is the integrity claim; `contiguous` says whether the slice covers an unbroken sequence span, which a filtered read usually does not."
+    }
+   }
+  },
+  "case_a_tax": {
+   "case": {
+    "case_id": "case_a_tax",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_tax",
+    "money_at_risk_paise": 15621000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "application_status": "unapplied",
+    "blocks_accounting": false,
+    "payable": true,
+    "open_hold_count": 0,
+    "released_hold_count": 1
+   },
+   "invoice": {
+    "id": "inv_x_tax",
+    "reference": "SUC/2026/0428",
+    "normalised_reference": "suc20260428",
+    "vendor_id": "ven_suchitra",
+    "vendor_name_raw": "Suchitra Facilities Services Pvt Ltd",
+    "invoice_date": "2026-08-13",
+    "received_date": "2026-08-15",
+    "due_date": "2026-09-12",
+    "period": "2026-08",
+    "gross_paise": 15621000,
+    "net_paise": 13200000,
+    "tax": {
+     "total_paise": 2421000,
+     "igst_paise": 0,
+     "cgst_paise": 1188000,
+     "sgst_paise": 1188000,
+     "cess_paise": 45000
+    },
+    "currency": "INR",
+    "is_credit_note": false,
+    "recurrence": null,
+    "purchase_order_reference": "PO-2026-0212",
+    "created_at": "2026-08-13T06:30:00.000Z"
+   },
+   "vendor": {
+    "id": "ven_suchitra",
+    "name": "Suchitra Facilities Services Pvt Ltd",
+    "normalised_name": "suchitra facilities services",
+    "tax_identifier": null
+   },
+   "holds": [
+    {
+     "id": "hold_a_tax",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_tax",
+     "invoice_id": "inv_x_tax",
+     "type": "tax_amount_range",
+     "reason": "Tax amount falls outside the permitted absolute range.",
+     "applied_at": "2026-08-31T02:14:00.000Z",
+     "auto_releasable": false,
+     "blocks_accounting": true,
+     "severity": "blocking",
+     "conflicts": [
+      {
+       "code": "tax_total_mismatch",
+       "field_path": "invoice.tax.total_paise",
+       "clause": "tax total exceeds the absolute band declared for this document class",
+       "severity": "advisory"
+      }
+     ],
+     "released_by": "rev_m_dsouza",
+     "released_at": "2026-09-03T09:40:00.000Z",
+     "release_reason": "tolerance change tch_tax_band_widened: absolute tax band widened",
+     "release_requires": "already released",
+     "is_open": false
+    }
+   ],
+   "candidates": [
+    {
+     "id": "cand_a_tax",
+     "run_id": "run_engine_a",
+     "invoice_id": "inv_x_tax",
+     "payment_ids": [
+      "pay_x_tax"
+     ],
+     "cardinality": "one_to_one",
+     "score": {
+      "amount": {
+       "score": 1,
+       "weight": 0.4,
+       "contribution": 0.4
+      },
+      "reference": {
+       "score": 1,
+       "weight": 0.3,
+       "contribution": 0.3
+      },
+      "date": {
+       "score": 1,
+       "weight": 0.15,
+       "contribution": 0.15
+      },
+      "vendor": {
+       "score": 1,
+       "weight": 0.15,
+       "contribution": 0.15
+      },
+      "weights": {
+       "amount": 0.4,
+       "reference": 0.3,
+       "date": 0.15,
+       "vendor": 0.15
+      },
+      "composite": 1,
+      "scorer_version": "holdfast-scorer@0.1.0-seed"
+     },
+     "evidence": {
+      "vendor": {
+       "field": "vendor",
+       "path": "invoice.vendor_name_raw",
+       "invoice_value": "Suchitra Facilities Services Pvt Ltd",
+       "payment_value": "SUCHITRA FACILITIES",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.85
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 1,
+       "invoice_vendor_id": "ven_suchitra",
+       "payment_vendor_id": "ven_suchitra"
+      },
+      "amount": {
+       "field": "amount",
+       "path": "invoice.gross_paise",
+       "tolerance": {
+        "kind": "absolute_paise",
+        "value_paise": 20000
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "cause": "unattributed",
+       "invoice_value_paise": 15621000,
+       "payment_value_paise": 15621000,
+       "delta_paise": 0
+      },
+      "date": {
+       "field": "date",
+       "path": "invoice.invoice_date",
+       "invoice_value": "2026-08-13",
+       "payment_value": "2026-08-30",
+       "tolerance": {
+        "kind": "days",
+        "value": 30
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 17
+      },
+      "reference": {
+       "field": "reference",
+       "path": "invoice.normalised_reference",
+       "invoice_value": "SUC/2026/0428",
+       "payment_value": "SUC/2026/0428",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.9
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 1,
+       "displaced": false,
+       "displaced_from": null
+      }
+     },
+     "conflicts": [
+      {
+       "code": "tax_total_mismatch",
+       "field_path": "invoice.tax.total_paise",
+       "clause": "tax total exceeds the absolute band declared for this document class",
+       "severity": "advisory"
+      }
+     ],
+     "residual_paise": 0,
+     "proposed_by": "deterministic_exact",
+     "reverified": true,
+     "rank": 1,
+     "created_at": "2026-08-31T02:14:00.000Z",
+     "payments": [
+      {
+       "id": "pay_x_tax",
+       "value_date": "2026-08-30",
+       "amount_paise": 15621000,
+       "currency": "INR",
+       "narration_raw": "NEFT-INW-712330 SUCHITRA FACILITIES SUC/2026/0428",
+       "narration_normalised": "neft-inw-712330 suchitra facilities suc/2026/0428",
+       "reference_extracted": "SUC/2026/0428",
+       "vendor_name_extracted": "SUCHITRA FACILITIES",
+       "vendor_id": "ven_suchitra",
+       "application_status": "unapplied",
+       "bank_transaction_id": "BTX-2026-0712330",
+       "created_at": "2026-08-30T07:05:00.000Z"
+      }
+     ],
+     "settled_paise": 15621000,
+     "payment_count": 1
+    }
+   ],
+   "money": {
+    "invoice_gross_paise": 15621000,
+    "invoice_net_paise": 13200000,
+    "tax_total_paise": 2421000,
+    "settled_on_top_candidate_paise": 15621000,
+    "residual_on_top_candidate_paise": 0
+   },
+   "duplicate_context": {
+    "same_vendor_invoice_count": 3,
+    "same_amount_invoices": [],
+    "vendor_exposure_paise": 30337800
+   },
+   "decisions": [
+    {
+     "id": "dec_tax_band",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_tax",
+     "invoice_id": "inv_x_tax",
+     "action": "change_tolerance",
+     "resolution_path": "internal_correction",
+     "owner_next": {
+      "role": "tax_team",
+      "party": "Indirect tax"
+     },
+     "reviewer": "rev_m_dsouza",
+     "reason": "cess on facilities contracts sits above the band the run was configured with",
+     "timestamp": "2026-09-03T09:40:00.000Z",
+     "hold_ids": [
+      "hold_a_tax"
+     ],
+     "tolerance_change_id": "tch_tax_band_widened"
+    }
+   ],
+   "tolerance_changes": [
+    {
+     "id": "tch_tax_band_widened",
+     "from": {
+      "kind": "absolute_paise",
+      "value_paise": 40000
+     },
+     "to": {
+      "kind": "absolute_paise",
+      "value_paise": 50000
+     },
+     "scope": {
+      "kind": "hold_type",
+      "hold_type": "tax_amount_range"
+     },
+     "reviewer": "rev_m_dsouza",
+     "reason": "cess on facilities contracts sits above the band the run was configured with",
+     "timestamp": "2026-09-03T09:40:00.000Z",
+     "affected_hold_ids": [
+      "hold_a_tax"
+     ],
+     "decision_id": "dec_tax_band",
+     "run_id": "run_engine_a",
+     "direction": "widened",
+     "scope_description": "hold type tax_amount_range",
+     "released_holds_on_this_case": [
+      "hold_a_tax"
+     ]
+    }
+   ],
+   "feedback_rules": [],
+   "why_held": [],
+   "suggested_next": null,
+   "audit": {
+    "entries": [
+     {
+      "id": "aud_0b5261e4448643e5952e8e4165cf0430",
+      "sequence": 7,
+      "occurred_at": "2026-08-31T02:14:00.000Z",
+      "recorded_at": "2026-08-31T02:14:00.000Z",
+      "actor": {
+       "kind": "system",
+       "component": "holdfast-engine"
+      },
+      "event": "hold_applied",
+      "entity": {
+       "entity": "hold",
+       "id": "hold_a_tax"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_tax",
+      "detail": {
+       "hold_type": "tax_amount_range",
+       "invoice_id": "inv_x_tax",
+       "severity": "blocking",
+       "blocks_accounting": true,
+       "conflict_count": 1
+      },
+      "payload_hash": "8bb23c76364f6554afcd4f0506c49e9111b23e9cb5b43ef0fdc2cc2c4a1b648a",
+      "prev_hash": "82b1291ad67f07c0eee14dd52e24502fa2fa4867ef5cebbc7f87289cae2e1e70"
+     },
+     {
+      "id": "aud_3e8ad57a417942a1b09e39283aca78f9",
+      "sequence": 13,
+      "occurred_at": "2026-09-03T09:40:00.000Z",
+      "recorded_at": "2026-09-03T09:40:00.000Z",
+      "actor": {
+       "kind": "human",
+       "reviewer": "rev_m_dsouza"
+      },
+      "event": "decision_recorded",
+      "entity": {
+       "entity": "decision",
+       "id": "dec_tax_band"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_tax",
+      "detail": {
+       "action": "change_tolerance",
+       "resolution_path": "internal_correction",
+       "owner_role": "tax_team",
+       "hold_count": 1
+      },
+      "payload_hash": "d63bf0bf565a22612de5a9bd3f379f7f94f805c2d588acce4ed311f656bbf9c8",
+      "prev_hash": "affa44de414f1e8aa269491847adda366a9fe59e24f5db17e1113d5ef17ffd4c"
+     },
+     {
+      "id": "aud_28fd7768e56b4b3e9fa58ac3f7a7f7dc",
+      "sequence": 14,
+      "occurred_at": "2026-09-03T09:40:00.000Z",
+      "recorded_at": "2026-09-03T09:40:00.000Z",
+      "actor": {
+       "kind": "human",
+       "reviewer": "rev_m_dsouza"
+      },
+      "event": "tolerance_changed",
+      "entity": {
+       "entity": "tolerance_change",
+       "id": "tch_tax_band_widened"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_tax",
+      "detail": {
+       "scope_kind": "hold_type",
+       "from_kind": "absolute_paise",
+       "to_kind": "absolute_paise",
+       "affected_hold_count": 1
+      },
+      "payload_hash": "b29a7a5a628ae59c5fbd357b61b63d7c7886879ed4641b614941aca140a1c4b9",
+      "prev_hash": "d63bf0bf565a22612de5a9bd3f379f7f94f805c2d588acce4ed311f656bbf9c8"
+     },
+     {
+      "id": "aud_48a1363efaec41f6880e898dd04a0af6",
+      "sequence": 15,
+      "occurred_at": "2026-09-03T09:40:00.000Z",
+      "recorded_at": "2026-09-03T09:40:00.000Z",
+      "actor": {
+       "kind": "human",
+       "reviewer": "rev_m_dsouza"
+      },
+      "event": "hold_released",
+      "entity": {
+       "entity": "hold",
+       "id": "hold_a_tax"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_tax",
+      "detail": {
+       "released_by": "rev_m_dsouza",
+       "tolerance_change_id": "tch_tax_band_widened"
+      },
+      "payload_hash": "7bcf33a09c9664ddf1774522e021ce5eb1ae47e391205809cf370b7925b9ff65",
+      "prev_hash": "b29a7a5a628ae59c5fbd357b61b63d7c7886879ed4641b614941aca140a1c4b9"
+     }
+    ],
+    "chain": {
+     "first_sequence": 7,
+     "last_sequence": 15,
+     "entries_examined": 4,
+     "missing_sequences": [
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "unverifiable_entries": [],
+     "broken_links": [],
+     "intact": true,
+     "contiguous": false,
+     "note": "Hashes recomputed and links re-walked over the entries this query returned. `intact` is the integrity claim; `contiguous` says whether the slice covers an unbroken sequence span, which a filtered read usually does not."
+    }
+   }
+  },
+  "case_a_period": {
+   "case": {
+    "case_id": "case_a_period",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_period",
+    "money_at_risk_paise": 9794000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "application_status": "unapplied",
+    "blocks_accounting": true,
+    "payable": false,
+    "open_hold_count": 1,
+    "released_hold_count": 0
+   },
+   "invoice": {
+    "id": "inv_x_period",
+    "reference": "NIR/2026/0430",
+    "normalised_reference": "nir20260430",
+    "vendor_id": "ven_nirvaha",
+    "vendor_name_raw": "Nirvaha Paper Mills Ltd",
+    "invoice_date": "2026-08-18",
+    "received_date": "2026-08-20",
+    "due_date": "2026-09-17",
+    "period": "2026-08",
+    "gross_paise": 9794000,
+    "net_paise": 8300000,
+    "tax": {
+     "total_paise": 1494000,
+     "igst_paise": 0,
+     "cgst_paise": 747000,
+     "sgst_paise": 747000,
+     "cess_paise": 0
+    },
+    "currency": "INR",
+    "is_credit_note": false,
+    "recurrence": "monthly",
+    "purchase_order_reference": null,
+    "created_at": "2026-08-18T06:30:00.000Z"
+   },
+   "vendor": {
+    "id": "ven_nirvaha",
+    "name": "Nirvaha Paper Mills Ltd",
+    "normalised_name": "nirvaha paper mills",
+    "tax_identifier": "33AAZZN3333C1Z1"
+   },
+   "holds": [
+    {
+     "id": "hold_a_period",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_period",
+     "invoice_id": "inv_x_period",
+     "type": "period_deferral",
+     "reason": "Invoice date and receipt date fall in different periods.",
+     "applied_at": "2026-08-31T02:14:00.000Z",
+     "auto_releasable": true,
+     "blocks_accounting": true,
+     "severity": "advisory",
+     "conflicts": [
+      {
+       "code": "period_mismatch",
+       "field_path": "payment.value_date",
+       "clause": "the settlement falls in the period after the invoice period",
+       "severity": "advisory"
+      }
+     ],
+     "released_by": null,
+     "released_at": null,
+     "release_reason": null,
+     "release_requires": "lifts by itself once the condition resolves, or a named human may release it",
+     "is_open": true
+    }
+   ],
+   "candidates": [
+    {
+     "id": "cand_a_period",
+     "run_id": "run_engine_a",
+     "invoice_id": "inv_x_period",
+     "payment_ids": [
+      "pay_x_period"
+     ],
+     "cardinality": "one_to_one",
+     "score": {
+      "amount": {
+       "score": 1,
+       "weight": 0.4,
+       "contribution": 0.4
+      },
+      "reference": {
+       "score": 1,
+       "weight": 0.3,
+       "contribution": 0.3
+      },
+      "date": {
+       "score": 0.72,
+       "weight": 0.15,
+       "contribution": 0.108
+      },
+      "vendor": {
+       "score": 1,
+       "weight": 0.15,
+       "contribution": 0.15
+      },
+      "weights": {
+       "amount": 0.4,
+       "reference": 0.3,
+       "date": 0.15,
+       "vendor": 0.15
+      },
+      "composite": 0.958,
+      "scorer_version": "holdfast-scorer@0.1.0-seed"
+     },
+     "evidence": {
+      "vendor": {
+       "field": "vendor",
+       "path": "invoice.vendor_name_raw",
+       "invoice_value": "Nirvaha Paper Mills Ltd",
+       "payment_value": "NIRVAHA PAPER MILLS",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.85
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 1,
+       "invoice_vendor_id": "ven_nirvaha",
+       "payment_vendor_id": "ven_nirvaha"
+      },
+      "amount": {
+       "field": "amount",
+       "path": "invoice.gross_paise",
+       "tolerance": {
+        "kind": "absolute_paise",
+        "value_paise": 20000
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "cause": "unattributed",
+       "invoice_value_paise": 9794000,
+       "payment_value_paise": 9794000,
+       "delta_paise": 0
+      },
+      "date": {
+       "field": "date",
+       "path": "invoice.invoice_date",
+       "invoice_value": "2026-08-18",
+       "payment_value": "2026-09-02",
+       "tolerance": {
+        "kind": "days",
+        "value": 5
+       },
+       "within_tolerance": false,
+       "normalisation": null,
+       "delta": 15
+      },
+      "reference": {
+       "field": "reference",
+       "path": "invoice.normalised_reference",
+       "invoice_value": "NIR/2026/0430",
+       "payment_value": "NIR/2026/0430",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.9
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 1,
+       "displaced": false,
+       "displaced_from": null
+      }
+     },
+     "conflicts": [
+      {
+       "code": "period_mismatch",
+       "field_path": "payment.value_date",
+       "clause": "the settlement falls in the period after the invoice period",
+       "severity": "advisory"
+      }
+     ],
+     "residual_paise": 0,
+     "proposed_by": "deterministic_exact",
+     "reverified": true,
+     "rank": 1,
+     "created_at": "2026-08-31T02:14:00.000Z",
+     "payments": [
+      {
+       "id": "pay_x_period",
+       "value_date": "2026-09-02",
+       "amount_paise": 9794000,
+       "currency": "INR",
+       "narration_raw": "RTGS-INW-778201 NIRVAHA PAPER MILLS NIR/2026/0430",
+       "narration_normalised": "rtgs-inw-778201 nirvaha paper mills nir/2026/0430",
+       "reference_extracted": "NIR/2026/0430",
+       "vendor_name_extracted": "NIRVAHA PAPER MILLS",
+       "vendor_id": "ven_nirvaha",
+       "application_status": "unapplied",
+       "bank_transaction_id": "BTX-2026-0778201",
+       "created_at": "2026-09-02T07:05:00.000Z"
+      }
+     ],
+     "settled_paise": 9794000,
+     "payment_count": 1
+    }
+   ],
+   "money": {
+    "invoice_gross_paise": 9794000,
+    "invoice_net_paise": 8300000,
+    "tax_total_paise": 1494000,
+    "settled_on_top_candidate_paise": 9794000,
+    "residual_on_top_candidate_paise": 0
+   },
+   "duplicate_context": {
+    "same_vendor_invoice_count": 4,
+    "same_amount_invoices": [],
+    "vendor_exposure_paise": 67543200
+   },
+   "decisions": [],
+   "tolerance_changes": [],
+   "feedback_rules": [],
+   "why_held": [
+    {
+     "hold_id": "hold_a_period",
+     "hold_type": "period_deferral",
+     "clause": "Invoice date and receipt date fall in different periods.",
+     "severity": "advisory",
+     "blocks_accounting": true,
+     "conflicts": [
+      {
+       "code": "period_mismatch",
+       "field_path": "payment.value_date",
+       "clause": "the settlement falls in the period after the invoice period",
+       "severity": "advisory"
+      }
+     ]
+    }
+   ],
+   "suggested_next": {
+    "owner_role": "controller",
+    "resolution_path": "internal_correction",
+    "decided_by_hold_type": "period_deferral",
+    "because": "the settlement falls outside the invoice accounting period",
+    "is_suggestion": true,
+    "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+   },
+   "audit": {
+    "entries": [
+     {
+      "id": "aud_3d8612351b894df9a09d5c0d05620684",
+      "sequence": 9,
+      "occurred_at": "2026-08-31T02:14:00.000Z",
+      "recorded_at": "2026-08-31T02:14:00.000Z",
+      "actor": {
+       "kind": "system",
+       "component": "holdfast-engine"
+      },
+      "event": "hold_applied",
+      "entity": {
+       "entity": "hold",
+       "id": "hold_a_period"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_period",
+      "detail": {
+       "hold_type": "period_deferral",
+       "invoice_id": "inv_x_period",
+       "severity": "advisory",
+       "blocks_accounting": true,
+       "conflict_count": 1
+      },
+      "payload_hash": "1400ee045e9e34c92037dab5505661f1fe95960d72e41f8b658cea3a573270e1",
+      "prev_hash": "5fbe6a48d4c4aa6785cbc77238d5d08cc81c6c8afefdee38eb8494a8fc5961df"
+     }
+    ],
+    "chain": {
+     "first_sequence": 9,
+     "last_sequence": 9,
+     "entries_examined": 1,
+     "missing_sequences": [],
+     "unverifiable_entries": [],
+     "broken_links": [],
+     "intact": true,
+     "contiguous": true,
+     "note": "Hashes recomputed and links re-walked over the entries this query returned. `intact` is the integrity claim; `contiguous` says whether the slice covers an unbroken sequence span, which a filtered read usually does not."
+    }
+   }
+  },
+  "case_a_noref": {
+   "case": {
+    "case_id": "case_a_noref",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_noref",
+    "money_at_risk_paise": 8850000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "application_status": "unidentified",
+    "blocks_accounting": false,
+    "payable": false,
+    "open_hold_count": 1,
+    "released_hold_count": 0
+   },
+   "invoice": {
+    "id": "inv_x_noref",
+    "reference": "AAV-2026-0423",
+    "normalised_reference": "aav20260423",
+    "vendor_id": "ven_aavarta",
+    "vendor_name_raw": "Aavarta Logistics LLP",
+    "invoice_date": "2026-08-11",
+    "received_date": "2026-08-13",
+    "due_date": "2026-09-10",
+    "period": "2026-08",
+    "gross_paise": 8850000,
+    "net_paise": 7500000,
+    "tax": {
+     "total_paise": 1350000,
+     "igst_paise": 1350000,
+     "cgst_paise": 0,
+     "sgst_paise": 0,
+     "cess_paise": 0
+    },
+    "currency": "INR",
+    "is_credit_note": false,
+    "recurrence": null,
+    "purchase_order_reference": null,
+    "created_at": "2026-08-11T06:30:00.000Z"
+   },
+   "vendor": {
+    "id": "ven_aavarta",
+    "name": "Aavarta Logistics LLP",
+    "normalised_name": "aavarta logistics",
+    "tax_identifier": "27AAZZA2222B1Z3"
+   },
+   "holds": [
+    {
+     "id": "hold_a_noref",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_noref",
+     "invoice_id": "inv_x_noref",
+     "type": "no_reference",
+     "reason": "No usable reference token was found on the payment side.",
+     "applied_at": "2026-08-31T02:14:00.000Z",
+     "auto_releasable": false,
+     "blocks_accounting": false,
+     "severity": "material",
+     "conflicts": [
+      {
+       "code": "reference_absent",
+       "field_path": "payment.reference_extracted",
+       "clause": "the narration carries no reference token",
+       "severity": "material"
+      }
+     ],
+     "released_by": null,
+     "released_at": null,
+     "release_reason": null,
+     "release_requires": "a named human must release it, with a reason",
+     "is_open": true
+    }
+   ],
+   "candidates": [
+    {
+     "id": "cand_a_noref",
+     "run_id": "run_engine_a",
+     "invoice_id": "inv_x_noref",
+     "payment_ids": [
+      "pay_x_noref"
+     ],
+     "cardinality": "one_to_one",
+     "score": {
+      "amount": {
+       "score": 1,
+       "weight": 0.4,
+       "contribution": 0.4
+      },
+      "reference": {
+       "score": 0,
+       "weight": 0.3,
+       "contribution": 0
+      },
+      "date": {
+       "score": 0.88,
+       "weight": 0.15,
+       "contribution": 0.132
+      },
+      "vendor": {
+       "score": 0.91,
+       "weight": 0.15,
+       "contribution": 0.1365
+      },
+      "weights": {
+       "amount": 0.4,
+       "reference": 0.3,
+       "date": 0.15,
+       "vendor": 0.15
+      },
+      "composite": 0.6685000000000001,
+      "scorer_version": "holdfast-scorer@0.1.0-seed"
+     },
+     "evidence": {
+      "vendor": {
+       "field": "vendor",
+       "path": "invoice.vendor_name_raw",
+       "invoice_value": "Aavarta Logistics LLP",
+       "payment_value": "AAVARTA LOG",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.85
+       },
+       "within_tolerance": true,
+       "normalisation": {
+        "side": "payment",
+        "raw_value": "AAVARTA LOG",
+        "normalised_value": "aavarta logistics",
+        "rule": "vendor alias, feedback rule",
+        "feedback_rule_id": "fbr_vendor_alias_aavarta_log"
+       },
+       "delta": 0.91,
+       "invoice_vendor_id": "ven_aavarta",
+       "payment_vendor_id": "ven_aavarta"
+      },
+      "amount": {
+       "field": "amount",
+       "path": "invoice.gross_paise",
+       "tolerance": {
+        "kind": "absolute_paise",
+        "value_paise": 2000
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "cause": "unattributed",
+       "invoice_value_paise": 8850000,
+       "payment_value_paise": 8850000,
+       "delta_paise": 0
+      },
+      "date": {
+       "field": "date",
+       "path": "invoice.invoice_date",
+       "invoice_value": "2026-08-11",
+       "payment_value": "2026-08-28",
+       "tolerance": {
+        "kind": "days",
+        "value": 30
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 17
+      },
+      "reference": {
+       "field": "reference",
+       "path": "invoice.normalised_reference",
+       "invoice_value": "AAV-2026-0423",
+       "payment_value": null,
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.9
+       },
+       "within_tolerance": false,
+       "normalisation": {
+        "side": "payment",
+        "raw_value": "NEFT INWARD CR  AAVARTA LOG  MISC SETTLEMENT  NO REF QUOTED",
+        "normalised_value": "neft inward cr aavarta log misc settlement no ref quoted",
+        "rule": "reference extraction found no token",
+        "feedback_rule_id": null
+       },
+       "delta": 0,
+       "displaced": false,
+       "displaced_from": null
+      }
+     },
+     "conflicts": [
+      {
+       "code": "reference_absent",
+       "field_path": "payment.reference_extracted",
+       "clause": "the narration carries no reference token",
+       "severity": "material"
+      }
+     ],
+     "residual_paise": 0,
+     "proposed_by": "deterministic_fuzzy",
+     "reverified": true,
+     "rank": 1,
+     "created_at": "2026-08-31T02:14:00.000Z",
+     "payments": [
+      {
+       "id": "pay_x_noref",
+       "value_date": "2026-08-28",
+       "amount_paise": 8850000,
+       "currency": "INR",
+       "narration_raw": "NEFT INWARD CR  AAVARTA LOG  MISC SETTLEMENT  NO REF QUOTED",
+       "narration_normalised": "neft inward cr aavarta log misc settlement no ref quoted",
+       "reference_extracted": null,
+       "vendor_name_extracted": "AAVARTA LOG",
+       "vendor_id": "ven_aavarta",
+       "application_status": "unidentified",
+       "bank_transaction_id": "BTX-2026-0701445",
+       "created_at": "2026-08-28T07:05:00.000Z"
+      }
+     ],
+     "settled_paise": 8850000,
+     "payment_count": 1
+    }
+   ],
+   "money": {
+    "invoice_gross_paise": 8850000,
+    "invoice_net_paise": 7500000,
+    "tax_total_paise": 1350000,
+    "settled_on_top_candidate_paise": 8850000,
+    "residual_on_top_candidate_paise": 0
+   },
+   "duplicate_context": {
+    "same_vendor_invoice_count": 6,
+    "same_amount_invoices": [],
+    "vendor_exposure_paise": 53819800
+   },
+   "decisions": [
+    {
+     "id": "dec_noref_rule",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_noref",
+     "invoice_id": "inv_x_noref",
+     "action": "create_feedback_rule",
+     "resolution_path": "internal_correction",
+     "owner_next": {
+      "role": "ap_clerk",
+      "party": null
+     },
+     "reviewer": "rev_a_iyer",
+     "reason": "this vendor quotes the reference without separators in the narration tail",
+     "timestamp": "2026-09-03T15:05:00.000Z",
+     "hold_ids": [
+      "hold_a_noref"
+     ],
+     "tolerance_change_id": null
+    }
+   ],
+   "tolerance_changes": [],
+   "feedback_rules": [
+    {
+     "id": "fbr_vendor_alias_aavarta_log",
+     "body": {
+      "kind": "vendor_alias",
+      "raw_value": "AAVARTA LOG",
+      "canonical_vendor_id": "ven_aavarta"
+     },
+     "learned_from_case_id": "case_a_noref",
+     "created_by": "rev_a_iyer",
+     "created_at": "2026-09-01T11:20:00.000Z",
+     "reason": "the bank truncates this vendor name to eleven characters on every line",
+     "active": true,
+     "deactivated_by": null,
+     "deactivated_at": null
+    },
+    {
+     "id": "fbr_reference_aavarta_slash",
+     "body": {
+      "kind": "reference_pattern",
+      "pattern": "AAV[- ]?([0-9]{4})[- ]?([0-9]{4})",
+      "canonical_form": "AAV-$1-$2"
+     },
+     "learned_from_case_id": "case_a_noref",
+     "created_by": "rev_a_iyer",
+     "created_at": "2026-09-03T15:05:00.000Z",
+     "reason": "this vendor quotes the reference without separators in the narration tail",
+     "active": true,
+     "deactivated_by": null,
+     "deactivated_at": null
+    }
+   ],
+   "why_held": [
+    {
+     "hold_id": "hold_a_noref",
+     "hold_type": "no_reference",
+     "clause": "No usable reference token was found on the payment side.",
+     "severity": "material",
+     "blocks_accounting": false,
+     "conflicts": [
+      {
+       "code": "reference_absent",
+       "field_path": "payment.reference_extracted",
+       "clause": "the narration carries no reference token",
+       "severity": "material"
+      }
+     ]
+    }
+   ],
+   "suggested_next": {
+    "owner_role": "vendor",
+    "resolution_path": "customer_outreach",
+    "decided_by_hold_type": "no_reference",
+    "because": "the bank narration carries no reference token to settle against",
+    "is_suggestion": true,
+    "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+   },
+   "audit": {
+    "entries": [
+     {
+      "id": "aud_714bd741942744b48923e565583779ce",
+      "sequence": 6,
+      "occurred_at": "2026-08-31T02:14:00.000Z",
+      "recorded_at": "2026-08-31T02:14:00.000Z",
+      "actor": {
+       "kind": "system",
+       "component": "holdfast-engine"
+      },
+      "event": "hold_applied",
+      "entity": {
+       "entity": "hold",
+       "id": "hold_a_noref"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_noref",
+      "detail": {
+       "hold_type": "no_reference",
+       "invoice_id": "inv_x_noref",
+       "severity": "material",
+       "blocks_accounting": false,
+       "conflict_count": 1
+      },
+      "payload_hash": "82b1291ad67f07c0eee14dd52e24502fa2fa4867ef5cebbc7f87289cae2e1e70",
+      "prev_hash": "2f2b1a335675915b27cd8bdd813079f80f0c67ee8b8cfdb4601423b076a7336c"
+     },
+     {
+      "id": "aud_b08ccf529b0a498895d69d7fbe9f1aab",
+      "sequence": 11,
+      "occurred_at": "2026-09-01T11:20:00.000Z",
+      "recorded_at": "2026-09-01T11:20:00.000Z",
+      "actor": {
+       "kind": "human",
+       "reviewer": "rev_a_iyer"
+      },
+      "event": "feedback_rule_created",
+      "entity": {
+       "entity": "feedback_rule",
+       "id": "fbr_vendor_alias_aavarta_log"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_noref",
+      "detail": {
+       "kind": "vendor_alias",
+       "active": true
+      },
+      "payload_hash": "bb9e602954cdd85b354c3ac198ce9cab28a44dcd20eff7a739f5b66a22af7106",
+      "prev_hash": "7e6c4786289651044a811652b86358e6e5cfc49fbcf31ab33874d1c5aa4176f2"
+     },
+     {
+      "id": "aud_13760b0b04444b989ed12d7777601a3c",
+      "sequence": 16,
+      "occurred_at": "2026-09-03T15:05:00.000Z",
+      "recorded_at": "2026-09-03T15:05:00.000Z",
+      "actor": {
+       "kind": "human",
+       "reviewer": "rev_a_iyer"
+      },
+      "event": "decision_recorded",
+      "entity": {
+       "entity": "decision",
+       "id": "dec_noref_rule"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_noref",
+      "detail": {
+       "action": "create_feedback_rule",
+       "resolution_path": "internal_correction",
+       "owner_role": "ap_clerk",
+       "hold_count": 1
+      },
+      "payload_hash": "96ca430501f7b6100e8f9304724ab22e8fcaddc876acb56594634b0f7ab98bfc",
+      "prev_hash": "7bcf33a09c9664ddf1774522e021ce5eb1ae47e391205809cf370b7925b9ff65"
+     },
+     {
+      "id": "aud_9c054040fe974b719b0c27d168c5c048",
+      "sequence": 17,
+      "occurred_at": "2026-09-03T15:05:00.000Z",
+      "recorded_at": "2026-09-03T15:05:00.000Z",
+      "actor": {
+       "kind": "human",
+       "reviewer": "rev_a_iyer"
+      },
+      "event": "feedback_rule_created",
+      "entity": {
+       "entity": "feedback_rule",
+       "id": "fbr_reference_aavarta_slash"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_noref",
+      "detail": {
+       "kind": "reference_pattern",
+       "active": true
+      },
+      "payload_hash": "e91c854c696769b763e8826040d8586c4c538c2a3a2a51ecfb430dbbed588d09",
+      "prev_hash": "96ca430501f7b6100e8f9304724ab22e8fcaddc876acb56594634b0f7ab98bfc"
+     }
+    ],
+    "chain": {
+     "first_sequence": 6,
+     "last_sequence": 17,
+     "entries_examined": 4,
+     "missing_sequences": [
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15
+     ],
+     "unverifiable_entries": [],
+     "broken_links": [],
+     "intact": true,
+     "contiguous": false,
+     "note": "Hashes recomputed and links re-walked over the entries this query returned. `intact` is the integrity claim; `contiguous` says whether the slice covers an unbroken sequence span, which a filtered read usually does not."
+    }
+   }
+  },
+  "case_a_dup_a": {
+   "case": {
+    "case_id": "case_a_dup_a",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_dup_a",
+    "money_at_risk_paise": 6726000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "application_status": "unapplied",
+    "blocks_accounting": true,
+    "payable": false,
+    "open_hold_count": 1,
+    "released_hold_count": 0
+   },
+   "invoice": {
+    "id": "inv_x_dup_a",
+    "reference": "AAV-2026-0415",
+    "normalised_reference": "aav20260415",
+    "vendor_id": "ven_aavarta",
+    "vendor_name_raw": "Aavarta Logistics LLP",
+    "invoice_date": "2026-08-06",
+    "received_date": "2026-08-08",
+    "due_date": "2026-09-05",
+    "period": "2026-08",
+    "gross_paise": 6726000,
+    "net_paise": 5700000,
+    "tax": {
+     "total_paise": 1026000,
+     "igst_paise": 1026000,
+     "cgst_paise": 0,
+     "sgst_paise": 0,
+     "cess_paise": 0
+    },
+    "currency": "INR",
+    "is_credit_note": false,
+    "recurrence": null,
+    "purchase_order_reference": "PO-2026-0190",
+    "created_at": "2026-08-06T06:30:00.000Z"
+   },
+   "vendor": {
+    "id": "ven_aavarta",
+    "name": "Aavarta Logistics LLP",
+    "normalised_name": "aavarta logistics",
+    "tax_identifier": "27AAZZA2222B1Z3"
+   },
+   "holds": [
+    {
+     "id": "hold_a_dup_a",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_dup_a",
+     "invoice_id": "inv_x_dup_a",
+     "type": "duplicate_candidate",
+     "reason": "A prior invoice matches on vendor, amount and date.",
+     "applied_at": "2026-08-31T02:14:00.000Z",
+     "auto_releasable": false,
+     "blocks_accounting": true,
+     "severity": "blocking",
+     "conflicts": [
+      {
+       "code": "duplicate_vendor_amount_date",
+       "field_path": "invoice.vendor_id",
+       "clause": "another document shares vendor, amount and invoice date",
+       "severity": "blocking"
+      },
+      {
+       "code": "multiple_candidates_tied",
+       "field_path": "candidate.payment_ids",
+       "clause": "one settlement is claimed by two documents at the same score",
+       "severity": "material"
+      }
+     ],
+     "released_by": null,
+     "released_at": null,
+     "release_reason": null,
+     "release_requires": "a named human must release it, with a reason",
+     "is_open": true
+    }
+   ],
+   "candidates": [
+    {
+     "id": "cand_a_dup_a",
+     "run_id": "run_engine_a",
+     "invoice_id": "inv_x_dup_a",
+     "payment_ids": [
+      "pay_x_dup"
+     ],
+     "cardinality": "one_to_one",
+     "score": {
+      "amount": {
+       "score": 1,
+       "weight": 0.4,
+       "contribution": 0.4
+      },
+      "reference": {
+       "score": 1,
+       "weight": 0.3,
+       "contribution": 0.3
+      },
+      "date": {
+       "score": 1,
+       "weight": 0.15,
+       "contribution": 0.15
+      },
+      "vendor": {
+       "score": 1,
+       "weight": 0.15,
+       "contribution": 0.15
+      },
+      "weights": {
+       "amount": 0.4,
+       "reference": 0.3,
+       "date": 0.15,
+       "vendor": 0.15
+      },
+      "composite": 1,
+      "scorer_version": "holdfast-scorer@0.1.0-seed"
+     },
+     "evidence": {
+      "vendor": {
+       "field": "vendor",
+       "path": "invoice.vendor_name_raw",
+       "invoice_value": "Aavarta Logistics LLP",
+       "payment_value": "AAVARTA LOGISTICS",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.85
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 1,
+       "invoice_vendor_id": "ven_aavarta",
+       "payment_vendor_id": "ven_aavarta"
+      },
+      "amount": {
+       "field": "amount",
+       "path": "invoice.gross_paise",
+       "tolerance": {
+        "kind": "absolute_paise",
+        "value_paise": 2000
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "cause": "unattributed",
+       "invoice_value_paise": 6726000,
+       "payment_value_paise": 6726000,
+       "delta_paise": 0
+      },
+      "date": {
+       "field": "date",
+       "path": "invoice.invoice_date",
+       "invoice_value": "2026-08-06",
+       "payment_value": "2026-08-26",
+       "tolerance": {
+        "kind": "days",
+        "value": 30
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 20
+      },
+      "reference": {
+       "field": "reference",
+       "path": "invoice.normalised_reference",
+       "invoice_value": "AAV-2026-0415",
+       "payment_value": "AAV-2026-0415",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.9
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 1,
+       "displaced": false,
+       "displaced_from": null
+      }
+     },
+     "conflicts": [
+      {
+       "code": "duplicate_vendor_amount_date",
+       "field_path": "invoice.vendor_id",
+       "clause": "another document shares vendor, amount and invoice date",
+       "severity": "blocking"
+      },
+      {
+       "code": "multiple_candidates_tied",
+       "field_path": "candidate.payment_ids",
+       "clause": "one settlement is claimed by two documents at the same score",
+       "severity": "material"
+      }
+     ],
+     "residual_paise": 0,
+     "proposed_by": "deterministic_exact",
+     "reverified": true,
+     "rank": 1,
+     "created_at": "2026-08-31T02:14:00.000Z",
+     "payments": [
+      {
+       "id": "pay_x_dup",
+       "value_date": "2026-08-26",
+       "amount_paise": 6726000,
+       "currency": "INR",
+       "narration_raw": "RTGS-INW-551903 AAVARTA LOGISTICS AAV-2026-0415",
+       "narration_normalised": "rtgs-inw-551903 aavarta logistics aav-2026-0415",
+       "reference_extracted": "AAV-2026-0415",
+       "vendor_name_extracted": "AAVARTA LOGISTICS",
+       "vendor_id": "ven_aavarta",
+       "application_status": "unapplied",
+       "bank_transaction_id": "BTX-2026-0551903",
+       "created_at": "2026-08-26T07:05:00.000Z"
+      }
+     ],
+     "settled_paise": 6726000,
+     "payment_count": 1
+    }
+   ],
+   "money": {
+    "invoice_gross_paise": 6726000,
+    "invoice_net_paise": 5700000,
+    "tax_total_paise": 1026000,
+    "settled_on_top_candidate_paise": 6726000,
+    "residual_on_top_candidate_paise": 0
+   },
+   "duplicate_context": {
+    "same_vendor_invoice_count": 6,
+    "same_amount_invoices": [
+     {
+      "invoice_id": "inv_x_dup_b",
+      "reference": "AAV-2026-0415-R",
+      "invoice_date": "2026-08-06",
+      "period": "2026-08",
+      "gross_paise": 6726000,
+      "days_from_this_invoice": 0,
+      "purchase_order_reference": "PO-2026-0190",
+      "recurrence": null
+     }
+    ],
+    "vendor_exposure_paise": 55943800
+   },
+   "decisions": [],
+   "tolerance_changes": [],
+   "feedback_rules": [],
+   "why_held": [
+    {
+     "hold_id": "hold_a_dup_a",
+     "hold_type": "duplicate_candidate",
+     "clause": "A prior invoice matches on vendor, amount and date.",
+     "severity": "blocking",
+     "blocks_accounting": true,
+     "conflicts": [
+      {
+       "code": "duplicate_vendor_amount_date",
+       "field_path": "invoice.vendor_id",
+       "clause": "another document shares vendor, amount and invoice date",
+       "severity": "blocking"
+      },
+      {
+       "code": "multiple_candidates_tied",
+       "field_path": "candidate.payment_ids",
+       "clause": "one settlement is claimed by two documents at the same score",
+       "severity": "material"
+      }
+     ]
+    }
+   ],
+   "suggested_next": {
+    "owner_role": "ap_manager",
+    "resolution_path": "internal_correction",
+    "decided_by_hold_type": "duplicate_candidate",
+    "because": "a second document with the same vendor, amount and date is in the run",
+    "is_suggestion": true,
+    "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+   },
+   "audit": {
+    "entries": [
+     {
+      "id": "aud_2293961e04af4798851af5bc3a974ff2",
+      "sequence": 3,
+      "occurred_at": "2026-08-31T02:14:00.000Z",
+      "recorded_at": "2026-08-31T02:14:00.000Z",
+      "actor": {
+       "kind": "system",
+       "component": "holdfast-engine"
+      },
+      "event": "hold_applied",
+      "entity": {
+       "entity": "hold",
+       "id": "hold_a_dup_a"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_dup_a",
+      "detail": {
+       "hold_type": "duplicate_candidate",
+       "invoice_id": "inv_x_dup_a",
+       "severity": "blocking",
+       "blocks_accounting": true,
+       "conflict_count": 2
+      },
+      "payload_hash": "dbaa4a1f9a98cf41ef85cd350b36e4397c8de7ea0d75b1fec3efc7db2315a678",
+      "prev_hash": "8b7ebe47f3640b051f70951a658fe633a2a3df0c1224176103d9580ba99b17a1"
+     }
+    ],
+    "chain": {
+     "first_sequence": 3,
+     "last_sequence": 3,
+     "entries_examined": 1,
+     "missing_sequences": [],
+     "unverifiable_entries": [],
+     "broken_links": [],
+     "intact": true,
+     "contiguous": true,
+     "note": "Hashes recomputed and links re-walked over the entries this query returned. `intact` is the integrity claim; `contiguous` says whether the slice covers an unbroken sequence span, which a filtered read usually does not."
+    }
+   }
+  },
+  "case_a_dup_b": {
+   "case": {
+    "case_id": "case_a_dup_b",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_dup_b",
+    "money_at_risk_paise": 6726000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "application_status": "unapplied",
+    "blocks_accounting": true,
+    "payable": false,
+    "open_hold_count": 1,
+    "released_hold_count": 0
+   },
+   "invoice": {
+    "id": "inv_x_dup_b",
+    "reference": "AAV-2026-0415-R",
+    "normalised_reference": "aav20260415r",
+    "vendor_id": "ven_aavarta",
+    "vendor_name_raw": "Aavarta Logistics LLP",
+    "invoice_date": "2026-08-06",
+    "received_date": "2026-08-08",
+    "due_date": "2026-09-05",
+    "period": "2026-08",
+    "gross_paise": 6726000,
+    "net_paise": 5700000,
+    "tax": {
+     "total_paise": 1026000,
+     "igst_paise": 1026000,
+     "cgst_paise": 0,
+     "sgst_paise": 0,
+     "cess_paise": 0
+    },
+    "currency": "INR",
+    "is_credit_note": false,
+    "recurrence": null,
+    "purchase_order_reference": "PO-2026-0190",
+    "created_at": "2026-08-06T06:30:00.000Z"
+   },
+   "vendor": {
+    "id": "ven_aavarta",
+    "name": "Aavarta Logistics LLP",
+    "normalised_name": "aavarta logistics",
+    "tax_identifier": "27AAZZA2222B1Z3"
+   },
+   "holds": [
+    {
+     "id": "hold_a_dup_b",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_dup_b",
+     "invoice_id": "inv_x_dup_b",
+     "type": "duplicate_candidate",
+     "reason": "A prior invoice matches on vendor, amount and date.",
+     "applied_at": "2026-08-31T02:14:00.000Z",
+     "auto_releasable": false,
+     "blocks_accounting": true,
+     "severity": "blocking",
+     "conflicts": [
+      {
+       "code": "duplicate_vendor_amount_date",
+       "field_path": "invoice.vendor_id",
+       "clause": "another document shares vendor, amount and invoice date",
+       "severity": "blocking"
+      },
+      {
+       "code": "multiple_candidates_tied",
+       "field_path": "candidate.payment_ids",
+       "clause": "one settlement is claimed by two documents at the same score",
+       "severity": "material"
+      }
+     ],
+     "released_by": null,
+     "released_at": null,
+     "release_reason": null,
+     "release_requires": "a named human must release it, with a reason",
+     "is_open": true
+    }
+   ],
+   "candidates": [
+    {
+     "id": "cand_a_dup_b",
+     "run_id": "run_engine_a",
+     "invoice_id": "inv_x_dup_b",
+     "payment_ids": [
+      "pay_x_dup"
+     ],
+     "cardinality": "one_to_one",
+     "score": {
+      "amount": {
+       "score": 1,
+       "weight": 0.4,
+       "contribution": 0.4
+      },
+      "reference": {
+       "score": 0.94,
+       "weight": 0.3,
+       "contribution": 0.282
+      },
+      "date": {
+       "score": 1,
+       "weight": 0.15,
+       "contribution": 0.15
+      },
+      "vendor": {
+       "score": 1,
+       "weight": 0.15,
+       "contribution": 0.15
+      },
+      "weights": {
+       "amount": 0.4,
+       "reference": 0.3,
+       "date": 0.15,
+       "vendor": 0.15
+      },
+      "composite": 0.982,
+      "scorer_version": "holdfast-scorer@0.1.0-seed"
+     },
+     "evidence": {
+      "vendor": {
+       "field": "vendor",
+       "path": "invoice.vendor_name_raw",
+       "invoice_value": "Aavarta Logistics LLP",
+       "payment_value": "AAVARTA LOGISTICS",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.85
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 1,
+       "invoice_vendor_id": "ven_aavarta",
+       "payment_vendor_id": "ven_aavarta"
+      },
+      "amount": {
+       "field": "amount",
+       "path": "invoice.gross_paise",
+       "tolerance": {
+        "kind": "absolute_paise",
+        "value_paise": 2000
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "cause": "unattributed",
+       "invoice_value_paise": 6726000,
+       "payment_value_paise": 6726000,
+       "delta_paise": 0
+      },
+      "date": {
+       "field": "date",
+       "path": "invoice.invoice_date",
+       "invoice_value": "2026-08-06",
+       "payment_value": "2026-08-26",
+       "tolerance": {
+        "kind": "days",
+        "value": 30
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 20
+      },
+      "reference": {
+       "field": "reference",
+       "path": "invoice.normalised_reference",
+       "invoice_value": "AAV-2026-0415-R",
+       "payment_value": "AAV-2026-0415",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.9
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 0.94,
+       "displaced": false,
+       "displaced_from": null
+      }
+     },
+     "conflicts": [
+      {
+       "code": "duplicate_vendor_amount_date",
+       "field_path": "invoice.vendor_id",
+       "clause": "another document shares vendor, amount and invoice date",
+       "severity": "blocking"
+      },
+      {
+       "code": "multiple_candidates_tied",
+       "field_path": "candidate.payment_ids",
+       "clause": "one settlement is claimed by two documents at the same score",
+       "severity": "material"
+      }
+     ],
+     "residual_paise": 0,
+     "proposed_by": "deterministic_fuzzy",
+     "reverified": true,
+     "rank": 2,
+     "created_at": "2026-08-31T02:14:00.000Z",
+     "payments": [
+      {
+       "id": "pay_x_dup",
+       "value_date": "2026-08-26",
+       "amount_paise": 6726000,
+       "currency": "INR",
+       "narration_raw": "RTGS-INW-551903 AAVARTA LOGISTICS AAV-2026-0415",
+       "narration_normalised": "rtgs-inw-551903 aavarta logistics aav-2026-0415",
+       "reference_extracted": "AAV-2026-0415",
+       "vendor_name_extracted": "AAVARTA LOGISTICS",
+       "vendor_id": "ven_aavarta",
+       "application_status": "unapplied",
+       "bank_transaction_id": "BTX-2026-0551903",
+       "created_at": "2026-08-26T07:05:00.000Z"
+      }
+     ],
+     "settled_paise": 6726000,
+     "payment_count": 1
+    }
+   ],
+   "money": {
+    "invoice_gross_paise": 6726000,
+    "invoice_net_paise": 5700000,
+    "tax_total_paise": 1026000,
+    "settled_on_top_candidate_paise": 6726000,
+    "residual_on_top_candidate_paise": 0
+   },
+   "duplicate_context": {
+    "same_vendor_invoice_count": 6,
+    "same_amount_invoices": [
+     {
+      "invoice_id": "inv_x_dup_a",
+      "reference": "AAV-2026-0415",
+      "invoice_date": "2026-08-06",
+      "period": "2026-08",
+      "gross_paise": 6726000,
+      "days_from_this_invoice": 0,
+      "purchase_order_reference": "PO-2026-0190",
+      "recurrence": null
+     }
+    ],
+    "vendor_exposure_paise": 55943800
+   },
+   "decisions": [],
+   "tolerance_changes": [],
+   "feedback_rules": [],
+   "why_held": [
+    {
+     "hold_id": "hold_a_dup_b",
+     "hold_type": "duplicate_candidate",
+     "clause": "A prior invoice matches on vendor, amount and date.",
+     "severity": "blocking",
+     "blocks_accounting": true,
+     "conflicts": [
+      {
+       "code": "duplicate_vendor_amount_date",
+       "field_path": "invoice.vendor_id",
+       "clause": "another document shares vendor, amount and invoice date",
+       "severity": "blocking"
+      },
+      {
+       "code": "multiple_candidates_tied",
+       "field_path": "candidate.payment_ids",
+       "clause": "one settlement is claimed by two documents at the same score",
+       "severity": "material"
+      }
+     ]
+    }
+   ],
+   "suggested_next": {
+    "owner_role": "ap_manager",
+    "resolution_path": "internal_correction",
+    "decided_by_hold_type": "duplicate_candidate",
+    "because": "a second document with the same vendor, amount and date is in the run",
+    "is_suggestion": true,
+    "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+   },
+   "audit": {
+    "entries": [
+     {
+      "id": "aud_40e0506aecc848cb89df4fd91bd0d6aa",
+      "sequence": 4,
+      "occurred_at": "2026-08-31T02:14:00.000Z",
+      "recorded_at": "2026-08-31T02:14:00.000Z",
+      "actor": {
+       "kind": "system",
+       "component": "holdfast-engine"
+      },
+      "event": "hold_applied",
+      "entity": {
+       "entity": "hold",
+       "id": "hold_a_dup_b"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_dup_b",
+      "detail": {
+       "hold_type": "duplicate_candidate",
+       "invoice_id": "inv_x_dup_b",
+       "severity": "blocking",
+       "blocks_accounting": true,
+       "conflict_count": 2
+      },
+      "payload_hash": "eaf8ce480fd8d6b6ed67c1d036b90eac36a113c0188810b6f31a83d275da32e7",
+      "prev_hash": "dbaa4a1f9a98cf41ef85cd350b36e4397c8de7ea0d75b1fec3efc7db2315a678"
+     }
+    ],
+    "chain": {
+     "first_sequence": 4,
+     "last_sequence": 4,
+     "entries_examined": 1,
+     "missing_sequences": [],
+     "unverifiable_entries": [],
+     "broken_links": [],
+     "intact": true,
+     "contiguous": true,
+     "note": "Hashes recomputed and links re-walked over the entries this query returned. `intact` is the integrity claim; `contiguous` says whether the slice covers an unbroken sequence span, which a filtered read usually does not."
+    }
+   }
+  },
+  "case_a_credit": {
+   "case": {
+    "case_id": "case_a_credit",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_credit",
+    "money_at_risk_paise": 3186000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "application_status": "on_account",
+    "blocks_accounting": true,
+    "payable": false,
+    "open_hold_count": 1,
+    "released_hold_count": 0
+   },
+   "invoice": {
+    "id": "inv_x_credit",
+    "reference": "TRV/2026/CN-0009",
+    "normalised_reference": "trv2026cn0009",
+    "vendor_id": "ven_trivarna",
+    "vendor_name_raw": "Trivarna Precision Components Pvt Ltd",
+    "invoice_date": "2026-08-15",
+    "received_date": "2026-08-17",
+    "due_date": "2026-09-14",
+    "period": "2026-08",
+    "gross_paise": -3186000,
+    "net_paise": -2700000,
+    "tax": {
+     "total_paise": -486000,
+     "igst_paise": -486000,
+     "cgst_paise": 0,
+     "sgst_paise": 0,
+     "cess_paise": 0
+    },
+    "currency": "INR",
+    "is_credit_note": true,
+    "recurrence": null,
+    "purchase_order_reference": null,
+    "created_at": "2026-08-15T06:30:00.000Z"
+   },
+   "vendor": {
+    "id": "ven_trivarna",
+    "name": "Trivarna Precision Components Pvt Ltd",
+    "normalised_name": "trivarna precision components",
+    "tax_identifier": "29AAZZT1111A1Z5"
+   },
+   "holds": [
+    {
+     "id": "hold_a_credit",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_credit",
+     "invoice_id": "inv_x_credit",
+     "type": "credit_note_crossing",
+     "reason": "A credit note crosses the settlement being matched.",
+     "applied_at": "2026-08-31T02:14:00.000Z",
+     "auto_releasable": false,
+     "blocks_accounting": true,
+     "severity": "material",
+     "conflicts": [
+      {
+       "code": "credit_note_crosses_period",
+       "field_path": "invoice.period",
+       "clause": "the credit note settles against a document in an earlier period",
+       "severity": "material"
+      },
+      {
+       "code": "no_candidate_found",
+       "field_path": "candidate.payment_ids",
+       "clause": "no settlement line was found for this document",
+       "severity": "material"
+      }
+     ],
+     "released_by": null,
+     "released_at": null,
+     "release_reason": null,
+     "release_requires": "a named human must release it, with a reason",
+     "is_open": true
+    }
+   ],
+   "candidates": [],
+   "money": {
+    "invoice_gross_paise": -3186000,
+    "invoice_net_paise": -2700000,
+    "tax_total_paise": -486000,
+    "settled_on_top_candidate_paise": null,
+    "residual_on_top_candidate_paise": null
+   },
+   "duplicate_context": {
+    "same_vendor_invoice_count": 5,
+    "same_amount_invoices": [],
+    "vendor_exposure_paise": 54138400
+   },
+   "decisions": [],
+   "tolerance_changes": [],
+   "feedback_rules": [],
+   "why_held": [
+    {
+     "hold_id": "hold_a_credit",
+     "hold_type": "credit_note_crossing",
+     "clause": "A credit note crosses the settlement being matched.",
+     "severity": "material",
+     "blocks_accounting": true,
+     "conflicts": [
+      {
+       "code": "credit_note_crosses_period",
+       "field_path": "invoice.period",
+       "clause": "the credit note settles against a document in an earlier period",
+       "severity": "material"
+      },
+      {
+       "code": "no_candidate_found",
+       "field_path": "candidate.payment_ids",
+       "clause": "no settlement line was found for this document",
+       "severity": "material"
+      }
+     ]
+    }
+   ],
+   "suggested_next": {
+    "owner_role": "controller",
+    "resolution_path": "internal_correction",
+    "decided_by_hold_type": "credit_note_crossing",
+    "because": "a credit note settles against a document in another accounting period",
+    "is_suggestion": true,
+    "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+   },
+   "audit": {
+    "entries": [
+     {
+      "id": "aud_0a16091df4be42efae042b9c7024723c",
+      "sequence": 8,
+      "occurred_at": "2026-08-31T02:14:00.000Z",
+      "recorded_at": "2026-08-31T02:14:00.000Z",
+      "actor": {
+       "kind": "system",
+       "component": "holdfast-engine"
+      },
+      "event": "hold_applied",
+      "entity": {
+       "entity": "hold",
+       "id": "hold_a_credit"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_credit",
+      "detail": {
+       "hold_type": "credit_note_crossing",
+       "invoice_id": "inv_x_credit",
+       "severity": "material",
+       "blocks_accounting": true,
+       "conflict_count": 2
+      },
+      "payload_hash": "5fbe6a48d4c4aa6785cbc77238d5d08cc81c6c8afefdee38eb8494a8fc5961df",
+      "prev_hash": "8bb23c76364f6554afcd4f0506c49e9111b23e9cb5b43ef0fdc2cc2c4a1b648a"
+     }
+    ],
+    "chain": {
+     "first_sequence": 8,
+     "last_sequence": 8,
+     "entries_examined": 1,
+     "missing_sequences": [],
+     "unverifiable_entries": [],
+     "broken_links": [],
+     "intact": true,
+     "contiguous": true,
+     "note": "Hashes recomputed and links re-walked over the entries this query returned. `intact` is the integrity claim; `contiguous` says whether the slice covers an unbroken sequence span, which a filtered read usually does not."
+    }
+   }
+  },
+  "case_a_card": {
+   "case": {
+    "case_id": "case_a_card",
+    "run_id": "run_engine_a",
+    "invoice_id": "inv_x_card",
+    "money_at_risk_paise": 2300000,
+    "held_since": "2026-08-31T02:14:00.000Z",
+    "age_days": 6,
+    "application_status": "unapplied",
+    "blocks_accounting": false,
+    "payable": false,
+    "open_hold_count": 1,
+    "released_hold_count": 0
+   },
+   "invoice": {
+    "id": "inv_x_card",
+    "reference": "NIR/2026/0421",
+    "normalised_reference": "nir20260421",
+    "vendor_id": "ven_nirvaha",
+    "vendor_name_raw": "Nirvaha Paper Mills Ltd",
+    "invoice_date": "2026-08-08",
+    "received_date": "2026-08-10",
+    "due_date": "2026-09-07",
+    "period": "2026-08",
+    "gross_paise": 41300000,
+    "net_paise": 35000000,
+    "tax": {
+     "total_paise": 6300000,
+     "igst_paise": 0,
+     "cgst_paise": 3150000,
+     "sgst_paise": 3150000,
+     "cess_paise": 0
+    },
+    "currency": "INR",
+    "is_credit_note": false,
+    "recurrence": null,
+    "purchase_order_reference": "PO-2026-0201",
+    "created_at": "2026-08-08T06:30:00.000Z"
+   },
+   "vendor": {
+    "id": "ven_nirvaha",
+    "name": "Nirvaha Paper Mills Ltd",
+    "normalised_name": "nirvaha paper mills",
+    "tax_identifier": "33AAZZN3333C1Z1"
+   },
+   "holds": [
+    {
+     "id": "hold_a_card",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_card",
+     "invoice_id": "inv_x_card",
+     "type": "cardinality_residual",
+     "reason": "A residual remains after partial settlement of a bulk payment.",
+     "applied_at": "2026-08-31T02:14:00.000Z",
+     "auto_releasable": false,
+     "blocks_accounting": false,
+     "severity": "material",
+     "conflicts": [
+      {
+       "code": "residual_unsettled",
+       "field_path": "candidate.residual_paise",
+       "clause": "the settled set leaves a residual on the document",
+       "severity": "material"
+      }
+     ],
+     "released_by": null,
+     "released_at": null,
+     "release_reason": null,
+     "release_requires": "a named human must release it, with a reason",
+     "is_open": true
+    }
+   ],
+   "candidates": [
+    {
+     "id": "cand_a_card",
+     "run_id": "run_engine_a",
+     "invoice_id": "inv_x_card",
+     "payment_ids": [
+      "pay_x_card_1",
+      "pay_x_card_2",
+      "pay_x_card_3"
+     ],
+     "cardinality": "one_to_many",
+     "score": {
+      "amount": {
+       "score": 0.71,
+       "weight": 0.4,
+       "contribution": 0.284
+      },
+      "reference": {
+       "score": 1,
+       "weight": 0.3,
+       "contribution": 0.3
+      },
+      "date": {
+       "score": 0.9,
+       "weight": 0.15,
+       "contribution": 0.135
+      },
+      "vendor": {
+       "score": 1,
+       "weight": 0.15,
+       "contribution": 0.15
+      },
+      "weights": {
+       "amount": 0.4,
+       "reference": 0.3,
+       "date": 0.15,
+       "vendor": 0.15
+      },
+      "composite": 0.869,
+      "scorer_version": "holdfast-scorer@0.1.0-seed"
+     },
+     "evidence": {
+      "vendor": {
+       "field": "vendor",
+       "path": "invoice.vendor_name_raw",
+       "invoice_value": "Nirvaha Paper Mills Ltd",
+       "payment_value": "NIRVAHA PAPER MILLS",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.85
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 1,
+       "invoice_vendor_id": "ven_nirvaha",
+       "payment_vendor_id": "ven_nirvaha"
+      },
+      "amount": {
+       "field": "amount",
+       "path": "invoice.gross_paise",
+       "tolerance": {
+        "kind": "absolute_paise",
+        "value_paise": 20000
+       },
+       "within_tolerance": false,
+       "normalisation": null,
+       "cause": "partial_settlement",
+       "invoice_value_paise": 41300000,
+       "payment_value_paise": 39000000,
+       "delta_paise": -2300000
+      },
+      "date": {
+       "field": "date",
+       "path": "invoice.invoice_date",
+       "invoice_value": "2026-08-08",
+       "payment_value": "2026-08-29",
+       "tolerance": {
+        "kind": "days",
+        "value": 30
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 21
+      },
+      "reference": {
+       "field": "reference",
+       "path": "invoice.normalised_reference",
+       "invoice_value": "NIR/2026/0421",
+       "payment_value": "NIR/2026/0421",
+       "tolerance": {
+        "kind": "similarity",
+        "value": 0.9
+       },
+       "within_tolerance": true,
+       "normalisation": null,
+       "delta": 1,
+       "displaced": false,
+       "displaced_from": null
+      }
+     },
+     "conflicts": [
+      {
+       "code": "residual_unsettled",
+       "field_path": "candidate.residual_paise",
+       "clause": "the settled set leaves a residual on the document",
+       "severity": "material"
+      }
+     ],
+     "residual_paise": 2300000,
+     "proposed_by": "cardinality_search",
+     "reverified": true,
+     "rank": 1,
+     "created_at": "2026-08-31T02:14:00.000Z",
+     "payments": [
+      {
+       "id": "pay_x_card_1",
+       "value_date": "2026-08-23",
+       "amount_paise": 15000000,
+       "currency": "INR",
+       "narration_raw": "RTGS-INW-662011 NIRVAHA PAPER MILLS NIR/2026/0421 PART 1",
+       "narration_normalised": "rtgs-inw-662011 nirvaha paper mills nir/2026/0421 part 1",
+       "reference_extracted": "NIR/2026/0421",
+       "vendor_name_extracted": "NIRVAHA PAPER MILLS",
+       "vendor_id": "ven_nirvaha",
+       "application_status": "unapplied",
+       "bank_transaction_id": "BTX-2026-0662011",
+       "created_at": "2026-08-23T07:05:00.000Z"
+      },
+      {
+       "id": "pay_x_card_2",
+       "value_date": "2026-08-27",
+       "amount_paise": 15000000,
+       "currency": "INR",
+       "narration_raw": "RTGS-INW-662488 NIRVAHA PAPER MILLS NIR/2026/0421 PART 2",
+       "narration_normalised": "rtgs-inw-662488 nirvaha paper mills nir/2026/0421 part 2",
+       "reference_extracted": "NIR/2026/0421",
+       "vendor_name_extracted": "NIRVAHA PAPER MILLS",
+       "vendor_id": "ven_nirvaha",
+       "application_status": "unapplied",
+       "bank_transaction_id": "BTX-2026-0662488",
+       "created_at": "2026-08-27T07:05:00.000Z"
+      },
+      {
+       "id": "pay_x_card_3",
+       "value_date": "2026-08-29",
+       "amount_paise": 9000000,
+       "currency": "INR",
+       "narration_raw": "RTGS-INW-663120 NIRVAHA PAPER MILLS NIR/2026/0421 FINAL",
+       "narration_normalised": "rtgs-inw-663120 nirvaha paper mills nir/2026/0421 final",
+       "reference_extracted": "NIR/2026/0421",
+       "vendor_name_extracted": "NIRVAHA PAPER MILLS",
+       "vendor_id": "ven_nirvaha",
+       "application_status": "unapplied",
+       "bank_transaction_id": "BTX-2026-0663120",
+       "created_at": "2026-08-29T07:05:00.000Z"
+      }
+     ],
+     "settled_paise": 39000000,
+     "payment_count": 3
+    }
+   ],
+   "money": {
+    "invoice_gross_paise": 41300000,
+    "invoice_net_paise": 35000000,
+    "tax_total_paise": 6300000,
+    "settled_on_top_candidate_paise": 39000000,
+    "residual_on_top_candidate_paise": 2300000
+   },
+   "duplicate_context": {
+    "same_vendor_invoice_count": 4,
+    "same_amount_invoices": [],
+    "vendor_exposure_paise": 36037200
+   },
+   "decisions": [
+    {
+     "id": "dec_card_route",
+     "run_id": "run_engine_a",
+     "case_id": "case_a_card",
+     "invoice_id": "inv_x_card",
+     "action": "route",
+     "resolution_path": "re_application",
+     "owner_next": {
+      "role": "treasury",
+      "party": "Treasury operations"
+     },
+     "reviewer": "rev_s_bhatt",
+     "reason": "three inward lines settle this document; the residual needs a treasury view",
+     "timestamp": "2026-09-02T10:15:00.000Z",
+     "hold_ids": [
+      "hold_a_card"
+     ],
+     "tolerance_change_id": null
+    }
+   ],
+   "tolerance_changes": [],
+   "feedback_rules": [],
+   "why_held": [
+    {
+     "hold_id": "hold_a_card",
+     "hold_type": "cardinality_residual",
+     "clause": "A residual remains after partial settlement of a bulk payment.",
+     "severity": "material",
+     "blocks_accounting": false,
+     "conflicts": [
+      {
+       "code": "residual_unsettled",
+       "field_path": "candidate.residual_paise",
+       "clause": "the settled set leaves a residual on the document",
+       "severity": "material"
+      }
+     ]
+    }
+   ],
+   "suggested_next": {
+    "owner_role": "treasury",
+    "resolution_path": "re_application",
+    "decided_by_hold_type": "cardinality_residual",
+    "because": "the settled set leaves an unexplained residual on the document",
+    "is_suggestion": true,
+    "note": "Derived from hold policy, not from a model. The reviewer chooses; the choice is what gets recorded."
+   },
+   "audit": {
+    "entries": [
+     {
+      "id": "aud_d3aa136d814941439cab0f8bc3315c4c",
+      "sequence": 5,
+      "occurred_at": "2026-08-31T02:14:00.000Z",
+      "recorded_at": "2026-08-31T02:14:00.000Z",
+      "actor": {
+       "kind": "system",
+       "component": "holdfast-engine"
+      },
+      "event": "hold_applied",
+      "entity": {
+       "entity": "hold",
+       "id": "hold_a_card"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_card",
+      "detail": {
+       "hold_type": "cardinality_residual",
+       "invoice_id": "inv_x_card",
+       "severity": "material",
+       "blocks_accounting": false,
+       "conflict_count": 1
+      },
+      "payload_hash": "2f2b1a335675915b27cd8bdd813079f80f0c67ee8b8cfdb4601423b076a7336c",
+      "prev_hash": "eaf8ce480fd8d6b6ed67c1d036b90eac36a113c0188810b6f31a83d275da32e7"
+     },
+     {
+      "id": "aud_7bc88c8b4e964bf6a775e35c2898b76f",
+      "sequence": 12,
+      "occurred_at": "2026-09-02T10:15:00.000Z",
+      "recorded_at": "2026-09-02T10:15:00.000Z",
+      "actor": {
+       "kind": "human",
+       "reviewer": "rev_s_bhatt"
+      },
+      "event": "decision_recorded",
+      "entity": {
+       "entity": "decision",
+       "id": "dec_card_route"
+      },
+      "run_id": "run_engine_a",
+      "case_id": "case_a_card",
+      "detail": {
+       "action": "route",
+       "resolution_path": "re_application",
+       "owner_role": "treasury",
+       "hold_count": 1
+      },
+      "payload_hash": "affa44de414f1e8aa269491847adda366a9fe59e24f5db17e1113d5ef17ffd4c",
+      "prev_hash": "bb9e602954cdd85b354c3ac198ce9cab28a44dcd20eff7a739f5b66a22af7106"
+     }
+    ],
+    "chain": {
+     "first_sequence": 5,
+     "last_sequence": 12,
+     "entries_examined": 2,
+     "missing_sequences": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+     ],
+     "unverifiable_entries": [],
+     "broken_links": [],
+     "intact": true,
+     "contiguous": false,
+     "note": "Hashes recomputed and links re-walked over the entries this query returned. `intact` is the integrity claim; `contiguous` says whether the slice covers an unbroken sequence span, which a filtered read usually does not."
+    }
+   }
+  }
+ },
+ "audit": {
+  "filter": {
+   "run_id": "run_engine_a",
+   "case_id": null,
+   "event": null,
+   "entity_id": null,
+   "after_sequence": null,
+   "limit": 200
+  },
+  "entries": [
+   {
+    "id": "aud_6b2e4baa0ab14831b921675e3e41d8a5",
+    "sequence": 1,
+    "occurred_at": "2026-08-31T02:10:00.000Z",
+    "recorded_at": "2026-08-31T02:10:00.000Z",
+    "actor": {
+     "kind": "system",
+     "component": "holdfast-engine"
+    },
+    "event": "run_started",
+    "entity": {
+     "entity": "run",
+     "id": "run_engine_a"
+    },
+    "run_id": "run_engine_a",
+    "case_id": null,
+    "detail": {
+     "kind": "engine",
+     "engine_version": "holdfast-engine@0.1.0-seed",
+     "scorer_version": "holdfast-scorer@0.1.0-seed",
+     "invoices_total": 22,
+     "payments_total": 22
+    },
+    "payload_hash": "10feaa606457b84647dcfdc1af3fb3bb3d0cefa567027ddaaa7e6301328ad1f3",
+    "prev_hash": null
+   },
+   {
+    "id": "aud_2750267d3ee941ef98281f6939b24c8e",
+    "sequence": 2,
+    "occurred_at": "2026-08-31T02:14:00.000Z",
+    "recorded_at": "2026-08-31T02:14:00.000Z",
+    "actor": {
+     "kind": "system",
+     "component": "holdfast-engine"
+    },
+    "event": "hold_applied",
+    "entity": {
+     "entity": "hold",
+     "id": "hold_a_price"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_price",
+    "detail": {
+     "hold_type": "price_variance",
+     "invoice_id": "inv_x_price",
+     "severity": "material",
+     "blocks_accounting": false,
+     "conflict_count": 1
+    },
+    "payload_hash": "8b7ebe47f3640b051f70951a658fe633a2a3df0c1224176103d9580ba99b17a1",
+    "prev_hash": "10feaa606457b84647dcfdc1af3fb3bb3d0cefa567027ddaaa7e6301328ad1f3"
+   },
+   {
+    "id": "aud_2293961e04af4798851af5bc3a974ff2",
+    "sequence": 3,
+    "occurred_at": "2026-08-31T02:14:00.000Z",
+    "recorded_at": "2026-08-31T02:14:00.000Z",
+    "actor": {
+     "kind": "system",
+     "component": "holdfast-engine"
+    },
+    "event": "hold_applied",
+    "entity": {
+     "entity": "hold",
+     "id": "hold_a_dup_a"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_dup_a",
+    "detail": {
+     "hold_type": "duplicate_candidate",
+     "invoice_id": "inv_x_dup_a",
+     "severity": "blocking",
+     "blocks_accounting": true,
+     "conflict_count": 2
+    },
+    "payload_hash": "dbaa4a1f9a98cf41ef85cd350b36e4397c8de7ea0d75b1fec3efc7db2315a678",
+    "prev_hash": "8b7ebe47f3640b051f70951a658fe633a2a3df0c1224176103d9580ba99b17a1"
+   },
+   {
+    "id": "aud_40e0506aecc848cb89df4fd91bd0d6aa",
+    "sequence": 4,
+    "occurred_at": "2026-08-31T02:14:00.000Z",
+    "recorded_at": "2026-08-31T02:14:00.000Z",
+    "actor": {
+     "kind": "system",
+     "component": "holdfast-engine"
+    },
+    "event": "hold_applied",
+    "entity": {
+     "entity": "hold",
+     "id": "hold_a_dup_b"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_dup_b",
+    "detail": {
+     "hold_type": "duplicate_candidate",
+     "invoice_id": "inv_x_dup_b",
+     "severity": "blocking",
+     "blocks_accounting": true,
+     "conflict_count": 2
+    },
+    "payload_hash": "eaf8ce480fd8d6b6ed67c1d036b90eac36a113c0188810b6f31a83d275da32e7",
+    "prev_hash": "dbaa4a1f9a98cf41ef85cd350b36e4397c8de7ea0d75b1fec3efc7db2315a678"
+   },
+   {
+    "id": "aud_d3aa136d814941439cab0f8bc3315c4c",
+    "sequence": 5,
+    "occurred_at": "2026-08-31T02:14:00.000Z",
+    "recorded_at": "2026-08-31T02:14:00.000Z",
+    "actor": {
+     "kind": "system",
+     "component": "holdfast-engine"
+    },
+    "event": "hold_applied",
+    "entity": {
+     "entity": "hold",
+     "id": "hold_a_card"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_card",
+    "detail": {
+     "hold_type": "cardinality_residual",
+     "invoice_id": "inv_x_card",
+     "severity": "material",
+     "blocks_accounting": false,
+     "conflict_count": 1
+    },
+    "payload_hash": "2f2b1a335675915b27cd8bdd813079f80f0c67ee8b8cfdb4601423b076a7336c",
+    "prev_hash": "eaf8ce480fd8d6b6ed67c1d036b90eac36a113c0188810b6f31a83d275da32e7"
+   },
+   {
+    "id": "aud_714bd741942744b48923e565583779ce",
+    "sequence": 6,
+    "occurred_at": "2026-08-31T02:14:00.000Z",
+    "recorded_at": "2026-08-31T02:14:00.000Z",
+    "actor": {
+     "kind": "system",
+     "component": "holdfast-engine"
+    },
+    "event": "hold_applied",
+    "entity": {
+     "entity": "hold",
+     "id": "hold_a_noref"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_noref",
+    "detail": {
+     "hold_type": "no_reference",
+     "invoice_id": "inv_x_noref",
+     "severity": "material",
+     "blocks_accounting": false,
+     "conflict_count": 1
+    },
+    "payload_hash": "82b1291ad67f07c0eee14dd52e24502fa2fa4867ef5cebbc7f87289cae2e1e70",
+    "prev_hash": "2f2b1a335675915b27cd8bdd813079f80f0c67ee8b8cfdb4601423b076a7336c"
+   },
+   {
+    "id": "aud_0b5261e4448643e5952e8e4165cf0430",
+    "sequence": 7,
+    "occurred_at": "2026-08-31T02:14:00.000Z",
+    "recorded_at": "2026-08-31T02:14:00.000Z",
+    "actor": {
+     "kind": "system",
+     "component": "holdfast-engine"
+    },
+    "event": "hold_applied",
+    "entity": {
+     "entity": "hold",
+     "id": "hold_a_tax"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_tax",
+    "detail": {
+     "hold_type": "tax_amount_range",
+     "invoice_id": "inv_x_tax",
+     "severity": "blocking",
+     "blocks_accounting": true,
+     "conflict_count": 1
+    },
+    "payload_hash": "8bb23c76364f6554afcd4f0506c49e9111b23e9cb5b43ef0fdc2cc2c4a1b648a",
+    "prev_hash": "82b1291ad67f07c0eee14dd52e24502fa2fa4867ef5cebbc7f87289cae2e1e70"
+   },
+   {
+    "id": "aud_0a16091df4be42efae042b9c7024723c",
+    "sequence": 8,
+    "occurred_at": "2026-08-31T02:14:00.000Z",
+    "recorded_at": "2026-08-31T02:14:00.000Z",
+    "actor": {
+     "kind": "system",
+     "component": "holdfast-engine"
+    },
+    "event": "hold_applied",
+    "entity": {
+     "entity": "hold",
+     "id": "hold_a_credit"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_credit",
+    "detail": {
+     "hold_type": "credit_note_crossing",
+     "invoice_id": "inv_x_credit",
+     "severity": "material",
+     "blocks_accounting": true,
+     "conflict_count": 2
+    },
+    "payload_hash": "5fbe6a48d4c4aa6785cbc77238d5d08cc81c6c8afefdee38eb8494a8fc5961df",
+    "prev_hash": "8bb23c76364f6554afcd4f0506c49e9111b23e9cb5b43ef0fdc2cc2c4a1b648a"
+   },
+   {
+    "id": "aud_3d8612351b894df9a09d5c0d05620684",
+    "sequence": 9,
+    "occurred_at": "2026-08-31T02:14:00.000Z",
+    "recorded_at": "2026-08-31T02:14:00.000Z",
+    "actor": {
+     "kind": "system",
+     "component": "holdfast-engine"
+    },
+    "event": "hold_applied",
+    "entity": {
+     "entity": "hold",
+     "id": "hold_a_period"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_period",
+    "detail": {
+     "hold_type": "period_deferral",
+     "invoice_id": "inv_x_period",
+     "severity": "advisory",
+     "blocks_accounting": true,
+     "conflict_count": 1
+    },
+    "payload_hash": "1400ee045e9e34c92037dab5505661f1fe95960d72e41f8b658cea3a573270e1",
+    "prev_hash": "5fbe6a48d4c4aa6785cbc77238d5d08cc81c6c8afefdee38eb8494a8fc5961df"
+   },
+   {
+    "id": "aud_af9acc490a7a4ca79cd37094be81c008",
+    "sequence": 10,
+    "occurred_at": "2026-08-31T02:14:00.000Z",
+    "recorded_at": "2026-08-31T02:14:00.000Z",
+    "actor": {
+     "kind": "system",
+     "component": "holdfast-engine"
+    },
+    "event": "run_completed",
+    "entity": {
+     "entity": "run",
+     "id": "run_engine_a"
+    },
+    "run_id": "run_engine_a",
+    "case_id": null,
+    "detail": {
+     "held_count": 8,
+     "decided_count": 14
+    },
+    "payload_hash": "7e6c4786289651044a811652b86358e6e5cfc49fbcf31ab33874d1c5aa4176f2",
+    "prev_hash": "1400ee045e9e34c92037dab5505661f1fe95960d72e41f8b658cea3a573270e1"
+   },
+   {
+    "id": "aud_b08ccf529b0a498895d69d7fbe9f1aab",
+    "sequence": 11,
+    "occurred_at": "2026-09-01T11:20:00.000Z",
+    "recorded_at": "2026-09-01T11:20:00.000Z",
+    "actor": {
+     "kind": "human",
+     "reviewer": "rev_a_iyer"
+    },
+    "event": "feedback_rule_created",
+    "entity": {
+     "entity": "feedback_rule",
+     "id": "fbr_vendor_alias_aavarta_log"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_noref",
+    "detail": {
+     "kind": "vendor_alias",
+     "active": true
+    },
+    "payload_hash": "bb9e602954cdd85b354c3ac198ce9cab28a44dcd20eff7a739f5b66a22af7106",
+    "prev_hash": "7e6c4786289651044a811652b86358e6e5cfc49fbcf31ab33874d1c5aa4176f2"
+   },
+   {
+    "id": "aud_7bc88c8b4e964bf6a775e35c2898b76f",
+    "sequence": 12,
+    "occurred_at": "2026-09-02T10:15:00.000Z",
+    "recorded_at": "2026-09-02T10:15:00.000Z",
+    "actor": {
+     "kind": "human",
+     "reviewer": "rev_s_bhatt"
+    },
+    "event": "decision_recorded",
+    "entity": {
+     "entity": "decision",
+     "id": "dec_card_route"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_card",
+    "detail": {
+     "action": "route",
+     "resolution_path": "re_application",
+     "owner_role": "treasury",
+     "hold_count": 1
+    },
+    "payload_hash": "affa44de414f1e8aa269491847adda366a9fe59e24f5db17e1113d5ef17ffd4c",
+    "prev_hash": "bb9e602954cdd85b354c3ac198ce9cab28a44dcd20eff7a739f5b66a22af7106"
+   },
+   {
+    "id": "aud_3e8ad57a417942a1b09e39283aca78f9",
+    "sequence": 13,
+    "occurred_at": "2026-09-03T09:40:00.000Z",
+    "recorded_at": "2026-09-03T09:40:00.000Z",
+    "actor": {
+     "kind": "human",
+     "reviewer": "rev_m_dsouza"
+    },
+    "event": "decision_recorded",
+    "entity": {
+     "entity": "decision",
+     "id": "dec_tax_band"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_tax",
+    "detail": {
+     "action": "change_tolerance",
+     "resolution_path": "internal_correction",
+     "owner_role": "tax_team",
+     "hold_count": 1
+    },
+    "payload_hash": "d63bf0bf565a22612de5a9bd3f379f7f94f805c2d588acce4ed311f656bbf9c8",
+    "prev_hash": "affa44de414f1e8aa269491847adda366a9fe59e24f5db17e1113d5ef17ffd4c"
+   },
+   {
+    "id": "aud_28fd7768e56b4b3e9fa58ac3f7a7f7dc",
+    "sequence": 14,
+    "occurred_at": "2026-09-03T09:40:00.000Z",
+    "recorded_at": "2026-09-03T09:40:00.000Z",
+    "actor": {
+     "kind": "human",
+     "reviewer": "rev_m_dsouza"
+    },
+    "event": "tolerance_changed",
+    "entity": {
+     "entity": "tolerance_change",
+     "id": "tch_tax_band_widened"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_tax",
+    "detail": {
+     "scope_kind": "hold_type",
+     "from_kind": "absolute_paise",
+     "to_kind": "absolute_paise",
+     "affected_hold_count": 1
+    },
+    "payload_hash": "b29a7a5a628ae59c5fbd357b61b63d7c7886879ed4641b614941aca140a1c4b9",
+    "prev_hash": "d63bf0bf565a22612de5a9bd3f379f7f94f805c2d588acce4ed311f656bbf9c8"
+   },
+   {
+    "id": "aud_48a1363efaec41f6880e898dd04a0af6",
+    "sequence": 15,
+    "occurred_at": "2026-09-03T09:40:00.000Z",
+    "recorded_at": "2026-09-03T09:40:00.000Z",
+    "actor": {
+     "kind": "human",
+     "reviewer": "rev_m_dsouza"
+    },
+    "event": "hold_released",
+    "entity": {
+     "entity": "hold",
+     "id": "hold_a_tax"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_tax",
+    "detail": {
+     "released_by": "rev_m_dsouza",
+     "tolerance_change_id": "tch_tax_band_widened"
+    },
+    "payload_hash": "7bcf33a09c9664ddf1774522e021ce5eb1ae47e391205809cf370b7925b9ff65",
+    "prev_hash": "b29a7a5a628ae59c5fbd357b61b63d7c7886879ed4641b614941aca140a1c4b9"
+   },
+   {
+    "id": "aud_13760b0b04444b989ed12d7777601a3c",
+    "sequence": 16,
+    "occurred_at": "2026-09-03T15:05:00.000Z",
+    "recorded_at": "2026-09-03T15:05:00.000Z",
+    "actor": {
+     "kind": "human",
+     "reviewer": "rev_a_iyer"
+    },
+    "event": "decision_recorded",
+    "entity": {
+     "entity": "decision",
+     "id": "dec_noref_rule"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_noref",
+    "detail": {
+     "action": "create_feedback_rule",
+     "resolution_path": "internal_correction",
+     "owner_role": "ap_clerk",
+     "hold_count": 1
+    },
+    "payload_hash": "96ca430501f7b6100e8f9304724ab22e8fcaddc876acb56594634b0f7ab98bfc",
+    "prev_hash": "7bcf33a09c9664ddf1774522e021ce5eb1ae47e391205809cf370b7925b9ff65"
+   },
+   {
+    "id": "aud_9c054040fe974b719b0c27d168c5c048",
+    "sequence": 17,
+    "occurred_at": "2026-09-03T15:05:00.000Z",
+    "recorded_at": "2026-09-03T15:05:00.000Z",
+    "actor": {
+     "kind": "human",
+     "reviewer": "rev_a_iyer"
+    },
+    "event": "feedback_rule_created",
+    "entity": {
+     "entity": "feedback_rule",
+     "id": "fbr_reference_aavarta_slash"
+    },
+    "run_id": "run_engine_a",
+    "case_id": "case_a_noref",
+    "detail": {
+     "kind": "reference_pattern",
+     "active": true
+    },
+    "payload_hash": "e91c854c696769b763e8826040d8586c4c538c2a3a2a51ecfb430dbbed588d09",
+    "prev_hash": "96ca430501f7b6100e8f9304724ab22e8fcaddc876acb56594634b0f7ab98bfc"
+   }
+  ],
+  "returned": 17,
+  "chain": {
+   "first_sequence": 1,
+   "last_sequence": 17,
+   "entries_examined": 17,
+   "missing_sequences": [],
+   "unverifiable_entries": [],
+   "broken_links": [],
+   "intact": true,
+   "contiguous": true,
+   "note": "Hashes recomputed and links re-walked over the entries this query returned. `intact` is the integrity claim; `contiguous` says whether the slice covers an unbroken sequence span, which a filtered read usually does not."
+  },
+  "actors": [
+   {
+    "actor": "system:holdfast-engine",
+    "entry_count": 10
+   },
+   {
+    "actor": "human:rev_a_iyer",
+    "entry_count": 3
+   },
+   {
+    "actor": "human:rev_s_bhatt",
+    "entry_count": 1
+   },
+   {
+    "actor": "human:rev_m_dsouza",
+    "entry_count": 3
+   }
+  ],
+  "note": "a model actor can only ever appear on a proposal event; it can never appear on a release or a clear"
+ }
+}

@@ -1,26 +1,33 @@
 import { api } from "@/lib/api";
 
 /**
- * Always-on reminder that the console is wired to a mock adapter. It reads
- * `api.info` rather than checking the environment directly, so it disappears on
- * its own once a non-mock adapter is selected.
+ * Always-on reminder that the console is wired to a mock adapter.
+ *
+ * It reads `api.info` rather than checking the environment directly, so it
+ * disappears on its own once a non-mock adapter is selected. It lives in the
+ * top bar as a chip rather than as its own full-width strip: the warning has
+ * to be permanent, not large.
  */
-export function DemoModeBanner() {
-  if (!api.info.isMock) return null;
+export function DemoModeChip() {
+  if (!api.info.isMock) {
+    return (
+      <span className="inline-flex items-center gap-2 rounded-sm border border-line-strong bg-surface px-2.5 py-1 text-xs text-ink-muted">
+        <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-cleared" />
+        {api.info.label}
+      </span>
+    );
+  }
 
   return (
-    <div className="flex items-center gap-2 border-b border-demo/30 bg-demo/10 px-4 py-2 text-[11px] text-demo sm:px-6 sm:py-1.5">
-      <span
-        aria-hidden
-        className="size-1.5 shrink-0 rounded-full bg-demo"
-      />
-      <p>
-        <span className="font-semibold uppercase tracking-wide">Demo data</span>
-        <span className="mx-1.5 opacity-50">·</span>
-        <span className="hidden text-ink-muted sm:inline">
-          {api.info.description} Routing, hold release, and tolerance changes are simulated.
-        </span>
-      </p>
-    </div>
+    <span
+      className="inline-flex items-center gap-2 rounded-sm border border-material/30 bg-material/8 px-2.5 py-1 text-xs text-material"
+      title={`${api.info.description} Routing, hold release, and tolerance changes are simulated.`}
+    >
+      <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-material" />
+      Demo data
+      <span className="sr-only">
+        {api.info.description} Routing, hold release, and tolerance changes are simulated.
+      </span>
+    </span>
   );
 }
