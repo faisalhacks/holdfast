@@ -81,10 +81,28 @@ A1 — typed holds, coverage >= 70%. Not started. Gates built and green.
 - **Session accounting**: report categories separately (merged / raced / sweep / critics),
   never a summed headline count.
 
-## Built and verified
-- Wave 0 complete: repo scaffolded, 5 CI checks, 9 gate scripts, gate self-tests (57
-  assertions), all dependencies installed, `pnpm verify` green.
-- Nothing else. No worker has been spawned.
+## Built and verified — on main, all green
+- **Wave 0**: repo, 5 CI checks, 10 gate scripts, branch protection, gate self-tests
+  (97 assertions). Pushed and green on GitHub.
+- **W01 contract** (`lib/types.ts`) — racer B, 1005 lines, 116 exports. FROZEN.
+- **W01 schema** (`db/**`) — racer E, 11 migrations, 9 tables. Append-only enforced TWICE.
+- **W04a normalise** (`engine/normalise/**`) — 8 files, swappable step registry.
+- **engine/holds/registry.ts** — orchestrator-owned, frozen, policy table + family
+  interface. Wiring section filled by the orchestrator at the Wave 3 merge gate.
+
+## Standing findings that change what we say on camera
+1. **CODEOWNERS does not block.** Proven: PR #2 edited a frozen, code-owned file and
+   merged. `required_approving_review_count: 0` makes `require_code_owner_reviews` inert;
+   raising it to 1 deadlocks (author cannot self-approve). The REAL enforcement is the
+   `ownership` required status check. Never claim CODEOWNERS protects anything.
+2. **A superuser bypasses GRANT.** `role_table_grants` showed the REVOKE, the migrate gate
+   went green, and `UPDATE audit_journal` still returned `UPDATE 1`. Now enforced twice:
+   REVOKE plus a BEFORE UPDATE/DELETE/TRUNCATE trigger. Both mechanisms ship; say so.
+3. **General lesson, seen twice**: a gate reporting that a claim holds is not the claim
+   holding. Test the claim, not the mechanism.
+4. **CI is ~40s wall**, not minutes. Large-migration-suite optimisations do not apply here.
+   The real serialisation was branch protection `strict: true`; now `false`, safe because
+   worker globs are disjoint and the ownership gate enforces that.
 
 ## Quarantined
 (none)
@@ -104,11 +122,55 @@ A1 — typed holds, coverage >= 70%. Not started. Gates built and green.
 (none — eval/report.json does not exist)
 
 ## Agent accounting (update as it changes)
-- W01 raced x3 (A in main workdir, B and C in worktrees). Wave 1 in flight.
+- **Merged workers (3)**: W01-contract (racer B), W01-schema (racer E), W04a-normalise.
+- **Race sessions discarded (4)**: W01 contract racers A (supervision failure, spawned into
+  the shared workdir) and C; W01 schema racer D.
+- **Killed by API outage (2)**: W01 contract racers B and C died mid-flight AFTER pushing
+  types.ts. The partial gate is why the critical path survived.
+- **Running (5)**: W02 x3 raced, W03 eval-harness, W06 api-routes.
+- Report these categories SEPARATELY in the submission. Never sum into a headline count.
+
+## Wave 3 briefs MUST carry these two things
+1. **The engine adapter interface.** W03 cannot read `engine/`, so it loads the engine at
+   runtime. `engine/run.ts` (or `$HOLDFAST_ENGINE_ENTRY`) must export `runEngine`/`run`/
+   default taking `{invoices, payments, thresholds}` and returning `EngineDecision[]`:
+   `{invoice_id, action: 'auto_clear'|'hold'|'unmatched', payment_ids?, hold_type?,
+   requires_human?, conflicts?}`. Read `eval/engine-adapter.ts` for the authoritative
+   shape. Without conformance, coverage reads 0 no matter how good the engine is.
+2. **`engine/run.ts` is ORCHESTRATOR-OWNED and frozen** — it is the assembly point wiring
+   normalise -> match -> holds, and no worker owns it. Written at the Wave 3 merge gate
+   alongside the `engine/holds/registry.ts` wiring section.
+
+## TERMINATION CHECKLIST — explicit items, not side effects
+- [ ] Run the strong LLM baseline ONCE for real, with `ANTHROPIC_API_KEY` set. W03 shipped
+      it default-off and exercised only the no-credentials path, so **its live behaviour is
+      currently unmeasured**. It is the entire defence against "did you handicap the
+      comparison"; a handicapped baseline dies under one question.
+- [ ] Write `eval/floors.live` after the Wave 3 merges; record the commit in the log.
+- [ ] Stage-2 floor enforcement is still unexercised — verify it the moment floors.live lands.
+- [ ] `pnpm verify` fully green with no "skip".
 
 ## Next action
-Spawn **Wave 1: W01 `contract-schema`** alone.
-W01 lands `lib/types.ts` FIRST and commits it. The moment types.ts typechecks green,
-spawn Wave 2 (W02, W03, W06, W04a) — do not wait for `db/**` migrations. W01 continues
-into migrations alongside Wave 2. Send the contract to the frontend collaborator at the
-start of Wave 2; unblocking them via W06 is critical path, ahead of engine work.
+**Wave 1 is COMPLETE.** Wave 2 is in flight: W02 x3 (raced), W03, W06.
+
+When W02 lands: pick a winner whole, merge, then run the **Wave 2 freeze gate** —
+`pnpm freeze` (records the holdout's seed and sha256 from OUTSIDE the repo) and confirm
+`data/holdout.spec.json` is committed. `data/MANIFEST` appearing makes the eval gate
+mandatory (stage 1: harness must run and write a report; floors NOT enforced).
+
+Then **Wave 3**: W04b-engine-match, W05a-holds-duplicate, W05b-holds-variance,
+W05c-holds-cardinality (raced x3). At the Wave 3 merge gate, fill the wiring section of
+`engine/holds/registry.ts` with the three family imports — that file is yours.
+
+Hand the frontend collaborator W06's route table the moment it reports.
+
+**Wave 3.5 sweep — do not lose these:**
+- Every sweep agent gets its OWN worktree AND its own database `holdfast_sweep_<id>` and
+  port. Worktrees isolate code but share ports, databases and caches.
+- `data/holdout/` is NOT in the repo at all. Nothing to exclude; nothing to leak.
+- **The ORCHESTRATOR runs every eval.** `eval/**` is inside W03's glob, so a sweep agent
+  could edit its own evaluator and self-report. No agent self-selects, ever.
+- Any candidate whose diff touches anything but `engine/normalise/**` is discarded
+  UNEVALUATED and logged with its agent id. Report the count in the submission.
+- Selection is lexicographic: FILTER on false_clears and rupees_at_risk first (discard,
+  do not rank), then rank survivors by coverage, tie-break on lower rupees_at_risk.
