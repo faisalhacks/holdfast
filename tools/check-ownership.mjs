@@ -50,9 +50,21 @@ function main() {
     return 0;
   }
 
-  const owned = cfg.workers[branch];
+  // AMENDMENT 02 §2 races several agents on one brief, on branches suffixed -A/-B/-C/...
+  // A racer is scored against the base worker's globs and the same frozen list. Without
+  // this, no racer could ever go green and the race would be unwinnable by construction.
+  // Only a single trailing uppercase letter is stripped, so `W04a-engine-normalise` and
+  // every other declared name is untouched.
+  const RACE_SUFFIX = /-[A-Z]$/;
+  const baseWorker = RACE_SUFFIX.test(branch) ? branch.replace(RACE_SUFFIX, '') : branch;
+  if (baseWorker !== branch && cfg.workers[baseWorker]) {
+    console.log(`ownership: "${branch}" is a race entry — scoring against "${baseWorker}"`);
+  }
+
+  const owned = cfg.workers[baseWorker];
   if (!owned) {
     console.error(`ownership: FAIL — branch "${branch}" is not a declared worker.`);
+    if (baseWorker !== branch) console.error(`  (race suffix stripped to "${baseWorker}", also undeclared)`);
     console.error('Declared workers:');
     for (const w of Object.keys(cfg.workers)) console.error(`  ${w}`);
     console.error('\nA worker branch must match its id exactly. Rename the branch; do not edit ownership.json.');
@@ -69,7 +81,7 @@ function main() {
     return 0;
   }
 
-  const exempt = (cfg.frozen_exceptions && cfg.frozen_exceptions[branch]) || [];
+  const exempt = (cfg.frozen_exceptions && cfg.frozen_exceptions[baseWorker]) || [];
   const frozenViolations = [];
   const scopeViolations = [];
 
@@ -79,7 +91,7 @@ function main() {
   }
 
   if (frozenViolations.length === 0 && scopeViolations.length === 0) {
-    console.log(`ownership: ${branch} — ${files.length} file(s), all within declared scope`);
+    console.log(`ownership: ${branch} — ${files.length} file(s), all within ${baseWorker}'s declared scope`);
     return 0;
   }
 

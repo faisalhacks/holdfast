@@ -399,3 +399,77 @@ inspects the diff rather than trusting the report.
 strategy; the ORCHESTRATOR runs the eval.** No agent's self-reported number is ever
 entered into selection. Any candidate whose diff touches anything but `engine/normalise/**`
 is discarded unevaluated and logged with its agent id.
+
+---
+
+## WAVE 1 SCHEMA — the race worked, and both racers found the same hole
+
+Two agents, same brief, isolated worktrees, ~20 minutes each. Both produced nine tables.
+Both independently identified `match_candidates` as the ninth and gave the same reasoning:
+`EntityRef` in the contract names eight addressable entities, seven were listed in the
+brief, and without the eighth the `candidate_scored` journal events reference rows that
+exist nowhere. Neither guessed; both derived it. That convergence is itself a signal the
+contract is well specified.
+
+### ADVERSE FINDING 3 — the append-only claim did not hold as designed
+
+**A superuser bypasses `GRANT`, and CI connects as `postgres`.**
+
+Racer E found it by testing rather than reasoning: the REVOKE showed correctly in
+`role_table_grants`, `tools/migrate.mjs` asserted it and went green on the first try, and
+`UPDATE audit_journal SET ...` still returned `UPDATE 1`. Racer D reached the same
+conclusion independently.
+
+So the gate was reporting that the claim held while the claim did not hold. A judge opening
+psql on camera would have broken it. This is the single most valuable thing either racer
+produced, and it is worth more than the schema.
+
+**Fixed with a second mechanism, not a stronger version of the first.** Append-only is now
+enforced by the REVOKE (which the tool audits) *and* a `BEFORE UPDATE / DELETE / TRUNCATE`
+trigger, which superusers do not bypass. Verified as `postgres` with `usesuper = t`: all
+three now raise. `DELETE` and `TRUNCATE` are revoked and trigger-refused on all nine
+tables, not just the journal. `UPDATE` is retained on the other eight because releasing a
+hold, deactivating a rule and completing a run are legitimate in-place transitions — each
+of which writes a journal row that cannot itself be amended.
+
+The general lesson, and it is the second time today: **a gate that reports a claim holds is
+not the same as the claim holding.** CODEOWNERS reported protection it did not provide.
+The GRANT reported immutability it did not provide. Both were caught by testing the claim
+rather than the mechanism.
+
+### Winner: racer E, taken whole
+
+Both were strong. E was taken for four things:
+- It found the superuser bypass **empirically**, and said so.
+- **Schema-level enforcement of the project's core invariant**: a candidate cannot reach
+  `cleared` unless `reverified`, so a model proposal cannot clear anything — the
+  LLM-proposes/deterministic-verifies rule is now a database constraint, not a convention.
+  A model actor in the journal is restricted to ingestion and proposal events and cannot
+  be recorded releasing a hold, deciding, changing a tolerance or scoring.
+- `tolerance_changes.direction` is GENERATED from the two values rather than declared by
+  the reviewer — and E noticed that a similarity tolerance is a *floor*, so raising it
+  registers as `narrowed`, not `widened`. That is sharper domain reasoning than the brief
+  asked for.
+- **What it deliberately did not constrain.** No UNIQUE on invoice reference (duplicates
+  must be storable to be held); no CHECK that the tax split sums (validation applies a
+  typed hold, it does not refuse the row at the door); no CHECK forcing
+  `held_invoices_without_conflict = 0`, because that would make an honest bad run
+  unrecordable and the metric would then measure the constraint rather than the system.
+  That last one is exactly the standard this project holds itself to.
+
+Nothing was cherry-picked from D. Its branch is retained as race evidence.
+
+### CI failure routed and fixed
+
+7. **No race branch could ever pass the ownership gate.** `check-ownership.mjs` matched
+   `^W[0-9]{2}[a-c]?-` and then required an exact name in `ownership.json`, so
+   `W01-schema-E`, `W01-schema-D` and the earlier `W01-contract-schema-B/-C` all failed
+   with "branch is not a declared worker". The race was unwinnable by construction. Both
+   racers reported it, correctly refused to edit the frozen `ownership.json`, and verified
+   their diffs through the tool's own `HOLDFAST_BRANCH` override instead — which is the
+   behaviour the house rules ask for, so the gate worked even while it was wrong.
+
+   Fixed by stripping a single trailing uppercase letter and scoring the racer against the
+   base worker's globs and the same frozen list. Twenty-three assertions cover it,
+   including the dangerous inverse: every declared worker name must survive stripping
+   untouched, or a real branch gets scored against globs that are not its own.
