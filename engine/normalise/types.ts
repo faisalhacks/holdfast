@@ -74,6 +74,7 @@ export const CHANGE_KINDS = [
   'reference_prefix_removed',
   'leading_zeros_removed',
   'identifier_character_repaired',
+  'identifier_marker_removed',
   'alias_applied',
   'tokens_sorted',
 ] as const;
@@ -148,6 +149,18 @@ export interface NormalisationTables {
   readonly abbreviations: ReadonlyMap<string, string>;
   /** Document-number prefixes stripped from a reference token: `inv`, `bill`, `no`. */
   readonly referencePrefixes: ReadonlySet<string>;
+  /**
+   * Tokens that LABEL a tax registration rather than being part of one: `gstin`, `gstno`.
+   * They anchor the identifier fold — a delimiter-split registration is recognised as one
+   * value because a marker introduced it — and they are furniture in their own right.
+   */
+  readonly identifierMarkers: ReadonlySet<string>;
+  /**
+   * What a feed writes where a registration would go when it has none: `na`, `nil`.
+   * Only ever read in the position directly after an identifier marker, because these are
+   * ordinary words anywhere else and a table that removed them everywhere would be wrong.
+   */
+  readonly identifierAbsentMarkers: ReadonlySet<string>;
   readonly aliases: AliasTable;
 }
 

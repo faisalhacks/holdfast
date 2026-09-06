@@ -126,6 +126,16 @@ export const DEFAULT_NOISE_TOKENS: ReadonlySet<string> = new Set([
   'nos',
   'num',
   'number',
+  // tax-registration furniture. The label a bank prints beside a registration, never a
+  // token of the registration itself and never a token of a registered name. Listed here
+  // as well as in DEFAULT_IDENTIFIER_MARKERS because the two do different jobs: there the
+  // marker ANCHORS a delimiter-split registration, here it is simply removed.
+  'gstin',
+  'gstinno',
+  'gstn',
+  'gstno',
+  'gst',
+  'uin',
   // settlement words
   'payment',
   'payments',
@@ -296,6 +306,52 @@ export const DEFAULT_REFERENCE_PREFIXES: ReadonlySet<string> = new Set([
 ]);
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Identifier markers
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Tokens that LABEL a tax registration. `GSTIN 99 ZZLOM 8277Y 6ZW` is one value written in
+ * four pieces, and the marker in front of it is what says so — without it the pieces are a
+ * two-digit number, a word and two mixed tokens, and the reference extractor offers three
+ * of them to the matcher as candidate document numbers.
+ *
+ * Deliberately short. Every entry here is boilerplate a bank prints next to a registration
+ * and none of them is a plausible standalone token in a vendor's registered name; `pan` and
+ * `tin` are absent for the opposite reason. The set is only ever consulted against a WHOLE
+ * token, never against the alphabetic head of a mixed one, so `GSTINV04964` — a document
+ * number that happens to start with these letters — is untouched by it.
+ */
+export const DEFAULT_IDENTIFIER_MARKERS: ReadonlySet<string> = new Set([
+  'gstin',
+  'gstinno',
+  'gstn',
+  'gstno',
+  'gst',
+  'uin',
+]);
+
+/**
+ * What a feed writes where a registration would go when the vendor has none.
+ *
+ * Read ONLY in the position directly after an identifier marker. `na` is a syllable in a
+ * great many Indian company names and `none` is an English word; a table that removed them
+ * wherever they appeared would be deleting vendor names to tidy up a tax column. Directly
+ * after `GSTIN`, they are the column saying it is empty.
+ */
+export const DEFAULT_IDENTIFIER_ABSENT_MARKERS: ReadonlySet<string> = new Set([
+  'na',
+  'n',
+  'nil',
+  'none',
+  'nan',
+  'notavailable',
+  'notapplicable',
+  'unregistered',
+  'urd',
+  'exempt',
+]);
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Alias table
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -381,6 +437,8 @@ export const DEFAULT_TABLES: NormalisationTables = {
   noiseTokens: DEFAULT_NOISE_TOKENS,
   abbreviations: DEFAULT_ABBREVIATIONS,
   referencePrefixes: DEFAULT_REFERENCE_PREFIXES,
+  identifierMarkers: DEFAULT_IDENTIFIER_MARKERS,
+  identifierAbsentMarkers: DEFAULT_IDENTIFIER_ABSENT_MARKERS,
   aliases: EMPTY_ALIAS_TABLE,
 };
 

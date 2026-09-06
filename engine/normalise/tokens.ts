@@ -20,6 +20,12 @@ import type {
   NormalisationTables,
   TokenClass,
 } from './types';
+import {
+  IDENTIFIER_LENGTH,
+  isIdentifierPrefix,
+  isIdentifierValue,
+  isRepairableIdentifierValue,
+} from './steps';
 
 export { TOKEN_CLASSES } from './types';
 export type { TokenClass, DisplacementFinding } from './types';
@@ -59,11 +65,155 @@ export function classifyToken(token: string, tables: NormalisationTables): Token
   return 'word';
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Identifier variant folding
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * A registration arrives as ONE VALUE and a delimiter is not a token boundary inside it.
+ *
+ *     GSTIN 99 ZZLOM 8277Y 6ZW        GSTIN 97-ZZHAS2704N-1ZP        GSTIN 99-ZZSUN6912V-9
+ *
+ * `punctuation_strip` has to make a token boundary out of every delimiter it meets — that
+ * is the rule that saves `A/B` against `A-B` and it is not negotiable. The cost lands here:
+ * a registration written with spaces or hyphens reaches classification as three or four
+ * pieces, none of which is identifier-shaped. `8277y` and `6zw` are then offered to the
+ * matcher as candidate document numbers, `zzlom` lands in the vendor residue and dilutes
+ * the name, and a line whose only numerals belong to a tax registration reads as a line
+ * that names an invoice.
+ *
+ * This pass puts the value back together before anything is classified. It joins ONLY runs
+ * of adjacent tokens whose concatenation is a whole identifier, plus — when a marker token
+ * introduced the run — a leading run of one that a fixed-width field cut off.
+ *
+ * IT NEVER CHANGES A CHARACTER. Joining is concatenation; the class repair it consults
+ * (`repairIdentifierLayout`) only ever substitutes where the class is wrong. Two
+ * registrations differing by a digit are two runs that both fold to themselves and stay
+ * apart, which is the entire point: a wrong fold here is a wrong match downstream, and the
+ * money moves.
+ */
+export interface IdentifierFold {
+  /** The token list with each split registration rejoined into one token. */
+  readonly tokens: readonly string[];
+  /** Indexes into `tokens` that carry a registration, whole or truncated. */
+  readonly identifiers: ReadonlySet<number>;
+  /** Indexes into `tokens` that are the label beside one, or its declared absence. */
+  readonly furniture: ReadonlySet<number>;
+}
+
+/** The most pieces a fifteen-character layout can be split into and still be worth joining. */
+const MAX_FOLD_RUN = 6;
+
+const NON_ALNUM_G = /[^\p{L}\p{N}]+/gu;
+
+function compactUpper(value: string): string {
+  return value.replace(NON_ALNUM_G, '').toUpperCase();
+}
+
+/**
+ * The longest run starting at `from` that concatenates to a registration, or null.
+ *
+ * `anchored` — a marker token sits immediately before the run — is what licenses the two
+ * lenient readings and nothing else does. Unanchored, the concatenation must be a whole
+ * identifier exactly as written; a run of tokens that only becomes one by reading a `0` as
+ * an `O`, or by being declared truncated, is not evidence, it is a wish.
+ */
+function identifierRunAt(
+  tokens: readonly string[],
+  from: number,
+  anchored: boolean,
+  tables: NormalisationTables,
+): number | null {
+  const limit = Math.min(MAX_FOLD_RUN, tokens.length - from);
+  for (let len = limit; len >= 1; len -= 1) {
+    let joined = '';
+    let spansFurniture = false;
+    for (let k = from; k < from + len; k += 1) {
+      const t = tokens[k];
+      if (t === undefined) continue;
+      if (tables.identifierMarkers.has(t) || tables.identifierAbsentMarkers.has(t)) {
+        spansFurniture = true;
+        break;
+      }
+      joined += t;
+    }
+    if (spansFurniture) continue;
+    const value = compactUpper(joined);
+    if (value.length > IDENTIFIER_LENGTH) continue;
+    if (isIdentifierValue(value)) return len;
+    if (anchored && (isRepairableIdentifierValue(value) || isIdentifierPrefix(value))) return len;
+  }
+  return null;
+}
+
+export function foldIdentifierTokens(
+  tokens: readonly string[],
+  tables: NormalisationTables,
+): IdentifierFold {
+  const out: string[] = [];
+  const identifiers = new Set<number>();
+  const furniture = new Set<number>();
+
+  let i = 0;
+  while (i < tokens.length) {
+    const token = tokens[i];
+    if (token === undefined) {
+      i += 1;
+      continue;
+    }
+
+    if (tables.identifierMarkers.has(token)) {
+      out.push(token);
+      furniture.add(out.length - 1);
+      i += 1;
+      continue;
+    }
+
+    const prev = i > 0 ? tokens[i - 1] : undefined;
+    const anchored = prev !== undefined && tables.identifierMarkers.has(prev);
+
+    // `GSTIN NA` — the column saying the vendor has no registration. Only ever read in
+    // this position; `na` is a syllable in a great many company names anywhere else.
+    if (anchored && tables.identifierAbsentMarkers.has(token)) {
+      out.push(token);
+      furniture.add(out.length - 1);
+      i += 1;
+      continue;
+    }
+
+    const run = identifierRunAt(tokens, i, anchored, tables);
+    if (run !== null) {
+      out.push(tokens.slice(i, i + run).join(''));
+      identifiers.add(out.length - 1);
+      i += run;
+      continue;
+    }
+
+    out.push(token);
+    i += 1;
+  }
+
+  return { tokens: out, identifiers, furniture };
+}
+
+/**
+ * Classifies a token list, folding split registrations back into one token first.
+ *
+ * The list this returns is therefore not always one entry per input token, and `index` is
+ * a position in the FOLDED list. Every caller reads the classification and the token text;
+ * none of them indexes back into the input, and a rejoined registration is the honest unit
+ * to report a position for.
+ */
 export function classifyTokens(
   tokens: readonly string[],
   tables: NormalisationTables,
 ): readonly ClassifiedToken[] {
-  return tokens.map((token, index) => ({ token, klass: classifyToken(token, tables), index }));
+  const folded = foldIdentifierTokens(tokens, tables);
+  return folded.tokens.map((token, index) => {
+    if (folded.identifiers.has(index)) return { token, klass: 'identifier' as TokenClass, index };
+    if (folded.furniture.has(index)) return { token, klass: 'noise' as TokenClass, index };
+    return { token, klass: classifyToken(token, tables), index };
+  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -73,6 +73,8 @@ export { CHANGE_KINDS, NORMALISE_FIELDS, STEP_IDS, TOKEN_CLASSES } from './types
 export type { AliasKeyFn } from './tables';
 export {
   DEFAULT_ABBREVIATIONS,
+  DEFAULT_IDENTIFIER_ABSENT_MARKERS,
+  DEFAULT_IDENTIFIER_MARKERS,
   DEFAULT_LEGAL_SUFFIXES,
   DEFAULT_NOISE_TOKENS,
   DEFAULT_REFERENCE_PREFIXES,
@@ -89,16 +91,23 @@ export {
 export type { PunctuationStripOptions, TokenSortOptions } from './steps';
 export {
   DEFAULT_STEPS,
+  IDENTIFIER_LAYOUT,
   IDENTIFIER_LENGTH,
+  IDENTIFIER_MIN_PREFIX,
   abbreviationExpandStep,
   aliasMapStep,
   caseFoldStep,
   identifierRepairStep,
+  isIdentifierPrefix,
+  isIdentifierValue,
+  isRepairableIdentifierValue,
   leadingZeroStripStep,
+  matchesIdentifierLayout,
   legalSuffixStripStep,
   noiseTokenStripStep,
   punctuationStripStep,
   referencePrefixStripStep,
+  repairIdentifierLayout,
   tokenSortStep,
   tokensOf,
   unicodeFoldStep,
@@ -138,12 +147,18 @@ export {
 } from './pipeline';
 
 // ── Token classification ─────────────────────────────────────────────────────
-export type { ClassifiedToken, DisplacementOptions, ExtractionOptions } from './tokens';
+export type {
+  ClassifiedToken,
+  DisplacementOptions,
+  ExtractionOptions,
+  IdentifierFold,
+} from './tokens';
 export {
   IDENTIFIER_SHAPE,
   classifyToken,
   classifyTokens,
   findDisplacedTokens,
+  foldIdentifierTokens,
   identifierCandidateTokens,
   looksLikeIdentifier,
   referenceCandidateTokens,

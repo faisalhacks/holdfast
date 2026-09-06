@@ -311,8 +311,19 @@ export function leadingZeroStripStep(): NormalisationStep {
  * GSTIN-style layout, by position: two digits, five letters, four digits, one letter, one
  * alphanumeric, one letter, one alphanumeric. Fifteen characters.
  */
-const IDENTIFIER_LAYOUT = ['D', 'D', 'A', 'A', 'A', 'A', 'A', 'D', 'D', 'D', 'D', 'A', 'X', 'A', 'X'] as const;
+export const IDENTIFIER_LAYOUT = ['D', 'D', 'A', 'A', 'A', 'A', 'A', 'D', 'D', 'D', 'D', 'A', 'X', 'A', 'X'] as const;
 export const IDENTIFIER_LENGTH = IDENTIFIER_LAYOUT.length;
+
+/**
+ * The shortest leading run of the layout still recognisable as a registration rather than
+ * as a document number: the state code, the whole five-letter block, and the four digits.
+ *
+ * A value shorter than the full fifteen is only ever read as an identifier when a marker
+ * token introduced it — see `foldIdentifierTokens` in tokens.ts. A bank field that ran out
+ * of characters mid-registration is a truncated registration, not a reference; a bare
+ * eleven-character fragment with nothing in front of it is neither, and is left alone.
+ */
+export const IDENTIFIER_MIN_PREFIX = 11;
 
 /** Optical confusions, in both directions. Only these; a wider map invents identifiers. */
 const TO_DIGIT: ReadonlyMap<string, string> = new Map([
@@ -332,24 +343,142 @@ const TO_ALPHA: ReadonlyMap<string, string> = new Map([
   ['8', 'B'],
 ]);
 
+/** `'D'` for an ASCII digit, `'A'` for an ASCII letter, null for anything else. */
+function charClass(ch: string): 'D' | 'A' | null {
+  if (ch >= '0' && ch <= '9') return 'D';
+  if (ch >= 'A' && ch <= 'Z') return 'A';
+  return null;
+}
+
 /**
- * Compacts to alphanumerics, upper-cases, and repairs character-class confusions at fixed
- * positions when the value is exactly the right length. Anything of another length is
- * compacted and upper-cased but never repaired: guessing at a value that is not the shape
- * it claims to be manufactures identifiers that were never issued.
+ * THE ONE INVARIANT OF THIS WHOLE FAMILY OF RULES.
+ *
+ * A character is replaced ONLY when the class its position requires is not the class it
+ * has. `O` standing where a digit belongs is a scanning artefact and becomes `0`; `7`
+ * standing where a digit belongs is a digit and is left exactly as it is, whatever it is.
+ * So no rule reachable from here can turn one registration into another registration:
+ * `...7504...` and `...7505...` differ in a position where both characters are already
+ * correct, every repair declines, and the two values stay two values.
+ *
+ * That is the difference between folding a variant and inventing a match. A variant is the
+ * same registration typed differently — spaced, hyphened, lower-cased, scanned with an `O`
+ * for a `0`. A registration one digit away is a different taxpayer, and merging the two is
+ * a wrong match wearing a normaliser's coat.
+ *
+ * Returns null when the value cannot be the layout at its length — a non-alphanumeric, or
+ * a class conflict with no optical explanation.
+ */
+export function repairIdentifierLayout(compactUpper: string): string | null {
+  if (compactUpper.length > IDENTIFIER_LENGTH) return null;
+  const chars = [...compactUpper];
+  for (let i = 0; i < chars.length; i += 1) {
+    const want = IDENTIFIER_LAYOUT[i];
+    const ch = chars[i];
+    if (want === undefined || ch === undefined) return null;
+    const klass = charClass(ch);
+    if (klass === null) return null;
+    if (want === 'X' || want === klass) continue;
+    const fixed = want === 'D' ? TO_DIGIT.get(ch) : TO_ALPHA.get(ch);
+    if (fixed === undefined) return null;
+    chars[i] = fixed;
+  }
+  return chars.join('');
+}
+
+/**
+ * True when every character already sits in the class its position requires — no repair
+ * consulted, no character substituted, nothing given the benefit of the doubt.
+ *
+ * RECOGNITION IS STRICT AND REPAIR IS NOT, and keeping the two apart is deliberate. The
+ * repair table is a reasonable thing to apply to a value already known to be a
+ * registration; applied as a TEST, it widens the shape enough to swallow document numbers
+ * — `99INV012345678` passes a repairing test by reading its `0` and `1` as `O` and `I`,
+ * and a reference read as a registration is a reference the matcher never sees.
+ */
+export function matchesIdentifierLayout(compactUpper: string): boolean {
+  if (compactUpper.length > IDENTIFIER_LENGTH) return false;
+  for (let i = 0; i < compactUpper.length; i += 1) {
+    const want = IDENTIFIER_LAYOUT[i];
+    const ch = compactUpper[i];
+    if (want === undefined || ch === undefined) return false;
+    const klass = charClass(ch);
+    if (klass === null) return false;
+    if (want !== 'X' && want !== klass) return false;
+  }
+  return true;
+}
+
+/** True when `compactUpper` is a whole identifier as written. Strict. */
+export function isIdentifierValue(compactUpper: string): boolean {
+  return compactUpper.length === IDENTIFIER_LENGTH && matchesIdentifierLayout(compactUpper);
+}
+
+/**
+ * True when `compactUpper` is a whole identifier once optical confusions are repaired.
+ * Only sound where something OTHER than the shape already says this is a registration —
+ * a marker token in front of it. See `matchesIdentifierLayout`.
+ */
+export function isRepairableIdentifierValue(compactUpper: string): boolean {
+  return (
+    compactUpper.length === IDENTIFIER_LENGTH && repairIdentifierLayout(compactUpper) !== null
+  );
+}
+
+/**
+ * True when `compactUpper` is a leading run of the layout that stops short of the full
+ * length — the shape of a registration a fixed-width bank field cut off. Strict, and never
+ * true of a whole one.
+ */
+export function isIdentifierPrefix(compactUpper: string): boolean {
+  return (
+    compactUpper.length >= IDENTIFIER_MIN_PREFIX &&
+    compactUpper.length < IDENTIFIER_LENGTH &&
+    matchesIdentifierLayout(compactUpper)
+  );
+}
+
+/**
+ * Compacts to alphanumerics, upper-cases, drops a fused label, and repairs character-class
+ * confusions at fixed positions.
+ *
+ * The three things a tax identifier arrives wearing are separators (`99-ZZSUN6912V-9ZG`,
+ * `99 ZZLOM 8277Y 6ZW`), case (`97zzest7504u1zv`) and the label it was printed beside
+ * (`GSTIN97ZZHAS2704N1ZP`). All three are the same registration and all three fold here.
+ *
+ * What does NOT fold is a value that differs in a character already of the right class.
+ * See `repairIdentifierLayout`: the repair table is consulted only where the class is
+ * wrong, so a one-digit difference survives every step in this file and stays a distinct
+ * registration. The label strip is bounded the same way — the remainder must be exactly a
+ * whole identifier, so nothing is ever shortened into a shape it did not have.
+ *
+ * A value of some other length is still compacted and upper-cased, and is still not
+ * repaired: guessing at a value that is not the shape it claims to be manufactures
+ * identifiers that were never issued.
  */
 export function identifierRepairStep(): NormalisationStep {
   return {
     id: 'identifier_repair',
-    clause: 'compacted, upper-cased, character-class confusions repaired at fixed positions',
-    apply(value: string): StepResult {
+    clause:
+      'compacted, upper-cased, label removed, character-class confusions repaired at fixed positions',
+    apply(value: string, ctx: StepContext): StepResult {
       const changes: StepChange[] = [];
 
       const compact = value.replace(NON_ALNUM, '');
       if (compact !== value) changes.push(change('whitespace_collapsed', value, compact, null));
 
-      const upper = compact.toUpperCase();
+      let upper = compact.toUpperCase();
       if (upper !== compact) changes.push(change('case_folded', compact, upper, null));
+
+      // A fused label: `GSTIN97ZZHAS2704N1ZP`. Stripped only when what is left is exactly a
+      // whole identifier, so this can never shorten a value into a shape it did not have.
+      if (upper.length > IDENTIFIER_LENGTH) {
+        const head = upper.slice(0, upper.length - IDENTIFIER_LENGTH);
+        const tail = upper.slice(upper.length - IDENTIFIER_LENGTH);
+        if (ctx.tables.identifierMarkers.has(head.toLowerCase()) && isIdentifierValue(tail)) {
+          changes.push(change('identifier_marker_removed', head, '', head.toLowerCase()));
+          upper = tail;
+        }
+      }
 
       if (upper.length !== IDENTIFIER_LENGTH) {
         if (changes.length === 0) return noChange(value);
@@ -361,8 +490,9 @@ export function identifierRepairStep(): NormalisationStep {
         const want = IDENTIFIER_LAYOUT[i];
         const ch = chars[i];
         if (want === undefined || ch === undefined || want === 'X') continue;
-        const isDigit = ch >= '0' && ch <= '9';
-        const fixed = want === 'D' && !isDigit ? TO_DIGIT.get(ch) : want === 'A' && isDigit ? TO_ALPHA.get(ch) : undefined;
+        const klass = charClass(ch);
+        if (klass === null || klass === want) continue;
+        const fixed = want === 'D' ? TO_DIGIT.get(ch) : TO_ALPHA.get(ch);
         if (fixed === undefined) continue;
         chars[i] = fixed;
         changes.push(change('identifier_character_repaired', ch, fixed, `position ${i}`));
