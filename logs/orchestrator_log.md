@@ -1090,3 +1090,40 @@ It belongs at the front of the README, not buried under adverse findings.
 | naive baseline | 65.0% | 9 | Rs 23,01,540.23 | 76.9% |
 
 The baseline clears twenty points more and gets nine of them wrong.
+
+---
+
+# STAGE 2 TURNED ON — it works, and it fails us
+
+`eval/floors.live` was written on branch `orchestrator/floors-live` and **deliberately not
+merged**. Stage-2 enforcement is proven to work and proven to fail us, and `main` stays
+green. This closes the GATE-DEBT item: "we built enforcement and never turned it on" is a
+free finding for a critic; "we turned it on, it failed us, here is the output" is not.
+
+**Verbatim, from `pnpm check:regression` with `floors.live` present:**
+
+```
+regression: stage 2 — eval/floors.live present, floors ENFORCED
+regression: no eval/report.prev.json — first live run, compared against floors alone
+regression: coverage 0.515, false_clears 0, decided 103, rupees_at_risk 0 paise, rate 0.0000
+
+regression: FAIL — 1 condition(s)
+
+  coverage 0.515 is below the floor 0.7
+
+Do not widen a floor to clear this. That is quarantine Q2 — the same move the
+incumbent ERP calls "change the tolerance", and we refuse it for the same reason.
+```
+
+**One condition fails, and it is coverage.** `false_clears_max`, `rupees_at_risk_max_paise`,
+`match_precision_min`, `conflicts_per_held_invoice_min` and `held_invoices_without_conflict`
+all pass. Every correctness floor is met; the throughput floor is not.
+
+The floor was set at 0.70 in `eval/thresholds.json` **before any data existed**, and locked
+into `eval/thresholds.lock` at the Wave 2 gate. We did not reach it. The gate's own message
+refuses the obvious fix, and we are taking its advice.
+
+Two structural reasons, both from constants frozen before we saw a row, and both stated on
+the holdout rather than the selection set so the numbers match the headline:
+- the amount cap sends every invoice above it to a named human regardless of score;
+- the bulk remittance names invoices far outside the frozen settlement window.
