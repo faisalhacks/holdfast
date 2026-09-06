@@ -79,9 +79,15 @@ export const REFERENCE_PROFILE_V1: NormalisationProfile = {
  * The whole bank narration line. Same shape as the vendor profile because the residue left
  * after the boilerplate is removed IS a vendor name; keeping the two orders identical is
  * what makes `fields.ts` able to hand the residue straight to the vendor profile.
+ *
+ * THE ALIAS STEP IS OFF HERE, and only here, from v2 on. The alias table resolves a VENDOR
+ * SPELLING to a vendor, and the value this profile produces is a whole bank line — reference
+ * tokens, rail furniture and all. Rewriting that line to a vendor's canonical name would
+ * replace the thing a reviewer is shown with a claim about it. The line's vendor residue goes
+ * to `vendor.v1` separately, which is where the resolution belongs and where it happens.
  */
-export const NARRATION_PROFILE_V1: NormalisationProfile = {
-  id: 'narration.v1',
+export const NARRATION_PROFILE_V2: NormalisationProfile = {
+  id: 'narration.v2',
   field: 'narration',
   order: [
     'unicode_fold',
@@ -94,6 +100,13 @@ export const NARRATION_PROFILE_V1: NormalisationProfile = {
     'alias_map',
     'token_sort',
   ],
+  enabled: { token_sort: false, alias_map: false },
+};
+
+/** The order as W04a declared it, alias step live. Kept so a sweep can put it back. */
+export const NARRATION_PROFILE_V1: NormalisationProfile = {
+  ...NARRATION_PROFILE_V2,
+  id: 'narration.v1',
   enabled: { token_sort: false },
 };
 
@@ -112,7 +125,7 @@ export const IDENTIFIER_PROFILE_V1: NormalisationProfile = {
 export const DEFAULT_PROFILES: ProfileSet = {
   vendor: VENDOR_PROFILE_V1,
   reference: REFERENCE_PROFILE_V1,
-  narration: NARRATION_PROFILE_V1,
+  narration: NARRATION_PROFILE_V2,
   identifier: IDENTIFIER_PROFILE_V1,
 };
 

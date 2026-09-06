@@ -15,6 +15,7 @@
 
 import type { FeedbackRule, VendorId } from '@/lib/types';
 import type { AliasEntry, AliasTable, NormalisationTables } from './types';
+import { VendorCooccurrenceTable } from './cooccurrence';
 
 /** Normalises a raw string to the key the alias table is stored under. */
 export type AliasKeyFn = (raw: string) => string;
@@ -302,6 +303,22 @@ export const DEFAULT_REFERENCE_PREFIXES: ReadonlySet<string> = new Set([
 export const EMPTY_ALIAS_TABLE: AliasTable = new Map<string, AliasEntry>();
 
 /**
+ * THE DEFAULT ALIAS TABLE IS STILL NOT SHIPPED — it is BUILT, from the ledger the engine is
+ * handed, every time the engine runs.
+ *
+ * The header above is unchanged and still holds: no vendor name is written into this source
+ * file, and there is no lookup here that a different dataset would not rebuild differently or
+ * not at all. What is here instead is an empty table that fills itself from the vendor master
+ * as `normaliseInvoice` reports each invoice's own (canonical name, vendor id) pair, and
+ * answers a narration spelling by asking which vendor it co-occurs with. The relation, the
+ * bounds and the refusals are declared in `cooccurrence.ts`.
+ *
+ * `EMPTY_ALIAS_TABLE` is kept beside it. `withAliases(DEFAULT_TABLES, EMPTY_ALIAS_TABLE)` is
+ * how a sweep measures what the derivation is worth by switching it off.
+ */
+export const DERIVED_ALIAS_TABLE: AliasTable = new VendorCooccurrenceTable();
+
+/**
  * The vendor master the engine is legitimately given, turned into an alias table so an
  * exact hit on a canonicalised name pins the vendor id. This is identity resolution over
  * data the engine already holds, not memorisation of an answer key.
@@ -381,7 +398,7 @@ export const DEFAULT_TABLES: NormalisationTables = {
   noiseTokens: DEFAULT_NOISE_TOKENS,
   abbreviations: DEFAULT_ABBREVIATIONS,
   referencePrefixes: DEFAULT_REFERENCE_PREFIXES,
-  aliases: EMPTY_ALIAS_TABLE,
+  aliases: DERIVED_ALIAS_TABLE,
 };
 
 /** Pure override. Returns a new bundle; the input is never mutated. */

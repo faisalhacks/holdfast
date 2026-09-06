@@ -77,6 +77,7 @@ export {
   DEFAULT_NOISE_TOKENS,
   DEFAULT_REFERENCE_PREFIXES,
   DEFAULT_TABLES,
+  DERIVED_ALIAS_TABLE,
   EMPTY_ALIAS_TABLE,
   aliasTableFromFeedbackRules,
   aliasTableFromVendors,
@@ -84,6 +85,17 @@ export {
   withAliases,
   withTables,
 } from './tables';
+
+// ── Alias derivation — the table built from vendor co-occurrence ─────────────
+export type { CorrespondenceSpec } from './cooccurrence';
+export {
+  DEFAULT_CORRESPONDENCE,
+  VendorCooccurrenceTable,
+  aliasTableFromCooccurrence,
+  correspondence,
+  isObservableAliasTable,
+  skeletonOf,
+} from './cooccurrence';
 
 // ── Steps — the behaviour half ───────────────────────────────────────────────
 export type { PunctuationStripOptions, TokenSortOptions } from './steps';
@@ -112,6 +124,7 @@ export {
   DEFAULT_PROFILES,
   IDENTIFIER_PROFILE_V1,
   NARRATION_PROFILE_V1,
+  NARRATION_PROFILE_V2,
   REFERENCE_PROFILE_V1,
   VENDOR_PROFILE_V1,
   isStepEnabled,

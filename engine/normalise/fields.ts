@@ -27,6 +27,7 @@ import type {
 } from '@/lib/types';
 import type { AliasKeyFn } from './tables';
 import { DEFAULT_TABLES } from './tables';
+import { isObservableAliasTable } from './cooccurrence';
 import { DEFAULT_STEPS } from './steps';
 import { DEFAULT_PROFILES, withStepEnabled } from './profiles';
 import { normalise, toNote } from './pipeline';
@@ -218,11 +219,30 @@ export interface NormalisedInvoice {
   readonly purchase_order_reference: NormalisedField | null;
 }
 
+/**
+ * The vendor master, reported one invoice at a time.
+ *
+ * An alias table over vendors needs the vendor master, and no entry point in this module is
+ * ever handed one: `engine/run.ts` is frozen and passes invoices and payments. But an invoice
+ * carries `vendor_id` beside `vendor_name_raw`, so the master is exactly what the ledger
+ * already says — and this is where it is said, under the key `aliasKeyFor('vendor')` builds,
+ * so the table and the lookup cannot drift apart.
+ *
+ * Nothing is reported but the pair the invoice itself carries, and a table that does not
+ * accumulate one (the shipped empty table, or a fixed one a sweep passed in) is left alone.
+ */
+function reportVendorMaster(invoice: Invoice, config: NormaliseConfig): void {
+  const table = config.tables.aliases;
+  if (!isObservableAliasTable(table)) return;
+  table.observe(aliasKeyFor('vendor', config)(invoice.vendor_name_raw), invoice.vendor_id);
+}
+
 export function normaliseInvoice(
   invoice: Invoice,
   config: NormaliseConfig = DEFAULT_CONFIG,
 ): NormalisedInvoice {
   const side: Side = 'invoice';
+  reportVendorMaster(invoice, config);
   return {
     invoice_id: invoice.id,
     vendor_id: invoice.vendor_id,
