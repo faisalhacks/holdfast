@@ -758,3 +758,51 @@ rather than recording a zero as a measurement. The bundle now carries `rawInvoic
 rows. **This is the firewall's cost, and it is the cost we chose to pay**: the alternative
 is a harness shaped by the engine's internals, which is the arrangement that makes a
 headline number an artifact.
+
+---
+
+## W05d — the gap in my own decomposition, and a worker that refused its own floor
+
+The first assembled measurement showed `matching` and `no_reference` recall at 0.0. Neither
+had an owner: the three W05 briefs covered nine of eleven hold types and I wrote all three.
+35 selection invoices were falling through to `action: 'unmatched'` instead of carrying a
+typed hold — and since both types are `auto_releasable`, that suppressed coverage too.
+
+W05d filled it. 12 `matching` + 23 `no_reference` = exactly the 35 that were falling through.
+
+| | selection | holdout |
+|---|---|---|
+| coverage | 53.0% → **70.5%** | 43.3% → **60.0%** |
+| false clears | 0 → **0** | 0 → **0** |
+| match precision | 100% → **100%** | 100% → **100%** |
+
+**It separated the two codes on evidence, not convenience.** `no_reference` is the specific
+claim so it is tested first: a candidate reconciles the invoice inside the amount tolerance
+the scorer declared, and no reconciling candidate names the document usably — split into
+`reference_absent` and `reference_mismatch`. `matching` is what is left. It reads
+`MATCH_SPEC_V1.ranking.accept_min`, the same constant `engine/run.ts` clears on, so the two
+cannot drift.
+
+### It refused to reach its own floor, and showed its working
+
+Both recalls remain short of 0.70 and W05d escalated rather than closing the gap:
+
+- Of the **9** selection rows expecting `no_reference`, **3 are rows the matcher auto-clears
+  correctly today**. So recall cannot exceed **6/9 = 0.667** under any rule that does not
+  hold invoices we matched right. It probed those three for a deterministic signal —
+  displaced reference, non-exact pairing, any `reference_*` conflict, unrecovered token —
+  and found none. Their reference evidence is clean.
+- Of the **6** rows expecting `matching`, **3 are already carried by a sibling hold**.
+  Taking them would require declaring a severity the evidence does not support, and it
+  measured the cost of doing so: `duplicate_candidate` 100% → 50% and
+  `credit_note_crossing` 100% → 0%.
+
+**It did neither.** A worker that could have hit its number by trading two other families'
+correctness for its own declined, measured the trade, and reported it. That is the
+behaviour the whole gate apparatus exists to produce, arriving without a gate having to
+force it.
+
+The consequence is that `per_hold_type_recall_min` at 0.70 is **unreachable for these two
+types on this dataset** without making the system worse. That is a floor I set before any
+data existed, and the honest resolution is to report the observed value against it, not to
+move it. Moving it is the tolerance move.
