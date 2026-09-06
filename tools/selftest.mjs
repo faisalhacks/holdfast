@@ -170,11 +170,33 @@ const clean = runGateOn({
 });
 eq(clean.code, 0, 'a clean engine/ file must pass the gate');
 
+// ── vocabulary allowlist: exact-line, and not extendable ────────────────────────
+// A file documenting a prohibition contains the prohibited token. That must pass. But the
+// exemption must be the LINE, not the file, or a worker inherits a licence to write
+// anything into that file later.
+console.log('\nvocabulary allowlist (exact line, not extendable)');
+
+const ALLOWED_LINE = '- No claim of SOC 2, compliance readiness, certification, or "continuous learning".';
+
+const documented = runGateOn({ 'docs/policy.md': `${ALLOWED_LINE}\n` });
+eq(documented.code, 0, 'an allowlisted line documenting a prohibition must pass');
+
+const extended = runGateOn({ 'docs/policy.md': `${ALLOWED_LINE} Also, we are bank-grade.\n` });
+eq(extended.code !== 0, true, 'appending marketing copy to an allowlisted line must fail');
+
+const smuggled = runGateOn({ 'docs/policy.md': 'Holdfast is SOC 2 compliant and enterprise-ready.\n' });
+eq(smuggled.code !== 0, true, 'a fresh overclaim in docs/ must fail');
+eq(/overclaim/.test(smuggled.out), true, 'failure must name the overclaim rule');
+
+const readme = runGateOn({ 'README.md': 'We make no SOC 2 claim.\n' });
+eq(readme.code !== 0, true, 'an undocumented disclaimer is not auto-exempt — it needs an allowlist entry');
+
 const total = globCases.length
   + Object.values(FIXTURES).reduce((n, f) => n + f.bad.length + f.good.length, 0)
   + 3
   + 5
-  + 7;
+  + 7
+  + 5;
 console.log(failed === 0
   ? `\nselftest: all ${total} assertions passed`
   : `\nselftest: ${failed} FAILURE(S) of ${total}`);

@@ -1,0 +1,33 @@
+# HOLDFAST — VOCABULARY ALLOWLIST
+#
+# Orchestrator-owned and FROZEN (tools/** is in the frozen set and in CODEOWNERS).
+#
+# Exact full lines permitted to contain otherwise-prohibited vocabulary. A line in a
+# scanned file is exempt from the forbidden gate ONLY when its trimmed text matches an
+# entry here in full.
+#
+# Why this exists, as a class and not an instance: any file that documents a prohibition
+# necessarily contains the prohibited token. AGENTS.md trips its own rules. So will docs/**
+# when the amendments land there, and so will W11's README — which SHOULD state that we
+# make no SOC 2 claim, because disclaiming an overclaim is a credibility move and the gate
+# must not punish it.
+#
+# Why exact-line and not per-file exclusion: excluding a file exempts everything a worker
+# later writes into it. Exempting a line exempts only that sentence. Appending marketing
+# copy to an allowlisted line changes the line and fails. A new occurrence anywhere fails.
+#
+# Adding an entry is a deliberate act by the orchestrator. A worker cannot add one — this
+# file is frozen, and the ownership gate denies it before the scope check runs.
+#
+# ── AGENTS.md — the house rules quoting the rules they impose ────────────────────
+
+- No DELETE, no `deleted_at`, no soft-delete, anywhere.
+- No claim of SOC 2, compliance readiness, certification, or "continuous learning".
+
+# ── HOLDFAST-ORCHESTRATION-FINAL.md — the planning document of record ────────────
+
+| `DELETE FROM` / `.delete(` | append-only is a claim we make on camera |
+| `SOC 2` / `compliant` / `continuously learns` | agent-written marketing copy |
+claim SOC 2 or compliance readiness.
+Prohibited vocabulary: SOC 2, compliant, certified, continuously learns, enterprise-ready,
+bank-grade.
