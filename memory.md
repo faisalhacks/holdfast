@@ -130,6 +130,26 @@ A1 — typed holds, coverage >= 70%. Not started. Gates built and green.
 - **Running (5)**: W02 x3 raced, W03 eval-harness, W06 api-routes.
 - Report these categories SEPARATELY in the submission. Never sum into a headline count.
 
+## Wave 3 briefs MUST carry these two things
+1. **The engine adapter interface.** W03 cannot read `engine/`, so it loads the engine at
+   runtime. `engine/run.ts` (or `$HOLDFAST_ENGINE_ENTRY`) must export `runEngine`/`run`/
+   default taking `{invoices, payments, thresholds}` and returning `EngineDecision[]`:
+   `{invoice_id, action: 'auto_clear'|'hold'|'unmatched', payment_ids?, hold_type?,
+   requires_human?, conflicts?}`. Read `eval/engine-adapter.ts` for the authoritative
+   shape. Without conformance, coverage reads 0 no matter how good the engine is.
+2. **`engine/run.ts` is ORCHESTRATOR-OWNED and frozen** — it is the assembly point wiring
+   normalise -> match -> holds, and no worker owns it. Written at the Wave 3 merge gate
+   alongside the `engine/holds/registry.ts` wiring section.
+
+## TERMINATION CHECKLIST — explicit items, not side effects
+- [ ] Run the strong LLM baseline ONCE for real, with `ANTHROPIC_API_KEY` set. W03 shipped
+      it default-off and exercised only the no-credentials path, so **its live behaviour is
+      currently unmeasured**. It is the entire defence against "did you handicap the
+      comparison"; a handicapped baseline dies under one question.
+- [ ] Write `eval/floors.live` after the Wave 3 merges; record the commit in the log.
+- [ ] Stage-2 floor enforcement is still unexercised — verify it the moment floors.live lands.
+- [ ] `pnpm verify` fully green with no "skip".
+
 ## Next action
 **Wave 1 is COMPLETE.** Wave 2 is in flight: W02 x3 (raced), W03, W06.
 

@@ -16,6 +16,7 @@
     "eval/floors.live",
     "data/MANIFEST",
     "engine/holds/registry.ts",
+    "engine/run.ts",
     "docs/citations.json",
     "AGENTS.md",
     "CODEOWNERS",
